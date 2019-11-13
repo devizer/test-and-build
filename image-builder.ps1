@@ -1,10 +1,11 @@
 #!/usr/bin/env pwsh
+# mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf *; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; pwsh image-builder.ps1 
 
 $build_folder="/github/test-and-build"
 
 $definitions=@(
     @{
-        key="arm"; BasicParts=5; BaseUrl="file://github.com/"
+        key="arm"; BasicParts=5; BaseUrl="file:///github.com/"
     } 
 );
 
