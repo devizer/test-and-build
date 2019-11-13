@@ -65,7 +65,7 @@ function Build { param($definition)
 
     Say "Extracting basic image: $key"
     Write-Host "archive: $arch1";
-    mkdi    r basic-image-$key; 
+    mkdir basic-image-$key; 
     pushd basic-image-$key 
     & 7z -y x $arch1
     # & bash -c 'rm -f *.7z.*'
