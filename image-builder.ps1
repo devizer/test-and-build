@@ -22,7 +22,7 @@ function Get-Elapsed
 
 function Build { param($definition)
     Say "Building $($definition.key)";
-    $download_cmd="curl $($definition.BaseUrl)debian-$($definition.Key).qcow2.7z.[1-$($definition.BasicParts)] -o 'debian-$($definition.Key).qcow2.7z.#1'";
+    $download_cmd="curl $($definition.BaseUrl)debian-$($definition.Key).qcow2.7z.00[1-$($definition.BasicParts)] -o 'debian-$($definition.Key).qcow2.7z.#1'";
     
     Say "Shell: $download_cmd"
     New-Item -Type Directory $build_folder -ea SilentlyContinue;
