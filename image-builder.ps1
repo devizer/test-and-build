@@ -28,11 +28,12 @@ function Prepare-VM { param($definition, $rootDiskFullName)
     pushd $path
     & qemu-img create -f qcow2 ephemeral.qcow2 200G
     popd
-
+    
+    $startParams = @{Mem="600M"; Cores=4; Port=2345};
 $qemuCmd = "#!/usr/bin/env bash" + @" 
 
 qemu\qemu-system-arm \
-    -smp 4 -m 800M -M virt \
+    -smp $($startParams.Cores) -m $($startParams.Mem) -M virt \
     -initrd initrd.img \
     -kernel vmlinuz \
     -append 'root=/dev/sda1 console=ttyAMA0' \
@@ -40,7 +41,7 @@ qemu\qemu-system-arm \
     -device virtio-scsi-device,id=scsi \
     -drive file=disk.qcow2,id=rootimg,cache=unsafe,if=none -device scsi-hd,drive=rootimg \
     -drive file=ephemeral.qcow2,id=ephemeral,cache=unsafe,if=none -device scsi-hd,drive=ephemeral \
-    -netdev user,hostfwd=tcp::%VM_SSH_PORT%-:22,id=net0 -device virtio-net-device,netdev=net0 \
+    -netdev user,hostfwd=tcp::$($startParams.Port)-:22,id=net0 -device virtio-net-device,netdev=net0 \
     -nographic
 "@
 
