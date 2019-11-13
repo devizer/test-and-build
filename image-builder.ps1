@@ -40,7 +40,8 @@ qemu\qemu-system-arm \
     -drive file=ephemeral.qcow2,id=ephemeral,cache=unsafe,if=none -device scsi-hd,drive=ephemeral \
     -netdev user,hostfwd=tcp::%VM_SSH_PORT%-:22,id=net0 -device virtio-net-device,netdev=net0 \
     -nographic
-"
+"@
+
     $qemuCmd > $path/start-vm.sh
     & cmdmod +x "$path/start-vm.sh"
 
