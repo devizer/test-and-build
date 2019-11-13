@@ -2,6 +2,7 @@
 # mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf *; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; pwsh image-builder.ps1 
 
 $build_folder="/transient-builds/test-and-build"
+$ScriptPath=(pwd).Path
 
 $definitions=@(
     @{
@@ -19,6 +20,12 @@ function Get-Elapsed
     if ($Global:startAt -eq $null) { $Global:startAt = [System.Diagnostics.Stopwatch]::StartNew(); }
     [System.String]::Concat("[", (new-object System.DateTime(0)).AddMilliseconds($Global:startAt.ElapsedMilliseconds).ToString("mm:ss"), "]");
 }; Get-Elapsed | out-null;
+
+function Prepare-VM { param($definition, $rootDiskFullName)
+    $path=Split-Path -Path $rootDiskFullName;
+    cp "$ScriptPath/$($definition.Key)/*" "$path"
+    # TODO: Create shell-script
+}
 
 function Build { param($definition)
     $key=$definition.key
@@ -44,8 +51,13 @@ function Build { param($definition)
     $qcowFile = join-Path -Path "." -ChildPath "*qcow2*" -Resolve
     popd
     
-    Say "Basic Image exctracted: $qcowFile";
+    Say "Basic Image for $key exctracted: $qcowFile";
     & virt-filesystems --all --long --uuid -h -a "$qcowFile"
+
+    Say "Prepare Image to launch: $key"
+    Prepare-VM $definition $qcowFile
+    
+    Say "The End"
     popd
 
 }
