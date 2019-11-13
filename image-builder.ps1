@@ -23,7 +23,7 @@ function Get-Elapsed
 
 function Prepare-VM { param($definition, $rootDiskFullName)
     $path=Split-Path -Path $rootDiskFullName;
-    cp "$ScriptPath/kernels/$($definition.Key)/*" "$($path)/" 
+    Copy-Item "$ScriptPath/kernels/$($definition.Key)/*" "$($path)/" 
     # TODO: Create shell-script
 }
 
