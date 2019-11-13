@@ -25,7 +25,7 @@ function Prepare-VM { param($definition, $rootDiskFullName)
     $path=Split-Path -Path $rootDiskFullName;
     Copy-Item "$ScriptPath/kernels/$($definition.Key)/*" "$($path)/"
     pushd $path
-    qemu-img.exe create -f qcow2 ephemeral.qcow2 200G
+    & qemu-img create -f qcow2 ephemeral.qcow2 200G
     popd
 
 $qemuCmd = "#!/usr/bin/env bash" + @"
