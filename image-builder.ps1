@@ -32,7 +32,7 @@ function Build { param($definition)
     & bash -c $download_cmd
     $arch1 = join-Path -Path "." -ChildPath "*.001" -Resolve
     Say "Extracting $arch1"
-    & 7z x $arch1
+    & 7z -y x $arch1
     & rm "*.7z*"
     $qcowFile = join-Path -Path "." -ChildPath "*qcow2*" -Resolve
     Say "Basic Image exctracted: $qcowFile";
