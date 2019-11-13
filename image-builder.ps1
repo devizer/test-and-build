@@ -23,6 +23,7 @@ function Get-Elapsed
 
 function Prepare-VM { param($definition, $rootDiskFullName)
     $path=Split-Path -Path $rootDiskFullName;
+    Write-Host "Copy kernel to '$($path)'"
     Copy-Item "$ScriptPath/kernels/$($definition.Key)/*" "$($path)/"
     pushd $path
     & qemu-img create -f qcow2 ephemeral.qcow2 200G
