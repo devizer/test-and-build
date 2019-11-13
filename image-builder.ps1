@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 # mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf *; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; pwsh image-builder.ps1 
 
-$build_folder="/tarnsient-builds/test-and-build"
+$build_folder="/transient-builds/test-and-build"
 
 $definitions=@(
     @{
@@ -33,7 +33,7 @@ function Build { param($definition)
     $arch1 = join-Path -Path "." -ChildPath "*.001" -Resolve
     Say "Extracting $arch1"
     & 7z -y x $arch1
-    & rm "*.7z*"
+    & bash -c 'rm -f *.7z.*'
     $qcowFile = join-Path -Path "." -ChildPath "*qcow2*" -Resolve
     Say "Basic Image exctracted: $qcowFile";
     popd
