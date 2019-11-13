@@ -43,7 +43,7 @@ qemu\qemu-system-arm \
 "@
 
     $qemuCmd > $path/start-vm.sh
-    & cmdmod +x "$path/start-vm.sh"
+    & cxmod +x "$path/start-vm.sh"
 
     @{ Path=$path; Command="$path/start-vm.sh"; }
 }
