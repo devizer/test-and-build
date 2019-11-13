@@ -6,7 +6,7 @@ $ScriptPath=(pwd).Path
 
 $definitions=@(
     @{
-        key="arm"; BasicParts=5; BaseUrl="file:///github.com/"
+        key="arm"; BasicParts=5; BaseUrl="file:///github.com/"; RootQcow="disk.expanded.qcow2.raw"
     } 
 );
 
@@ -71,7 +71,7 @@ function Build { param($definition)
     pushd basic-image-$key 
     & 7z -y x $arch1
     # & bash -c 'rm -f *.7z.*'
-    $qcowFile = join-Path -Path "." -ChildPath "*qcow2*" -Resolve
+    $qcowFile = join-Path -Path "." -ChildPath "*$($definition.RootQcow)*" -Resolve
     popd
     
     Say "Basic Image for $key exctracted: $qcowFile";
