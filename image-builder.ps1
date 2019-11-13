@@ -23,8 +23,28 @@ function Get-Elapsed
 
 function Prepare-VM { param($definition, $rootDiskFullName)
     $path=Split-Path -Path $rootDiskFullName;
-    Copy-Item "$ScriptPath/kernels/$($definition.Key)/*" "$($path)/" 
-    # TODO: Create shell-script
+    Copy-Item "$ScriptPath/kernels/$($definition.Key)/*" "$($path)/"
+    pushd $path
+    qemu-img.exe create -f qcow2 ephemeral.qcow2 200G
+    popd
+
+$qemuCmd = @"#!/usr/bin/env bash
+qemu\qemu-system-arm \
+    -smp 4 -m 800M -M virt \
+    -initrd initrd.img \
+    -kernel vmlinuz \
+    -append 'root=/dev/sda1 console=ttyAMA0' \
+    -global virtio-blk-device.scsi=off \
+    -device virtio-scsi-device,id=scsi \
+    -drive file=disk.qcow2,id=rootimg,cache=unsafe,if=none -device scsi-hd,drive=rootimg \
+    -drive file=ephemeral.qcow2,id=ephemeral,cache=unsafe,if=none -device scsi-hd,drive=ephemeral \
+    -netdev user,hostfwd=tcp::%VM_SSH_PORT%-:22,id=net0 -device virtio-net-device,netdev=net0 \
+    -nographic
+"
+    $qemuCmd > $path/start-vm.sh
+    & cmdmod +x "$path/start-vm.sh"
+
+    @{ Path=$path; Command="$path/start-vm.sh"; }
 }
 
 function Build { param($definition)
@@ -44,7 +64,7 @@ function Build { param($definition)
 
     Say "Extracting basic image: $key"
     Write-Host "archive: $arch1";
-    mkdir basic-image-$key; 
+    mkdi    r basic-image-$key; 
     pushd basic-image-$key 
     & 7z -y x $arch1
     # & bash -c 'rm -f *.7z.*'
@@ -55,7 +75,8 @@ function Build { param($definition)
     & virt-filesystems --all --long --uuid -h -a "$qcowFile"
 
     Say "Prepare Image to launch: $key"
-    Prepare-VM $definition $qcowFile
+    $preparedVm = Prepare-VM $definition $qcowFile
+    Write-Host "Command prepared: [$($preparedVm.Command)]"
     
     Say "The End"
     popd
