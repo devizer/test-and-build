@@ -21,20 +21,26 @@ function Get-Elapsed
 }; Get-Elapsed | out-null;
 
 function Build { param($definition)
+    $key=$definition.key
     Say "Building $($definition.key)";
+
+    Say "Downloading basic image: $key"
     $download_cmd="curl $($definition.BaseUrl)debian-$($definition.Key).qcow2.7z.00[1-$($definition.BasicParts)] -o 'debian-$($definition.Key).qcow2.7z.00#1'";
-    
-    Say "Shell: $download_cmd"
+    Write-Host "shell command: [$download_cmd]";
     New-Item -Type Directory $build_folder -ea SilentlyContinue;
     pushd $build_folder
-    mkdir downloads
-    pushd downloads
+    mkdir downloads-$key; pushd downloads-$key
     & bash -c $download_cmd
     $arch1 = join-Path -Path "." -ChildPath "*.001" -Resolve
-    Say "Extracting $arch1"
+    popd
+
+    Say "Extracting basic image: $key"
+    Write-Host "archive: $arch1";
+    mkdir basic-image-$key; pushd basic-image-$key 
     & 7z -y x $arch1
-    & bash -c 'rm -f *.7z.*'
+    # & bash -c 'rm -f *.7z.*'
     $qcowFile = join-Path -Path "." -ChildPath "*qcow2*" -Resolve
+    
     Say "Basic Image exctracted: $qcowFile";
     popd
     popd
