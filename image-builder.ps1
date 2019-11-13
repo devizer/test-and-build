@@ -28,7 +28,7 @@ function Prepare-VM { param($definition, $rootDiskFullName)
     qemu-img.exe create -f qcow2 ephemeral.qcow2 200G
     popd
 
-$qemuCmd = @"#!/usr/bin/env bash
+$qemuCmd = "#!/usr/bin/env bash" + @"
 qemu\qemu-system-arm \
     -smp 4 -m 800M -M virt \
     -initrd initrd.img \
