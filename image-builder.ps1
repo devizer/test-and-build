@@ -9,7 +9,7 @@ $definitions=@(
 @{
     key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
     BaseUrl="file:///github.com/";
-    DefaultPort=2342;
+    DefaultPort=2344;
     ExpandTargetSize="5000M"
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
 },
@@ -246,6 +246,6 @@ function Build { param($definition, $startParams)
 
 }
 
-$globalStartParams = @{Mem="600M"; Cores=4; Port=2345};
+$globalStartParams = @{Mem="600M"; Cores=2; Port=2345};
 $definitions | % {$globalStartParams.Port = $_.DefaultPort; Build $_ $globalStartParams;};
 
