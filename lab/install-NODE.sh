@@ -10,6 +10,12 @@ export NVM_DIR="$HOME/.nvm"
 ' >> ~/.bashrc
 
 # nvm install --lts node  # 10.16.3
-nvm install node          # 12.12
-npm install yarn npm npx npm-check-updates --global
-yarn config set network-timeout 600000 -g
+time nvm install node          # 12.12
+time yarn config set network-timeout 600000 -g
+time npm install yarn npm npx npm-check-updates --global
+
+pushd /tmp
+npx create-react-app my-react
+cd my-react
+yarn install
+popd

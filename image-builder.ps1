@@ -105,7 +105,7 @@ function Build { param($definition, $startParams)
     Say "Basic Image for $key exctracted: $qcowFile";
     & virt-filesystems --all --long --uuid -h -a "$qcowFile"
 
-    Say "Prepare Image to launch: $key"
+    Say "Prepare Image and launch: $key"
     $preparedVm = Prepare-VM $definition $qcowFile
     Write-Host "Command prepared: [$($preparedVm.Command)]"
 
@@ -130,20 +130,22 @@ function Build { param($definition, $startParams)
     Remote-Command-Raw 'mkdir -p /tmp/build' "localhost" $startParams.Port "root" "pass"
     & cp $ScriptPath/lab/* $mapto/tmp/build
 
+    Say "Greetings from Guest [$key]"
+    Remote-Command-Raw 'printf "HEEEELLLLLOOOO. I am [$(hostname)]\n$(lscpu)"' "localhost" $startParams.Port "root" "pass"
+
+    Say "Installing DotNet Core on [$key]"
+    Remote-Command-Raw "bash /tmp/build/install-dotnet.sh" "localhost" $startParams.Port "root" "pass"
+
+    Say "Installing Node [$key]"
+    Remote-Command-Raw "cat /tmp/build/install-NODE.sh" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw 'echo "NODE: $(node --version); YARN: $(yarn --version); NPM: $(npm --version)"' "localhost" $startParams.Port "root" "pass"
+
     Say "Dismounting guest's share of [$key]"
-    & cp $ScriptPath/lab/* $mapto/tmp/
-
-    Say "Installing DotNet Core"
-    Remote-Command-Raw 'printf "HEEEELLLLLOOOO. I am $(hostname)\n$(lscpu)"' "localhost" $startParams.Port "root" "pass"
-    # TODO: REPLACE cat by bash
-    Remote-Command-Raw "cat /tmp/build/install-dotnet.sh" "localhost" $startParams.Port "root" "pass"
-
-    Say "Dotnet installed! for [$key]"
+    & umount -f $mapto
 
     Say "SHUTDOWN [$key] GUEST"
     Remote-Command-Raw "sudo shutdown now" "localhost" $startParams.Port "root" "pass"
     Wait-For-Process $process $key
-    
 
     Say "The End"
     popd
