@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+echo "Content of /etc/default/locale:"; cat /etc/default/locale
+echo "-----------------"
+
 sudo locale-gen "en_US.UTF-8" "en_GB.UTF-8"
 echo '
 LC_ALL="en_GB.UTF-8"
