@@ -1,0 +1,5 @@
+PARAMETERS
+services: postgres, postgres-docker, docker, mysql, redis, mongodb, node-latest, node-lts
+root_map: ~/mapto/arm
+cores: 4
+mem: 800M

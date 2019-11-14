@@ -158,7 +158,8 @@ function Build { param($definition, $startParams)
     Remote-Command-Raw 'printenv | sort' "localhost" $startParams.Port "root" "pass"
 
     Say "Greetings from Guest [$key]"
-    Remote-Command-Raw 'Say "Hello. I am the $(hostname) host"; lscpu' "localhost" $startParams.Port "root" "pass"
+    $cmd='Say "Hello. I am the $(hostname) host"; lscpu; content of /etc/default/locale; cat /etc/default/locale'
+    Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
 
     Say "Installing DotNet Core on [$key]"
     # Remote-Command-Raw "bash -e /tmp/build/install-dotnet.sh; dotnet --info" "localhost" $startParams.Port "root" "pass"
