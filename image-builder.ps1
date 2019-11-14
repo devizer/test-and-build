@@ -8,13 +8,15 @@ $ScriptPath=(pwd).Path
 $definitions=@(
 @{
     key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw"
-    BaseUrl="file:///github.com/"
+    BaseUrl="file:///github.com/";
+    DefaultPort=2346;
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
 },
 @{
     key="arm"; BasicParts=5; RootQcow="disk.expanded.qcow2.raw"
     # BaseUrl="file:///github.com/"
-    BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
+    BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/";
+    DefaultPort=2347;
 }
 );
 # temprarily we build only ARM-64
@@ -225,5 +227,5 @@ function Build { param($definition, $startParams)
 }
 
 $globalStartParams = @{Mem="600M"; Cores=4; Port=2345};
-$definitions | % {Build $_ $globalStartParams;};
+$definitions | % {$globalStartParams.Port = $_.DefaultPort; Build $_ $globalStartParams;};
 
