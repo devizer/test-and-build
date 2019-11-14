@@ -169,7 +169,7 @@ function Build { param($definition, $startParams)
     $si.UseShellExecute = $false
     $si.WorkingDirectory = $preparedVm.Path
     $process = [System.Diagnostics.Process]::Start($si)
-    $isExited = $process.WaitForExit(1000)
+    $isExited = $process.WaitForExit(7000)
 
     Wait-For-Ssh "localhost" $startParams.Port "root" "pass"
 
