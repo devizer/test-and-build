@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
 # mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf *; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; pwsh image-builder.ps1
-# sudo apt-get install sshpass
+# sudo apt-get install sshpass sshfs
 
 $build_folder="/transient-builds/test-and-build"
 $ScriptPath=(pwd).Path
@@ -71,7 +71,7 @@ function Build { param($definition, $startParams)
     Say "Downloading basic image: $key"
     $download_cmd="curl $($definition.BaseUrl)debian-$($definition.Key).qcow2.7z.00[1-$($definition.BasicParts)] -o 'debian-$($definition.Key).qcow2.7z.00#1'";
     Write-Host "shell command: [$download_cmd]";
-    mkdir downloads-$key; 
+    & mkdir -p downloads-$key; 
     pushd downloads-$key
     & bash -c $download_cmd
     $arch1 = join-Path -Path "." -ChildPath "*.001" -Resolve
@@ -79,7 +79,7 @@ function Build { param($definition, $startParams)
 
     Say "Extracting basic image: $key"
     Write-Host "archive: $arch1";
-    mkdir basic-image-$key; 
+    & mkdir -p basic-image-$key; 
     pushd basic-image-$key 
     & 7z -y x $arch1
     # & bash -c 'rm -f *.7z.*'
@@ -99,17 +99,16 @@ function Build { param($definition, $startParams)
     $process = [System.Diagnostics.Process]::Start($si)
     $isExited = $process.WaitForExit(1000)
 
-    Wait-For-Ssh "localhost" $startParams.Port "root" "pass" 
+    Wait-For-Ssh "localhost" $startParams.Port "root" "pass"
 
-<#
-$si = new-object System.Diagnostics.ProcessStartInfo("/bin/ls", "-la")
-$si.UseShellExecute = $true
-$si.UseShellExecute = $false
-$si.WorkingDirectory = "/root"
-$process = [System.Diagnostics.Process]::Start($si)
-$isExited = $process.WaitForExit(1000); Write-Host "isExited: $isExited"
-#>
-    
+    Say "Mapping guest FS to localfs"
+    $mapto="$build_folder/root-$($key)"
+    Write-Host "Mapping Folder is [$mapto]";
+    & mkdir -p "$mapto"
+    & bash -c "echo pass | sshfs -o password_stdin 'root@localhost:/' "-p" $startParams.Port" "$mapto"
+    & ls -la "$mapto" 
+
+
 
 
 
