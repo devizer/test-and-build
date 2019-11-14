@@ -66,10 +66,16 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     "#!/usr/bin/env bash`n$cmd" > $mapto/$rnd
     & chmod +x $mapto/$rnd
-    $cmd="sshpass -p `'$($password)`' ssh $($user)@$($ip) -p $($port) /$rnd"
+    $localCmd="sshpass -p `'$($password)`' ssh $($user)@$($ip) -p $($port) /$rnd"
     Write-Host "#: $cmd"
-    & bash -c "$cmd"
+    & bash -c "$localCmd"
     & rm -f $mapto/$rnd
+}
+
+function Wait-For-Process {param($process, $name)
+    Say "Waiting for shutdown of [$key]"
+    $process.WaitForExit()
+    Say "[$key] VM gracefully powered off"
 }
 
 function Build { param($definition, $startParams)
@@ -120,22 +126,23 @@ function Build { param($definition, $startParams)
     & bash -c "$mountCmd"
     & ls -la "$mapto"
 
-    Say "Copying lab/ to guest for [$key]"
-    & cp $ScriptPath/lab/* $mapto/tmp/
+    Say "Copying ./lab/ to guest for [$key]"
+    Remote-Command-Raw 'mkdir -p /tmp/build' "localhost" $startParams.Port "root" "pass"
+    & cp $ScriptPath/lab/* $mapto/tmp/build
 
     Say "Dismounting guest's share of [$key]"
     & cp $ScriptPath/lab/* $mapto/tmp/
 
     Say "Installing DotNet Core"
-    Remote-Command-Raw "echo HEEEELLLLLOOOO" "localhost" $startParams.Port "root" "pass"
-    Remote-Command-Raw "ls -la /tmp" "localhost" $startParams.Port "root" "pass"
-    Remote-Command-Raw "bash /tmp/install-dotnet.sh" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw 'printf "HEEEELLLLLOOOO. I am $(hostname)\n$(lscpu)"' "localhost" $startParams.Port "root" "pass"
+    # TODO: REPLACE cat by bash
+    Remote-Command-Raw "cat /tmp/build/install-dotnet.sh" "localhost" $startParams.Port "root" "pass"
 
     Say "Dotnet installed! for [$key]"
 
     Say "SHUTDOWN [$key] GUEST"
     Remote-Command-Raw "sudo shutdown now" "localhost" $startParams.Port "root" "pass"
-    sleep 33
+    Wait-For-Process $process $key
     
 
     Say "The End"
