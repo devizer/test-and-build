@@ -161,7 +161,9 @@ function Build { param($definition, $startParams)
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
 
     Say "Installing DotNet Core on [$key]"
-    # Remote-Command-Raw "bash -e /tmp/build/install-dotnet.sh; dotnet --info" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "bash -e /tmp/build/install-dotnet.sh; dotnet --info" "localhost" $startParams.Port "user" "pass"
+    Remote-Command-Raw "Say 'I am ROOT'; dotnet --info" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "Say 'I am USER'; dotnet --info" "localhost" $startParams.Port "user" "pass"
     # TODO: Add dotnet restore
 
     if (false)
