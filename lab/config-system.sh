@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+sudo timedatectl set-timezone UTC
+
 echo "Content of /etc/default/locale:"; cat /etc/default/locale
 echo "-----------------"
 
@@ -6,7 +8,6 @@ sudo locale-gen "en_US.UTF-8" "en_GB.UTF-8"
 echo '
 LC_ALL="en_GB.UTF-8"
 ' | sudo tee /etc/default/locale > /dev/null
-sudo timedatectl set-timezone UTC
 
 echo '
 export LC_ALL="en_GB.UTF-8"
@@ -25,3 +26,5 @@ printenv | sort
 echo "-----------------"
 
 echo "Info: /etc/localtime is a symlink to [$(readlink /etc/localtime)]"
+echo "Finally, try a sudo command"
+sudo true
