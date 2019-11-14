@@ -23,3 +23,5 @@ chmod +x /usr/local/bin/Say
 echo "Environment:"; 
 printenv | sort
 echo "-----------------"
+
+echo "Info: /etc/localtime is a symlink to [$(readlink /etc/localtime)]"
