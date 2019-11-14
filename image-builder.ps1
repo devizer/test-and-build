@@ -95,7 +95,7 @@ function Final-Compact
     virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.compacting.qcow2
     qemu-img convert -O qcow2 -c -p disk.intermediate.compacting.qcow2 "$newPath"
     Prepare-VM $definition "$newPath"
-    ls -la disk*
+    & rm -f disk.intermediate.compacting.qcow2 
 }
 
 function Build { param($definition, $startParams)
@@ -188,7 +188,7 @@ function Build { param($definition, $startParams)
     Final-Compact $definition "$qcowFile" "42G" $finalQcow 
     popd
 
-    Say "Final Image for [$key]: $qcowFile";
+    Say "Final Image for [$key]: $finalQcow";
     & virt-filesystems --all --long --uuid -h -a "$finalQcow"
 
     Say "Splitting final image for publication [$key]: $qcowFile";
@@ -198,7 +198,7 @@ function Build { param($definition, $startParams)
     $finalArchivePath = "$(pwd)"
     popd
     pushd $finalQcowPath
-    & 7z a -t7z -mx=1 -mfb=32 -md=4m -v42m "debian-$key-final.qcow2.7z" "."
+    & 7z a -t7z -mx=1 -mfb=32 -md=4m -v42m "$finalArchive" "."
     popd
     pushd $finalArchivePath
     & ls -la
