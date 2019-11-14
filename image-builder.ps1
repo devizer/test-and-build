@@ -59,7 +59,7 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
         Write-Host "Waiting for ssh connection to $($ip):$($port) ... " -ForegroundColor Grey
         & sshpass "-p" "$($password)" "ssh" "$($user)@$($ip)" "-p" "$($port)"
     } while (-not $?)
-    Write-Host "SSH on $($ip):$($port) is online" -ForegroundColor Grey
+    Write-Host "SSH on $($ip):$($port) is online" -ForegroundColor Gray
 }
 
 function Build { param($definition, $startParams)
