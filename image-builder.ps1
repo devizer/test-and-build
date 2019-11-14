@@ -166,11 +166,11 @@ function Build { param($definition, $startParams)
     Remote-Command-Raw "Say 'I am USER'; dotnet --info" "localhost" $startParams.Port "user" "pass"
     # TODO: Add dotnet restore
 
-    if (false)
+    if (true)
     {
         Say "Installing Node [$key]"
-        Remote-Command-Raw "bash /tmp/build/install-NODE.sh" "localhost" $startParams.Port "root" "pass"
-        Remote-Command-Raw 'echo "NODE: $(node --version); YARN: $(yarn --version); NPM: $(npm --version)"' "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw "bash /tmp/build/install-NODE.sh" "localhost" $startParams.Port "user" "pass"
+        Remote-Command-Raw 'echo "NODE: $(node --version); YARN: $(yarn --version); NPM: $(npm --version)"' "localhost" $startParams.Port "user" "pass"
     }
 
     Say "Zeroing free space of [$key]"

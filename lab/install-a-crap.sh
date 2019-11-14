@@ -6,9 +6,11 @@ sudo apt-get -y install subversion git p7zip-full mc wget htop iotop curl ca-cer
    libgdiplus pv \
    cmake 
 
+# postgres
 apt install postgresql postgresql-contrib -y
 sudo -u postgres psql -c "SELECT version();"
 
+# mariadb
 export DEBIAN_FRONTEND=noninteractive
 sudo debconf-set-selections <<< 'mariadb-server-10.0 mysql-server/root_password password PASS'
 sudo debconf-set-selections <<< 'mariadb-server-10.0 mysql-server/root_password_again password PASS'
