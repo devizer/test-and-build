@@ -193,7 +193,7 @@ function Build { param($definition, $startParams)
 
     Say "Splitting final image for publication [$key]: $qcowFile";
     & mkdir -p "final-$key-splitted"
-    & pusdh "final-$key-splitted"
+    & pushd "final-$key-splitted"
     $finalArchive = "$(pwd)/debian-$key-final.qcow2.7z"
     $finalArchivePath = "$(pwd)"
     popd
