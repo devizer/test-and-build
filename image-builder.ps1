@@ -43,9 +43,10 @@ function Prepare-VM { param($definition, $rootDiskFullName)
     & qemu-img create -f qcow2 ephemeral.qcow2 200G
     popd
     
+$p1="arm"; $k=$definition.Key; if ($k == "arm64") {$p1="arm64"}
 $qemuCmd = "#!/usr/bin/env bash" + @" 
 
-qemu-system-arm \
+qemu-system-${p1} \
     -smp $($startParams.Cores) -m $($startParams.Mem) -M virt \
     -initrd initrd.img \
     -kernel vmlinuz \
