@@ -7,7 +7,9 @@ $ScriptPath=(pwd).Path
 
 $definitions=@(
     @{
-        key="arm"; BasicParts=5; BaseUrl="file:///github.com/"; RootQcow="disk.expanded.qcow2.raw"
+        key="arm"; BasicParts=5; RootQcow="disk.expanded.qcow2.raw"
+        # BaseUrl="file:///github.com/"
+        BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
     } 
 );
 

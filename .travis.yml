@@ -1,0 +1,16 @@
+language: shell
+os: linux
+dist: bionic
+
+git:
+  depth: false
+
+# https://docs.travis-ci.com/user/caching/
+before_script:
+- 'sudo apt update; sudo apt install libguestfs-tools qemu-img sshpass sshfs qemu-system-arm qemu-img -y'
+- |
+    url=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-dependencies.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash
+    script=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-and-nodejs.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash -s dotnet node pwsh
+
+script:
+- pwsh image-builder.ps1
