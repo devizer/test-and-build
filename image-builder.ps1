@@ -162,15 +162,15 @@ function Build { param($definition, $startParams)
 
     Say "Installing DotNet Core on [$key]"
     Remote-Command-Raw "bash -e /tmp/build/install-dotnet.sh; dotnet --info" "localhost" $startParams.Port "user" "pass"
-    Remote-Command-Raw "Say 'I am ROOT'; dotnet --info" "localhost" $startParams.Port "root" "pass"
-    Remote-Command-Raw "Say 'I am USER'; dotnet --info" "localhost" $startParams.Port "user" "pass"
+    Remote-Command-Raw 'Say "I am ROOT"; echo PATH is $PATH; dotnet --info' "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw 'Say "I am USER"; echo PATH is $PATH; dotnet --info' "localhost" $startParams.Port "user" "pass"
     # TODO: Add dotnet restore
 
     if ($true)
     {
         Say "Installing Node [$key]"
         Remote-Command-Raw "bash /tmp/build/install-NODE.sh" "localhost" $startParams.Port "user" "pass"
-        Remote-Command-Raw 'echo "NODE: $(node --version); YARN: $(yarn --version); NPM: $(npm --version)"' "localhost" $startParams.Port "user" "pass"
+        Remote-Command-Raw 'Say "NODE: $(node --version); YARN: $(yarn --version); NPM: $(npm --version)"; echo PATH is $PATH;' "localhost" $startParams.Port "user" "pass"
     }
 
     Say "Zeroing free space of [$key]"
