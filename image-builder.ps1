@@ -78,11 +78,11 @@ qemu-system-i386 -smp $($startParams.Cores) -m $($startParams.Mem) -M q35 \
     -initrd initrd.img \
     -kernel vmlinuz -append "root=/dev/sda1 console=ttyS0" \
     -drive file=$($fileName) \
-    -drive file=ephemeral.qcow2 \    
+        
     -netdev user,hostfwd=tcp::$($startParams.Port)-:22,id=unet -device rtl8139,netdev=unet \
     -net user \
     -nographic
-"@; # -drive file=ephemeral.qcow2,id=ephemeral,cache=unsafe,if=none \
+"@; # -drive file=ephemeral.qcow2 \
     }
     $qemuCmd > $path/start-vm.sh
     & chmod +x "$path/start-vm.sh"
