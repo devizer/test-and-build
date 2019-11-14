@@ -20,3 +20,6 @@ sudo cp /tmp/build/Say.sh /usr/local/bin/Say
 chmod +x /usr/local/bin/Say
 
 # apt-get install -qq libunwind8 -y 
+echo "Environment:"; 
+printenv | sort
+echo "-----------------"

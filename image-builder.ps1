@@ -155,9 +155,6 @@ function Build { param($definition, $startParams)
     Say "Configure LC_ALL and UTC"
     Remote-Command-Raw "bash /tmp/build/config-system.sh" "localhost" $startParams.Port "root" "pass"
 
-    Say "env on [$key]:"
-    Remote-Command-Raw 'printenv | sort' "localhost" $startParams.Port "root" "pass"
-
     Say "Greetings from Guest [$key]"
     $cmd='Say "Hello. I am the $(hostname) host"; sudo lscpu; echo "Content of /etc/default/locale:"; cat /etc/default/locale'
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
