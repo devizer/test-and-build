@@ -13,6 +13,10 @@ Say "Installing NodeJS LTS"
 time nvm install --lts node  # 10.16.3
 Say "Installing NodeJS LATEST"
 time nvm install node          # 12.12
+Say "Default NodeJS version: $(nvm current)"
+Say "switch to latest stable"
+nvm use node
+Say "New NodeJS version: $(nvm current)"
 Say "Upgrading NPM & NPX, installing YARN"
 time npm install yarn npm npx npm-check-updates --global
 time yarn config set network-timeout 600000 -g
