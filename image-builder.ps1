@@ -72,12 +72,13 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
 
 function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
-    "#!/usr/bin/env bash`n$cmd" > $mapto/$rnd
-    & chmod +x $mapto/$rnd
-    $localCmd="sshpass -p `'$($password)`' ssh -o 'StrictHostKeyChecking no' $($user)@$($ip) -p $($port) /$rnd"
+    $tmpCmdLocalFullName="$mapto/tmp/$rnd"
+    "#!/usr/bin/env bash`n$cmd" > $tmpCmdLocalFullName
+    & chmod +x $tmpCmdLocalFullName
+    $localCmd="sshpass -p `'$($password)`' ssh -o 'StrictHostKeyChecking no' $($user)@$($ip) -p $($port) /tmp/$rnd"
     Write-Host "#: $cmd"
     & bash -c "$localCmd"
-    & rm -f $mapto/$rnd
+    & rm -f $tmpCmdLocalFullName
 }
 
 function Wait-For-Process
@@ -177,7 +178,7 @@ function Build { param($definition, $startParams)
     # & umount -f $mapto # NOOOO shutdown?????
 
     Say "SHUTDOWN [$key] GUEST"
-    Remote-Command-Raw "sudo shutdown now" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "rm -rf /tmp/build; sudo shutdown now" "localhost" $startParams.Port "root" "pass"
     Wait-For-Process $process $key
 
     Say "Final compact [$key]"
