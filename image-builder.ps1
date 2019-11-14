@@ -88,7 +88,7 @@ function Build { param($definition)
     $process.StartInfo.UseShellExecute = $true
     $process.StartInfo.RedirectStandardOutput = $false
     $process.StartInfo.WorkingDirectory = $($preparedVm.Path)
-    $process.Start()
+    $process.Start
 
 
 Say "The End"
