@@ -1,7 +1,6 @@
 language: shell
 os: linux
 dist: xenial # bionic wa slow
-
 git:
   depth: false
 
