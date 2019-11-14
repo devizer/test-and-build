@@ -92,9 +92,10 @@ qemu-system-i386 -smp $($startParams.Cores) -m $($startParams.Mem) -M q35 \
 
 function Wait-For-Ssh {param($ip, $port, $user, $password)
     $at = [System.Diagnostics.Stopwatch]::StartNew();
+    $pingCounter = 0;
     do
     {
-        Write-Host "Waiting for ssh connection to $($ip):$($port) ... " -ForegroundColor Gray
+        Write-Host "#$($pingCounter): Waiting for ssh connection to $($ip):$($port) ... " -ForegroundColor Gray
         # $sshCmd="sshpass -p $($password) ssh -o StrictHostKeyChecking=no $($user)@$($ip) -p $($port) hostname"
         & sshpass "-p" "$($password)" "ssh" "-o" "StrictHostKeyChecking no" "$($user)@$($ip)" "-p" "$($port)" "hostname"
         if ($?)
@@ -103,6 +104,7 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
             return $true;
         }
         Start-Sleep 1;
+        $pingCounter++;
     } while ($true)
     
 }
