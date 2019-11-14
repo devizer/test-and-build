@@ -13,9 +13,11 @@ $definitions=@(
     } 
 );
 
-function Say { param( [string] $message )
-Write-Host "$(Get-Elapsed) " -NoNewline -ForegroundColor Magenta
-Write-Host "$message" -ForegroundColor Yellow
+function Say
+{
+    param([string] $message)
+    Write-Host "$( Get-Elapsed ) " -NoNewline -ForegroundColor Magenta
+    Write-Host "$message" -ForegroundColor Yellow
 }
 
 function Get-Elapsed
@@ -77,10 +79,23 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
     & rm -f $mapto/$rnd
 }
 
-function Wait-For-Process {param($process, $name)
+function Wait-For-Process
+{
+    param($process, $name)
     Say "Waiting for shutdown of [$key]"
     $process.WaitForExit()
     Say "[$key] VM gracefully powered off"
+}
+
+function Final-Compact
+{
+    param($definition, $rootDiskFullName, $newSize="32G", $newPath)
+    qemu-img create -f qcow2 -o preallocation=metadata disk.intermediate.compacting.qcow2 $newSize
+    # qemu-img check newdisk.qcow2
+    virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.compacting.qcow2
+    qemu-img convert -O qcow2 -c -p disk.intermediate.compacting.qcow2 "$newPath"
+    Prepare-VM $definition "$newPath"
+    ls -la disk*
 }
 
 function Build { param($definition, $startParams)
@@ -145,20 +160,49 @@ function Build { param($definition, $startParams)
     Remote-Command-Raw 'Say "Hello. I am the $(hostname) host"; lscpu' "localhost" $startParams.Port "root" "pass"
 
     Say "Installing DotNet Core on [$key]"
-    Remote-Command-Raw "bash /tmp/build/install-dotnet.sh" "localhost" $startParams.Port "root" "pass"
+    # Remote-Command-Raw "bash -e /tmp/build/install-dotnet.sh; dotnet --info" "localhost" $startParams.Port "root" "pass"
     # TODO: Add dotnet restore
-    Remote-Command-Raw "dotnet --info" "localhost" $startParams.Port "root" "pass"
 
-    Say "Installing Node [$key]"
-    Remote-Command-Raw "bash /tmp/build/install-NODE.sh" "localhost" $startParams.Port "root" "pass"
-    Remote-Command-Raw 'echo "NODE: $(node --version); YARN: $(yarn --version); NPM: $(npm --version)"' "localhost" $startParams.Port "root" "pass"
+    if (false)
+    {
+        Say "Installing Node [$key]"
+        Remote-Command-Raw "bash /tmp/build/install-NODE.sh" "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw 'echo "NODE: $(node --version); YARN: $(yarn --version); NPM: $(npm --version)"' "localhost" $startParams.Port "root" "pass"
+    }
+
+    Say "Zeroing free space of [$arm]"
+    Remote-Command-Raw "del-caches" "localhost" $startParams.Port "root" "pass"
 
     Say "Dismounting guest's share of [$key]"
-    # & umount -f $mapto # shutdown?????
+    # & umount -f $mapto # NOOOO shutdown?????
 
     Say "SHUTDOWN [$key] GUEST"
     Remote-Command-Raw "sudo shutdown now" "localhost" $startParams.Port "root" "pass"
     Wait-For-Process $process $key
+
+    Say "Final compact [$key]"
+    & mkdir -p "final-$key"
+    pushd "final-$key"
+    $finalQcow = "$(pwd)/debian-$key-final.qcow2"
+    $finalQcowPath = "$(pwd)"
+    Final-Compact $definition "$qcowFile" "42G" $finalQcow 
+    popd
+
+    Say "Final Image for [$key]: $qcowFile";
+    & virt-filesystems --all --long --uuid -h -a "$finalQcow"
+
+    Say "Splitting final image for publication [$key]: $qcowFile";
+    & mkdir -p "final-$key-splitted"
+    & pusdh "final-$key-splitted"
+    $finalArchive = "$(pwd)/debian-$key-final.qcow2.7z"
+    $finalArchivePath = "$(pwd)"
+    popd
+    pushd $finalQcowPath
+    & 7z a -t7z -mx=1 -mfb=32 -md=4m -v42m "debian-$key-final.qcow2.7z" "."
+    popd
+    pushd $finalArchivePath
+    & ls -la
+    popd
 
     Say "The End"
     popd
