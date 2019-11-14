@@ -117,6 +117,7 @@ function Build { param($definition, $startParams)
     Write-Host "archive: $arch1";
     & mkdir -p basic-image-$key; 
     pushd basic-image-$key 
+    & rm -rf *
     & 7z -y x $arch1
     # & bash -c 'rm -f *.7z.*'
     $qcowFile = join-Path -Path "." -ChildPath "*$($definition.RootQcow)*" -Resolve
@@ -183,6 +184,7 @@ function Build { param($definition, $startParams)
     Say "Final compact [$key]"
     & mkdir -p "final-$key"
     pushd "final-$key"
+    & rm -rf *
     $finalQcow = "$(pwd)/debian-$key-final.qcow2"
     $finalQcowPath = "$(pwd)"
     Final-Compact $definition "$qcowFile" "42G" $finalQcow 
@@ -194,6 +196,7 @@ function Build { param($definition, $startParams)
     Say "Splitting final image for publication [$key]: $qcowFile";
     & mkdir -p "final-$key-splitted"
     & pushd "final-$key-splitted"
+    & rm -rf *
     $finalArchive = "$(pwd)/debian-$key-final.qcow2.7z"
     $finalArchivePath = "$(pwd)"
     popd
