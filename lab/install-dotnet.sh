@@ -3,7 +3,8 @@ echo "I'm $(whoami). Should be installed as USER"
 
       url=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-dependencies.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash
       DOTNET_Url=https://dot.net/v1/dotnet-install.sh; 
-      mkdir -p ~/.dotnet/tools /opt/dotnet; 
+      mkdir -p ~/.dotnet/tools;
+      sudo mkdir -p /opt/dotnet;
       export PATH="/opt/dotnet:$HOME/.dotnet/tools:$PATH"
       # for arm it starts from 2.1
       time (curl -ksSL $DOTNET_Url | sudo bash /dev/stdin -c 2.1 -i /opt/dotnet)
