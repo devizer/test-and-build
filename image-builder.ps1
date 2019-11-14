@@ -137,11 +137,11 @@ function Build { param($definition, $startParams)
     Remote-Command-Raw "bash /tmp/build/install-dotnet.sh" "localhost" $startParams.Port "root" "pass"
 
     Say "Installing Node [$key]"
-    Remote-Command-Raw "cat /tmp/build/install-NODE.sh" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "bash /tmp/build/install-NODE.sh" "localhost" $startParams.Port "root" "pass"
     Remote-Command-Raw 'echo "NODE: $(node --version); YARN: $(yarn --version); NPM: $(npm --version)"' "localhost" $startParams.Port "root" "pass"
 
     Say "Dismounting guest's share of [$key]"
-    & umount -f $mapto
+    # & umount -f $mapto # shutdown?????
 
     Say "SHUTDOWN [$key] GUEST"
     Remote-Command-Raw "sudo shutdown now" "localhost" $startParams.Port "root" "pass"
