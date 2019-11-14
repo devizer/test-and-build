@@ -138,8 +138,10 @@ function Build { param($definition, $startParams)
     Say "Configure LC_ALL and UTC"
     Remote-Command-Raw "bash /tmp/build/config-system.sh" "localhost" $startParams.Port "root" "pass"
 
+    Say "env on [$key]:"
+    Remote-Command-Raw 'printenv | sort' $startParams.Port "root" "pass"
+
     Say "Greetings from Guest [$key]"
-    # Remote-Command-Raw 'printf "HEEEELLLLLOOOO. I am [$(hostname)]\n$(lscpu)\n"' "localhost" $startParams.Port "root" "pass"
     Remote-Command-Raw 'Say "Hello. I am the `$(hostname)` host"; lscpu' "localhost" $startParams.Port "root" "pass"
 
     Say "Installing DotNet Core on [$key]"
