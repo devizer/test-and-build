@@ -1,6 +1,8 @@
 
 
     function print_header() {
+      # if [[ -e /tmp/
+      # user=
       SYSTEM="${SYSTEM:-$(uname -s)}"
       if [[ ${SYSTEM} != Darwin ]]; then
           uptime=$(</proc/uptime);                  # 42645.93 240538.58
