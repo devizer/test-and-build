@@ -82,13 +82,22 @@ function Build { param($definition)
     $preparedVm = Prepare-VM $definition $qcowFile
     Write-Host "Command prepared: [$($preparedVm.Command)]"
 
-    $process = New-Object System.Diagnostics.Process
-    $process.StartInfo.FileName = $preparedVm.Command
-    $process.StartInfo.Arguments = @("hello", "world")
-    $process.StartInfo.UseShellExecute = $true
-    $process.StartInfo.RedirectStandardOutput = $false
-    $process.StartInfo.WorkingDirectory = $preparedVm.Path
-    $process.Start()
+    $si = new-object System.Diagnostics.ProcessStartInfo($preparedVm.Command, "")
+    $si.UseShellExecute = $false
+    $si.WorkingDirectory = $preparedVm.Path
+    $process = [System.Diagnostics.Process]::Start($si)
+    $isExited = $process.WaitForExit(1000)
+
+<#
+$si = new-object System.Diagnostics.ProcessStartInfo("/bin/ls", "-la")
+$si.UseShellExecute = $true
+$si.UseShellExecute = $false
+$si.WorkingDirectory = "/root"
+$process = [System.Diagnostics.Process]::Start($si)
+$isExited = $process.WaitForExit(1000); Write-Host "isExited: $isExited"
+#>
+    
+
 
 
 Say "The End"
