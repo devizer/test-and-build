@@ -99,6 +99,8 @@ function Build { param($definition, $startParams)
     $process = [System.Diagnostics.Process]::Start($si)
     $isExited = $process.WaitForExit(1000)
 
+    Wait-For-Ssh "localhost" $startParams.Port "root" "pass" 
+
 <#
 $si = new-object System.Diagnostics.ProcessStartInfo("/bin/ls", "-la")
 $si.UseShellExecute = $true
