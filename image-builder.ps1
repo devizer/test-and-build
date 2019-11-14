@@ -97,10 +97,14 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
         Write-Host "Waiting for ssh connection to $($ip):$($port) ... " -ForegroundColor Gray
         # $sshCmd="sshpass -p $($password) ssh -o StrictHostKeyChecking=no $($user)@$($ip) -p $($port) hostname"
         & sshpass "-p" "$($password)" "ssh" "-o" "StrictHostKeyChecking no" "$($user)@$($ip)" "-p" "$($port)" "hostname"
-        #  Write-Host "#- $sshCmd"
-        # bash -ec "$sshCmd" 
-    } while (-not $?)
-    Write-Host "SSH on $($ip):$($port) is online" -ForegroundColor Gray
+        if ($?)
+        {
+            Write-Host "SSH on $($ip):$($port) is online" -ForegroundColor Green
+            return $true;
+        }
+        Start-Sleep 1;
+    } while ($true)
+    
 }
 
 function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
@@ -171,7 +175,7 @@ function Build { param($definition, $startParams)
     $process = [System.Diagnostics.Process]::Start($si)
     $isExited = $process.WaitForExit(7000)
 
-    Wait-For-Ssh "localhost" $startParams.Port "root" "pass"
+    $isOnline = Wait-For-Ssh "localhost" $startParams.Port "root" "pass"
 
     Say "Mapping guest FS to localfs"
     $mapto="$build_folder/root-$($key)"
