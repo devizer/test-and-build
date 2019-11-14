@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-sudo locale-gen "en_US.UTF-8"
+sudo locale-gen "en_US.UTF-8" "en_GB.UTF-8"
 echo '
 LC_ALL="en_US.UTF-8"
 ' | sudo tee /etc/default/locale > /dev/null
@@ -12,3 +12,6 @@ export TZ=Europe/London
 sudo timedatectl set-timezone UTC
 
 cat /tmp/build/Say.sh >> ~/.bashrc
+cat /tmp/build/Say.sh >> ~/.profile
+
+apt-get install -qq libunwind8 -y 
