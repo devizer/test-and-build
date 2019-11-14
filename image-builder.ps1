@@ -63,7 +63,7 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
 }
 
 function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
-    $rnd = [System.Guid]::NewGuid().ToString("N")
+    $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     "#!/usr/bin/env bash`n$cmd" > $mapto/$rnd
     & chmod +x $mapto/$rnd
     $cmd="sshpass -p `'$($password)`' ssh $($user)@$($ip) -p $($port) /$rnd"
