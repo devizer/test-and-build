@@ -1,5 +1,6 @@
 #!/usr/bin/env pwsh
-# mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf *; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; pwsh image-builder.ps1 
+# mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf *; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; pwsh image-builder.ps1
+# sudo apt-get install sshpass
 
 $build_folder="/transient-builds/test-and-build"
 $ScriptPath=(pwd).Path
@@ -21,6 +22,7 @@ function Get-Elapsed
     [System.String]::Concat("[", (new-object System.DateTime(0)).AddMilliseconds($Global:startAt.ElapsedMilliseconds).ToString("mm:ss"), "]");
 }; Get-Elapsed | out-null;
 
+
 function Prepare-VM { param($definition, $rootDiskFullName)
     $path=Split-Path -Path $rootDiskFullName;
     Write-Host "Copy kernel to '$($path)'"
@@ -29,7 +31,6 @@ function Prepare-VM { param($definition, $rootDiskFullName)
     & qemu-img create -f qcow2 ephemeral.qcow2 200G
     popd
     
-    $startParams = @{Mem="600M"; Cores=4; Port=2345};
 $qemuCmd = "#!/usr/bin/env bash" + @" 
 
 qemu-system-arm \
@@ -51,7 +52,17 @@ qemu-system-arm \
     @{ Path=$path; Command="$path/start-vm.sh"; }
 }
 
-function Build { param($definition)
+function Wait-For-Ssh {param($host, $port, $user, $password)
+    $at = [System.Diagnostics.Stopwatch]::StartNew();
+    do
+    {
+        Write-Host "Waiting for ssh connection to $($host):$($port)" -ForegroundColor Grey
+        & sshpass "-p" "${password}" "ssh" "${user}@${host}" "-p" "${port}"
+    } while (-not $?)
+    Write-Host "SSH on $($host):$($port) is online" -ForegroundColor Grey
+}
+
+function Build { param($definition, $startParams)
     $key=$definition.key
     Say "Building $($definition.key)";
     New-Item -Type Directory $build_folder -ea SilentlyContinue;
@@ -105,5 +116,6 @@ Say "The End"
 
 }
 
-$definitions | % {Build $_;};
+$globalStartParams = @{Mem="600M"; Cores=4; Port=2345};
+$definitions | % {Build $_ $globalStartParams;};
 
