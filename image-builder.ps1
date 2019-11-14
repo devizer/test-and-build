@@ -170,8 +170,8 @@ function Build { param($definition, $startParams)
         Remote-Command-Raw 'echo "NODE: $(node --version); YARN: $(yarn --version); NPM: $(npm --version)"' "localhost" $startParams.Port "root" "pass"
     }
 
-    Say "Zeroing free space of [$arm]"
-    Remote-Command-Raw "del-caches" "localhost" $startParams.Port "root" "pass"
+    Say "Zeroing free space of [$key]"
+    Remote-Command-Raw "before-compact" "localhost" $startParams.Port "root" "pass"
 
     Say "Dismounting guest's share of [$key]"
     # & umount -f $mapto # NOOOO shutdown?????
