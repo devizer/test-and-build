@@ -17,7 +17,7 @@
       user="${LOGNAME:-$(whoami)}"
       file="/tmp/.${user}-said-counter"
       if [[ -e "$file" ]]; then counter=$(< "$file"); else counter=1; fi
-      print_header " $counter" "$1";
+      print_header " #${counter}" "$1";
       counter=$((counter+1));
       echo $counter > "$file"
     }; 
