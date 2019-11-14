@@ -29,6 +29,7 @@ function Get-Elapsed
 
 function Prepare-VM { param($definition, $rootDiskFullName)
     $path=Split-Path -Path $rootDiskFullName;
+    $fileName = [System.IO.Path]::GetFileName($rootDiskFullName)
     Write-Host "Copy kernel to '$($path)'"
     Copy-Item "$ScriptPath/kernels/$($definition.Key)/*" "$($path)/"
     pushd $path
@@ -44,7 +45,7 @@ qemu-system-arm \
     -append 'root=/dev/sda1 console=ttyAMA0' \
     -global virtio-blk-device.scsi=off \
     -device virtio-scsi-device,id=scsi \
-    -drive file=$($rootDiskFullName),id=rootimg,cache=unsafe,if=none -device scsi-hd,drive=rootimg \
+    -drive file=$($fileName),id=rootimg,cache=unsafe,if=none -device scsi-hd,drive=rootimg \
     -drive file=ephemeral.qcow2,id=ephemeral,cache=unsafe,if=none -device scsi-hd,drive=ephemeral \
     -netdev user,hostfwd=tcp::$($startParams.Port)-:22,id=net0 -device virtio-net-device,netdev=net0 \
     -nographic
