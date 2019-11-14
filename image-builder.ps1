@@ -18,7 +18,7 @@ $definitions=@(
 }
 );
 # temprarily we build only ARM-64
-$definitions=@($definitions[1]);
+$definitions=@($definitions[0]);
 
 function Say
 {
@@ -44,11 +44,12 @@ function Prepare-VM { param($definition, $rootDiskFullName)
     popd
     
     $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
+    $p2 = if ($k -eq "arm64") { " -cpu cortex-a57 "; } else {""};
 
 $qemuCmd = "#!/usr/bin/env bash" + @" 
 
 qemu-system-${p1} \
-    -smp $($startParams.Cores) -m $($startParams.Mem) -M virt \
+    -smp $($startParams.Cores) -m $($startParams.Mem) -M virt ${p2} \
     -initrd initrd.img \
     -kernel vmlinuz \
     -append 'root=/dev/sda1 console=ttyAMA0' \
