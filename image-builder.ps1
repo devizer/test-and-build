@@ -43,7 +43,8 @@ function Prepare-VM { param($definition, $rootDiskFullName)
     & qemu-img create -f qcow2 ephemeral.qcow2 200G
     popd
     
-$p1="arm"; $k=$definition.Key; if ($k == "arm64") {$p1="arm64"}
+    $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
+
 $qemuCmd = "#!/usr/bin/env bash" + @" 
 
 qemu-system-${p1} \
