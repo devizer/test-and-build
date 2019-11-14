@@ -62,6 +62,10 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
     Write-Host "SSH on $($ip):$($port) is online" -ForegroundColor Gray
 }
 
+function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
+    & sshpass "-p" "$($password)" "ssh" "$($user)@$($ip)" "-p" "$($port)" "bash" "-c" "$cmd"
+}
+
 function Build { param($definition, $startParams)
     $key=$definition.key
     Say "Building $($definition.key)";
@@ -108,13 +112,25 @@ function Build { param($definition, $startParams)
     $mountCmd = "echo pass | sshfs -o password_stdin 'root@localhost:/' -p $($startParams.Port) '$mapto'"
     Write-Host "Mount command: [$mountCmd]"
     & bash -c "$mountCmd"
-    & ls -la "$mapto" 
+    & ls -la "$mapto"
 
+    Say "Copying lab/ to guest for [$key]"
+    & cp $ScriptPath/lab/* $mapto/tmp/
 
+    Say "Dismounting guest's share of [$key]"
+    & cp $ScriptPath/lab/* $mapto/tmp/
 
+    Say "Installing DotNet Core"
+    Remote-Command-Raw "/tmp/install-dotnet.sh" "localhost" $startParams.Port "root" "pass"
 
+    Say "Dotnet installed! for [$key]"
 
-Say "The End"
+    Say "SHUTDOWN [$key] GUEST"
+    Remote-Command-Raw "shutdown now" "localhost" $startParams.Port "root" "pass"
+    Sleep 33
+    
+
+    Say "The End"
     popd
 
 }
