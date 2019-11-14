@@ -126,7 +126,7 @@ function Build { param($definition, $startParams)
     Say "Dotnet installed! for [$key]"
 
     Say "SHUTDOWN [$key] GUEST"
-    Remote-Command-Raw "shutdown now" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "sudo shutdown now" "localhost" $startParams.Port "root" "pass"
     sleep 33
     
 
