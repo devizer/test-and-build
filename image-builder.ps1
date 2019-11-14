@@ -83,12 +83,12 @@ function Build { param($definition)
     Write-Host "Command prepared: [$($preparedVm.Command)]"
 
     $process = New-Object System.Diagnostics.Process
-    $process.StartInfo.FileName = $($preparedVm.Command)
+    $process.StartInfo.FileName = $preparedVm.Command
     $process.StartInfo.Arguments = @("hello", "world")
     $process.StartInfo.UseShellExecute = $true
     $process.StartInfo.RedirectStandardOutput = $false
-    $process.StartInfo.WorkingDirectory = $($preparedVm.Path)
-    $process.Start
+    $process.StartInfo.WorkingDirectory = $preparedVm.Path
+    $process.Start()
 
 
 Say "The End"
