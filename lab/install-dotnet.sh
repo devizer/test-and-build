@@ -10,9 +10,9 @@
       time (curl -ksSL $DOTNET_Url | bash /dev/stdin -c 2.2 -i ~/.dotnet)
       time (curl -ksSL $DOTNET_Url | bash /dev/stdin -c 3.0 -i ~/.dotnet)
       export DOTNET_ROOT="$HOME/.dotnet"
-      # time dotnet tool install -g BenchmarkDotNet.Tool || true
+      time dotnet tool install -g BenchmarkDotNet.Tool || true
       # time dotnet --info || true
       echo '
-export PATH="$HOME/.dotnet:$HOME/.dotnet/tools:$PATH"  
+export PATH="$HOME/.dotnet:$PATH:$HOME/.dotnet/tools"  
 export DOTNET_ROOT="$HOME/.dotnet"
 ' >> ~/.bashrc

@@ -11,8 +11,8 @@ export NVM_DIR="$HOME/.nvm"
 
 # nvm install --lts node  # 10.16.3
 time nvm install node          # 12.12
-time yarn config set network-timeout 600000 -g
 time npm install yarn npm npx npm-check-updates --global
+time yarn config set network-timeout 600000 -g
 
 pushd /tmp
 npx create-react-app my-react

@@ -131,10 +131,12 @@ function Build { param($definition, $startParams)
     & cp $ScriptPath/lab/* $mapto/tmp/build
 
     Say "Greetings from Guest [$key]"
-    Remote-Command-Raw 'printf "HEEEELLLLLOOOO. I am [$(hostname)]\n$(lscpu)"' "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw 'printf "HEEEELLLLLOOOO. I am [$(hostname)]\n$(lscpu)\n"' "localhost" $startParams.Port "root" "pass"
 
     Say "Installing DotNet Core on [$key]"
     Remote-Command-Raw "bash /tmp/build/install-dotnet.sh" "localhost" $startParams.Port "root" "pass"
+    # TODO: Add dotnet restore
+    Remote-Command-Raw "dotnet --info" "localhost" $startParams.Port "root" "pass"
 
     Say "Installing Node [$key]"
     Remote-Command-Raw "bash /tmp/build/install-NODE.sh" "localhost" $startParams.Port "root" "pass"
