@@ -63,7 +63,9 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
 }
 
 function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
-    & sshpass "-p" "$($password)" "ssh" "$($user)@$($ip)" "-p" "$($port)" "bash" "-c" "$cmd"
+    $cmd="sshpass -p `"$($password)`" ssh $($user)@$($ip) -p $($port) bash -c `"$cmd`""
+    Write-Host "#: $cmd"
+    & bash -c "$cmd"
 }
 
 function Build { param($definition, $startParams)
