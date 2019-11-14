@@ -7,9 +7,17 @@ $ScriptPath=(pwd).Path
 
 $definitions=@(
 @{
+    key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
+    BaseUrl="file:///github.com/";
+    DefaultPort=2342;
+    ExpandTargetSize="5000M"
+    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
+},
+@{
     key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw"
     BaseUrl="file:///github.com/";
     DefaultPort=2346;
+    ExpandTargetSize="5000M"
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
 },
 @{
@@ -61,8 +69,21 @@ qemu-system-${p1} \
     -drive file=ephemeral.qcow2,id=ephemeral,cache=unsafe,if=none -device scsi-hd,drive=ephemeral \
     -netdev user,hostfwd=tcp::$($startParams.Port)-:22,id=net0 -device virtio-net-device,netdev=net0 \
     -nographic
-"@
+"@;
 
+    if ($definition.Key -eq "i386") {
+        $qemuCmd = "#!/usr/bin/env bash" + @"
+
+qemu-system-i386 -smp $($startParams.Cores) -m $($startParams.Mem) -M q35 \
+    -initrd initrd.img \
+    -kernel vmlinuz -append "root=/dev/sda1 console=ttyS0" \
+    -drive file=$($fileName),cache=unsafe,if=none \
+    -drive file=ephemeral.qcow2,id=ephemeral,cache=unsafe,if=none -device scsi-hd,drive=ephemeral \
+    -netdev user,hostfwd=tcp::$($startParams.Port)-:22,id=unet -device rtl8139,netdev=unet \
+    -net user \
+    -nographic
+"@;
+    }
     $qemuCmd > $path/start-vm.sh
     & chmod +x "$path/start-vm.sh"
 
