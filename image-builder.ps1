@@ -81,8 +81,17 @@ function Build { param($definition)
     Say "Prepare Image to launch: $key"
     $preparedVm = Prepare-VM $definition $qcowFile
     Write-Host "Command prepared: [$($preparedVm.Command)]"
-    
-    Say "The End"
+
+    $process = New-Object System.Diagnostics.Process
+    $process.StartInfo.FileName = $($preparedVm.Command)
+    $process.StartInfo.Arguments = @("hello", "world")
+    $process.StartInfo.UseShellExecute = $true
+    $process.StartInfo.RedirectStandardOutput = $false
+    $process.StartInfo.WorkingDirectory = $($preparedVm.Path)
+    $process.Start()
+
+
+Say "The End"
     popd
 
 }
