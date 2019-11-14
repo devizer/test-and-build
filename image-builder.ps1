@@ -52,14 +52,14 @@ qemu-system-arm \
     @{ Path=$path; Command="$path/start-vm.sh"; }
 }
 
-function Wait-For-Ssh {param($host, $port, $user, $password)
+function Wait-For-Ssh {param($ip, $port, $user, $password)
     $at = [System.Diagnostics.Stopwatch]::StartNew();
     do
     {
-        Write-Host "Waiting for ssh connection to $($host):$($port)" -ForegroundColor Grey
-        & sshpass "-p" "${password}" "ssh" "${user}@${host}" "-p" "${port}"
+        Write-Host "Waiting for ssh connection to $($ip):$($port) ... " -ForegroundColor Grey
+        & sshpass "-p" "$($password)" "ssh" "$($user)@$(ip)" "-p" "$($port)"
     } while (-not $?)
-    Write-Host "SSH on $($host):$($port) is online" -ForegroundColor Grey
+    Write-Host "SSH on $($ip):$($port) is online" -ForegroundColor Grey
 }
 
 function Build { param($definition, $startParams)
