@@ -121,6 +121,8 @@ function Build { param($definition, $startParams)
     & cp $ScriptPath/lab/* $mapto/tmp/
 
     Say "Installing DotNet Core"
+    Remote-Command-Raw "echo HEEEELLLLLOOOO" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "ls -la /tmp" $startParams.Port "root" "pass"
     Remote-Command-Raw "bash /tmp/install-dotnet.sh" "localhost" $startParams.Port "root" "pass"
 
     Say "Dotnet installed! for [$key]"
