@@ -57,7 +57,7 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
     do
     {
         Write-Host "Waiting for ssh connection to $($ip):$($port) ... " -ForegroundColor Gray
-        & sshpass "-p" "$($password)" "ssh" "$($user)@$($ip)" "-p" "$($port)"
+        & sshpass "-p" "$($password)" "ssh" "$($user)@$($ip)" "-p" "$($port)" "hostname"
     } while (-not $?)
     Write-Host "SSH on $($ip):$($port) is online" -ForegroundColor Gray
 }
