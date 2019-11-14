@@ -6,12 +6,19 @@ $build_folder="/transient-builds/test-and-build"
 $ScriptPath=(pwd).Path
 
 $definitions=@(
-    @{
-        key="arm"; BasicParts=5; RootQcow="disk.expanded.qcow2.raw"
-        # BaseUrl="file:///github.com/"
-        BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
-    } 
+@{
+    key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw"
+    BaseUrl="file:///github.com/"
+    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
+},
+@{
+    key="arm"; BasicParts=5; RootQcow="disk.expanded.qcow2.raw"
+    # BaseUrl="file:///github.com/"
+    BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
+}
 );
+# temprarily we build only ARM-64
+$definitions=@($definitions[0]);
 
 function Say
 {
