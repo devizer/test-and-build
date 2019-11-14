@@ -32,7 +32,7 @@ function Prepare-VM { param($definition, $rootDiskFullName)
     $startParams = @{Mem="600M"; Cores=4; Port=2345};
 $qemuCmd = "#!/usr/bin/env bash" + @" 
 
-qemu\qemu-system-arm \
+qemu-system-arm \
     -smp $($startParams.Cores) -m $($startParams.Mem) -M virt \
     -initrd initrd.img \
     -kernel vmlinuz \
