@@ -1,6 +1,6 @@
 language: shell
 os: linux
-dist: xenial # bionic wa slow
+dist: bionic # xenial's qemu is too old
 git:
   depth: false
 
