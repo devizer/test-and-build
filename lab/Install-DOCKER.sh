@@ -1,6 +1,6 @@
+#!/usr/bin/env bash
 function header() { LightGreen='\033[1;32m';Yellow='\033[1;33m';RED='\033[0;31m'; NC='\033[0m'; printf "${LightGreen}$1${NC} ${Yellow}$2${NC}\n"; }
 
-if [ "$(command -v docker)" == "" ]; then 
   header "Installing docker from" "download.docker.com repo"
   source /etc/os-release
   # sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get clean
@@ -17,7 +17,6 @@ if [ "$(command -v docker)" == "" ]; then
   sudo apt-get update
   apt-cache policy docker-ce
   sudo apt-get install -y docker-ce && sudo apt-get clean && sudo systemctl status docker | head -n 88
-fi
 
 if [ "$(command -v docker-compose)" == "" ]; then 
   header "Installing" "docker-compose"

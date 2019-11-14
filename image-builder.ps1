@@ -135,8 +135,12 @@ function Build { param($definition, $startParams)
     Remote-Command-Raw 'mkdir -p /tmp/build' "localhost" $startParams.Port "root" "pass"
     & cp $ScriptPath/lab/* $mapto/tmp/build
 
+    Say "Configure LC_ALL and UTC"
+    Remote-Command-Raw "bash /tmp/build/config-system.sh" "localhost" $startParams.Port "root" "pass"
+
     Say "Greetings from Guest [$key]"
-    Remote-Command-Raw 'printf "HEEEELLLLLOOOO. I am [$(hostname)]\n$(lscpu)\n"' "localhost" $startParams.Port "root" "pass"
+    # Remote-Command-Raw 'printf "HEEEELLLLLOOOO. I am [$(hostname)]\n$(lscpu)\n"' "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw 'Say "Hello. I am the `$(hostname)` host"; lscpu' "localhost" $startParams.Port "root" "pass"
 
     Say "Installing DotNet Core on [$key]"
     Remote-Command-Raw "bash /tmp/build/install-dotnet.sh" "localhost" $startParams.Port "root" "pass"
