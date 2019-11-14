@@ -59,7 +59,7 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
     do
     {
         Write-Host "Waiting for ssh connection to $($ip):$($port) ... " -ForegroundColor Gray
-        $sshCmd="sshpass -p $($password) ssh -o StrictHostKeyChecking=no $($user)@$($ip) -p $($port) hostname"
+        # $sshCmd="sshpass -p $($password) ssh -o StrictHostKeyChecking=no $($user)@$($ip) -p $($port) hostname"
         & sshpass "-p" "$($password)" "ssh" "-o" "StrictHostKeyChecking no" "$($user)@$($ip)" "-p" "$($port)" "hostname"
         #  Write-Host "#- $sshCmd"
         # bash -ec "$sshCmd" 

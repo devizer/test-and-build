@@ -17,5 +17,6 @@ time yarn config set network-timeout 600000 -g
 pushd /tmp
 npx create-react-app my-react
 cd my-react
-yarn install
+yarn install --verbose
 popd
+rm -rf my-react
