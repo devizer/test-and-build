@@ -23,7 +23,7 @@ function Output-To-Markdown{
     
     $trimmedOutput=$output.Trim([char]13, [char]10)
     if ($trimmedOutput -like "/tmp/cmd-*") {
-        return "ERR: _" + $trimmedOutput.Substring(52) + "_"; 
+        return "|ERR: _" + $trimmedOutput.Substring(51) + "_|"; 
     }    
     Write-Host "trimmedOutput: $trimmedOutput"
     $outputAsArray=$trimmedOutput.Split([char]10)
