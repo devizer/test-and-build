@@ -139,7 +139,7 @@ function Produce-Report {
     param($definition, $startParams, $suffix)
     $key=$definition.Key
     Say "Produce Report for [$key]"
-    & mkdir "$ProjectPath/Public-Report"
+    & mkdir -p "$ProjectPath/Public-Report"
     $reportFile = "$ProjectPath/Public-Report/Debian-10-Buster-$key-$suffix.md"
     "|  Debian 10 Buster $key |`n|-------|" > $reportFile
 
@@ -152,6 +152,7 @@ function Produce-Report {
         "| $cmd |" >> $reportFile
         # "| $response |" >> $reportFile
         Output-To-Markdown $response >> $reportFile
+        & rm -f "$responseFile" 
     }
 }
     
