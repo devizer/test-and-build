@@ -18,23 +18,24 @@ $definitions=@(
     DefaultPort=2344;
     ExpandTargetSize="5000M";
     EnableKvm=$true;
-    SwapMb=256
+    SwapMb=256;
     # BaseUrl="file:///github.com/"
     BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
 },
 @{
-    key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw"
-    BaseUrl="file:///github.com/";
+    key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw";
     DefaultPort=2346;
     ExpandTargetSize="5000M";
+    SwapMb=32;
     # BaseUrl="file:///github.com/"
     BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
 },
 @{
     key="arm"; BasicParts=5; RootQcow="disk.expanded.qcow2.raw"
     # BaseUrl="file:///github.com/"
-    BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/";
     DefaultPort=2347;
+    SwapMb=32;
+    BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/";
 }
 );
 # temprarily we build only ARM-64
