@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-echo "[env]"
-printenv | sort
-echo "[~/.bashrc]"
-cat ~/.bashrc
+# echo "[env]"
+# printenv | sort
+# echo "[~/.bashrc]"
+# cat ~/.bashrc
 
 echo "I'm [$(whoami)]. Net Core Should be installed as USER. Arch is $ARCH"
 
