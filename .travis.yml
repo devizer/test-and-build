@@ -12,6 +12,8 @@ before_script:
     libguestfs-tools qemu-system-arm qemu-system-i386 \
     qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker
   
+  apt clean
+  
   sudo modprobe kvm
   kvm-ok
   

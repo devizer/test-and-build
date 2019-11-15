@@ -13,6 +13,7 @@ if [[ "$ARCH" == "i386" ]]; then
 fi
 
       url=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-dependencies.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash
+      apt clean
       DOTNET_Url=https://dot.net/v1/dotnet-install.sh; 
       mkdir -p ~/.dotnet/tools;
       sudo mkdir -p /opt/dotnet;

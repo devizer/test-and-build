@@ -98,3 +98,5 @@ ARCH='$ARCH'
 ' > /home/user/.ssh/environment
 chmod +x /home/user/.ssh/environment
 chown -R user:user /home/user/.ssh
+
+usermod -aG sudo user

@@ -196,7 +196,7 @@ function Build { param($definition, $startParams)
     $isOnline = Wait-For-Ssh "localhost" $startParams.Port "root" "pass"
 
     Say "Mapping guest FS to localfs"
-    $mapto="$build_folder/root-$($key)"
+    $mapto="$build_folder/rootfs-$($key)"
     Write-Host "Mapping Folder is [$mapto]";
     & mkdir -p "$mapto"
     $mountCmd = "echo pass | sshfs -o password_stdin 'root@localhost:/' -p $($startParams.Port) '$mapto'"
@@ -215,21 +215,39 @@ function Build { param($definition, $startParams)
     $cmd='Say "Hello. I am the $(hostname) host"; sudo lscpu; echo "Content of /etc/default/locale:"; cat /etc/default/locale; echo "[env]"; printenv | sort'
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
 
-    Say "Installing DotNet Core on [$key]"
-    Remote-Command-Raw "bash -e /tmp/build/install-dotnet.sh; dotnet --info" "localhost" $startParams.Port "user" "pass"
-    Remote-Command-Raw 'Say "I am ROOT"; echo PATH is $PATH; dotnet --info' "localhost" $startParams.Port "root" "pass"
-    Remote-Command-Raw 'Say "I am USER"; echo PATH is $PATH; dotnet --info' "localhost" $startParams.Port "user" "pass"
-    # TODO: Add dotnet restore
+    $mustHavePackages="apt-update; sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y && sudo apt-get clean"
+    Say "Installing must have packages on [$key]"
+    Remote-Command-Raw "$mustHavePackages" "localhost" $startParams.Port "root" "pass"
+
+
+Say "Installing DotNet Core on [$key]"
+Remote-Command-Raw "cd /tmp/build; bash -e install-dotnet.sh; command -v dotnet && dotnet --info || true" "localhost" $startParams.Port "user" "pass"
+Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "root" "pass"
+Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "user" "pass"
+# TODO: Add dotnet restore
+
+Say "Installing Latest Mono [$key]"
+Remote-Command-Raw "cd /tmp/build; bash -e install-MONO.sh" "localhost" $startParams.Port "user" "pass"
+Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget | head -4' "localhost" $startParams.Port "root" "pass"
+Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget | head -4' "localhost" $startParams.Port "user" "pass"
+
 
     if ($true)
     {
         Say "Installing Node [$key]"
-        Remote-Command-Raw "bash /tmp/build/install-NODE.sh" "localhost" $startParams.Port "user" "pass"
-        Remote-Command-Raw 'Say "NODE: $(node --version); YARN: $(yarn --version); NPM: $(npm --version)"; echo PATH is $PATH;' "localhost" $startParams.Port "user" "pass"
+        Remote-Command-Raw "cd /tmp/build; bash install-NODE.sh" "localhost" $startParams.Port "user" "pass"
+        Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "user" "pass"
+        Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "root" "pass"
     }
 
+    Say "Installing Docker [$key]"
+    Remote-Command-Raw "cd /tmp/build; bash install-DOCKER.sh" "localhost" $startParams.Port "root" "pass"
+
+    Say "Installing a Crap [$key]"
+    Remote-Command-Raw "cd /tmp/build; bash install-a-crap.sh" "localhost" $startParams.Port "root" "pass"
+
     Say "Zeroing free space of [$key]"
-    Remote-Command-Raw "bash /tmp/build/TearDown.sh; before-compact" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "cd /tmp/build; bash TearDown.sh; before-compact" "localhost" $startParams.Port "root" "pass"
 
     # Say "Dismounting guest's share of [$key]"
     # & umount -f $mapto # NOOOO shutdown?????

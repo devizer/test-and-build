@@ -9,6 +9,7 @@ if [ -n "$(uname -m | grep -E 'i.86' 2>/dev/null)" ]; then
     Say "Installing build-essential"
     apt-update
     time sudo apt-get install build-essential libssl-dev -y
+    apt clean -qq
 fi
 
 echo '
@@ -23,7 +24,11 @@ export NVM_DIR="/home/user/.nvm"
 
 Say "Installing NodeJS LTS"
 df -h
+export CFLAGS="-O0"
+export CXXFLAGS="$CFLAGS"
+export CPPFLAGS="$CFLAGS"
 time nvm install --lts node  # 12.13
+nvm cache clear
 df -h
 # Say "Installing NodeJS LATEST"
 # time nvm install node          # 12.12
