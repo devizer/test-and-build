@@ -260,7 +260,7 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
     Say "Installing a Crap [$key]"
     Remote-Command-Raw "cd /tmp/build; bash install-a-crap.sh" "localhost" $startParams.Port "root" "pass"
 
-    Produce-Report $definition, $startParams, "onfinish"
+    Produce-Report $definition $startParams "onfinish"
 
     Say "Zeroing free space of [$key]"
     Remote-Command-Raw "cd /tmp/build; bash TearDown.sh; before-compact" "localhost" $startParams.Port "root" "pass"
