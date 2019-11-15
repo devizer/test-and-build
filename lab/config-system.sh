@@ -12,11 +12,12 @@ echo "-----------------"
 
 sudo locale-gen "en_US.UTF-8" "en_GB.UTF-8"
 echo '
-LC_ALL="en_GB.UTF-8"
+LC_ALL="en_US.UTF-8"
+LANG="en_US.UTF-8"
 ' | sudo tee /etc/default/locale > /dev/null
 
 echo '
-export LC_ALL="en_GB.UTF-8"
+export LC_ALL="en_US.UTF-8"
 export TZ=Europe/London
 ' | sudo tee -a ~/.bashrc > /dev/null
 sudo timedatectl set-timezone UTC
