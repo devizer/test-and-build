@@ -49,7 +49,10 @@ Say "Current Swap Size: $currentSwap MB"
 
 # SMART apt-update - only for built-in debian repos
 echo '#!/usr/bin/env bash
-ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || sudo apt update --allow-unauthenticated
+ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || sudo apt update --allow-unauthenticated -qq
 ' > /usr/local/bin/apt-update
 chmod +x /usr/local/bin/apt-update
 
+
+Say "Adding user to nopasswd sudoers"
+echo 'user    ALL=(ALL:ALL) NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo
