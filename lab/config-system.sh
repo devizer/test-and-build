@@ -100,4 +100,9 @@ ARCH='$ARCH'
 chmod +x /home/user/.ssh/environment
 chown -R user:user /home/user/.ssh
 
+Say "Disable apparmor"
+systemctl stop apparmor
+systemctl disable apparmor
+
+Say "Add user to sudo group"
 usermod -aG sudo user

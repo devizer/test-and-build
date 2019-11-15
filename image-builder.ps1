@@ -254,13 +254,14 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
 
 }
 
-$cores = [Environment]::ProcessorCount;
-if ($cores -ge 8) { $cores-- }
-Say "TOTAL PHYSICAL CORE(s): $([Environment]::ProcessorCount). Building '$imagesToBuild' using $cores core(s)"
-$globalStartParams = @{Mem="2000M"; Cores=$cores; Port=2345};
 # $definitions | % {$globalStartParams.Port = $_.DefaultPort; Build $_ $globalStartParams;};
 
+$cores = [Environment]::ProcessorCount;
+if ($cores -ge 8) { $cores-- }
+$globalStartParams = @{Mem="2000M"; Cores=$cores; Port=2345};
+
 $definitions | % {Say "Defenition of the $($_.Key)"; Write-Host (Pretty-Format $_)}
+Say "TOTAL PHYSICAL CORE(s): $([Environment]::ProcessorCount). Building '$imagesToBuild' using $cores core(s)"
 
 $imagesToBuild | % {
     $nameToBuild=$_
@@ -272,6 +273,6 @@ $imagesToBuild | % {
     {
         $globalStartParams.Port = $definition.DefaultPort;
         Write-Host "Next image:`n$(Pretty-Format $definition)" -ForegroundColor Yellow;
-        # Build $definition $globalStartParams;
+        Build $definition $globalStartParams;
     }
 }
