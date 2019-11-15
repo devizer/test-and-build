@@ -60,6 +60,10 @@ Say "Adding user to nopasswd sudoers"
 echo 'user    ALL=(ALL:ALL) NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo
 
 echo '
+ARCH='$ARCH'
+' >> /home/user/.bashrc
+
+echo '
 export ARCH='$ARCH'
 ' >> ~/.bashrc
 
