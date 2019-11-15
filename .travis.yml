@@ -22,4 +22,4 @@ before_script:
     script=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-and-nodejs.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash -s pwsh
 
 script:
-- sudo pwsh image-builder.ps1
+- sudo pwsh -command ./image-builder.ps1 -Images i386
