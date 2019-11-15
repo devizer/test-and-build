@@ -15,6 +15,7 @@
     }
     function SayIt() { 
       user="${LOGNAME:-$(whoami)}"
+      user="${LOGNAME:-$(whoami)}"
       file="/tmp/.${user}-said-counter"
       if [[ -e "$file" ]]; then counter=$(< "$file"); else counter=1; fi
       print_header "#${counter}" "$1";
