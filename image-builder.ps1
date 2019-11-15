@@ -149,8 +149,9 @@ function Produce-Report {
         Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass" > $responseFile 2>&1
         $response=Get-Content $responseFile -Raw
         Write-Host "Response for [$cmd]:`n$($response)"
-        "|$cmd|" >> $reportFile
-        "|$response|" >> $reportFile
+        "| $cmd |" >> $reportFile
+        # "| $response |" >> $reportFile
+        Output-To-Markdown $response >> $reportFile
     }
 }
     

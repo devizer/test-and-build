@@ -17,3 +17,14 @@ function Get-Elapsed
     if ($Global:startAt -eq $null) { $Global:startAt = [System.Diagnostics.Stopwatch]::StartNew(); }
     [System.String]::Concat("[", (new-object System.DateTime(0)).AddMilliseconds($Global:startAt.ElapsedMilliseconds).ToString("mm:ss"), "]");
 }; Get-Elapsed | out-null;
+
+function Output-To-Markdown{
+    param([string] $output)
+    $s1=$output.Trim([char]13, [char]10)
+    $arr1=$s1.Split([char]10)
+    $ret="";
+    @($arr) | % {
+        $ret += "| ``" + $_ + "`` |"
+    }
+    $ret
+}
