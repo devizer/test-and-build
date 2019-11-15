@@ -30,7 +30,7 @@ echo info | redis-cli | grep version
 
 systemctl list-units --type=service
 for s in 'postgresql' 'redis-server' 'mariadb'; do
-    Say "Stop and disable $s"
+    Say "Stop and disable [$s]"
     systemctl stop $s
     systemctl disable $s
 done
