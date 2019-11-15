@@ -68,3 +68,10 @@ export ARCH='$ARCH'
 ' >> /home/user/.bashrc
 chown user:user /home/user/.bashrc
 
+echo '
+#!/usr/bin/env bash
+if [ -f ~/.bashrc ]; then
+  . ~/.bashrc
+fi
+' > /home/user/.bashrc_profile
+chown user:user /home/user/.bashrc_profile
