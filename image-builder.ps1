@@ -144,7 +144,7 @@ function Produce-Report {
     "|  Debian 10 Buster $key |`n|-------|" > $reportFile
 
     $probes | % { $cmd = $_.Cmd;
-        $responseFile="/tmp/response-$([Guid]::NewGuid("N"))"
+        $responseFile="/tmp/response-$(([Guid]::NewGuid()).ToString("N"))"
         Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass" > $responseFile  2>&1
         $response=Get-Content $responseFile
         Write-Host "Response for [$cmd]:`n${$response}"
