@@ -20,11 +20,12 @@ function Get-Elapsed
 
 function Output-To-Markdown{
     param([string] $output)
-    $s1=$output.Trim([char]13, [char]10)
-    $arr1=$s1.Split([char]10)
-    $ret="";
-    @($arr) | % {
-        $ret += "| ``" + $_ + "`` |"
+    $trimmedOutput=$output.Trim([char]13, [char]10)
+    Write-Host "trimmedOutput: $trimmedOutput"
+    $outputAsArray=$trimmedOutput.Split([char]10)
+    $outputAsMarkdown="";
+    @($outputAsArray) | % {
+        $outputAsMarkdown += "| ``" + $_ + "`` |"
     }
-    $ret
+    $outputAsMarkdown
 }
