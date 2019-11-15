@@ -86,7 +86,8 @@ qemu-system-${p1} \
 "@;  
 
     if ($definition.Key -eq "i386") {
-        $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm -cpu kvm32 "} else {""}
+        $cpu="IvyBridge" # kvm32|IvyBridge
+        $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm -cpu $(cpu) "} else {" -cpu $(cpu) "}
         $qemuCmd = "#!/usr/bin/env bash" + @"
 
 qemu-system-i386 -smp $($startParams.Cores) -m $($startParams.Mem) -M q35 $($kvmParameters) \
