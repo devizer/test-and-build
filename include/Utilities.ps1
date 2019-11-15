@@ -20,12 +20,17 @@ function Get-Elapsed
 
 function Output-To-Markdown{
     param([string] $output)
+    
     $trimmedOutput=$output.Trim([char]13, [char]10)
+    if ($trimmedOutput -like "/tmp/cmd-*") {
+        return "ERR: _" + $trimmedOutput.Substring(52) + "_"; 
+    }    
     Write-Host "trimmedOutput: $trimmedOutput"
     $outputAsArray=$trimmedOutput.Split([char]10)
     $outputAsMarkdown="";
     @($outputAsArray) | % {
-        $outputAsMarkdown += "| ``" + $_ + "`` |"
+        if ($outputAsMarkdown) { $outputAsMarkdown += "<br>" }
+        $outputAsMarkdown += "**``" + $_ + "``**"
     }
-    $outputAsMarkdown
+    "|$($outputAsMarkdown)|"
 }
