@@ -1,61 +1,24 @@
 #!/usr/bin/env pwsh
+param(
+    [ValidateSet("i386", "arm", "arm64")]    
+    [string[]] $images
+)
 
+$imagesToBuild=$images
+
+. "$($PSScriptRoot)\include\Main.ps1"
+. "$($PSScriptRoot)\include\Utilities.ps1"
 # 1st run
-# mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf test-and-build; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; pwsh image-builder.ps1
+# mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf test-and-build; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; bash build-all.sh
 
 # next run
-# cd ~/build/devizer/test-and-build; git pull; pwsh image-builder.ps1
+# cd ~/build/devizer/test-and-build; git pull; pwsh -command ./image-builder.ps1 -Images arm,i386,arm64
 
 # sudo apt-get install sshpass sshfs libguestfs-tools qemu-system-arm qemu-system-i386 
 # sudo apt-get install qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker
 
 $build_folder="/transient-builds/test-and-build"
-$ScriptPath=(pwd).Path
 
-$definitions=@(
-@{
-    key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
-    DefaultPort=2344;
-    ExpandTargetSize="5000M";
-    EnableKvm=$true;
-    SwapMb=256;
-    # BaseUrl="file:///github.com/"
-    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
-    BaseUrl="file://$ScriptPath/basic-images/"
-},
-@{
-    key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw";
-    DefaultPort=2346;
-    ExpandTargetSize="5000M";
-    SwapMb=32;
-    # BaseUrl="file:///github.com/"
-    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
-    BaseUrl="file://$ScriptPath/basic-images/"
-},
-@{
-    key="arm"; BasicParts=5; RootQcow="disk.expanded.qcow2.raw"
-    # BaseUrl="file:///github.com/"
-    DefaultPort=2347;
-    SwapMb=32;
-    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/";
-    BaseUrl="file://$ScriptPath/basic-images/"
-}
-);
-# temprarily we build only ARM-64
-$definitions=@($definitions[2]);
-
-function Say
-{
-    param([string] $message)
-    Write-Host "$( Get-Elapsed ) " -NoNewline -ForegroundColor Magenta
-    Write-Host "$message" -ForegroundColor Yellow
-}
-
-function Get-Elapsed
-{
-    if ($Global:startAt -eq $null) { $Global:startAt = [System.Diagnostics.Stopwatch]::StartNew(); }
-    [System.String]::Concat("[", (new-object System.DateTime(0)).AddMilliseconds($Global:startAt.ElapsedMilliseconds).ToString("mm:ss"), "]");
-}; Get-Elapsed | out-null;
 
 
 function Prepare-VM { param($definition, $rootDiskFullName)
@@ -219,7 +182,7 @@ function Build { param($definition, $startParams)
     $cmd='Say "Hello. I am the $(hostname) host"; sudo lscpu; echo "Content of /etc/default/locale:"; cat /etc/default/locale; echo "[env]"; printenv | sort'
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
 
-    $mustHavePackages="apt-update; sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y && sudo apt-get clean"
+    $mustHavePackages="apt-update; apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y && apt-get clean"
     Say "Installing must have packages on [$key]"
     Remote-Command-Raw "$mustHavePackages" "localhost" $startParams.Port "root" "pass"
 
@@ -293,7 +256,20 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
 
 $cores = [Environment]::ProcessorCount;
 if ($cores -ge 8) { $cores-- }
-Say "TOTAL PHYSICAL CORE(s): $([Environment]::ProcessorCount). Building using $cores core(s)"
+Say "TOTAL PHYSICAL CORE(s): $([Environment]::ProcessorCount). Building '$imagesToBuild' using $cores core(s)"
 $globalStartParams = @{Mem="2000M"; Cores=$cores; Port=2345};
-$definitions | % {$globalStartParams.Port = $_.DefaultPort; Build $_ $globalStartParams;};
+# $definitions | % {$globalStartParams.Port = $_.DefaultPort; Build $_ $globalStartParams;};
 
+$imagesToBuild | % {
+    $nameToBuild=$_
+    $definition = $definitions | where { $_.Key -eq $nameToBuild} | select -First 1
+    if (-not $definition) {
+        Write-Host "Unknown image '$nameToBuild'" -ForegroundColor Red;
+    }
+    else
+    {
+        $globalStartParams.Port = $definition.DefaultPort;
+        Write-Host "Next image:`n$(Pretty-Format $definition)" -ForegroundColor Yellow;
+        # Build $definition $globalStartParams;
+    }
+}
