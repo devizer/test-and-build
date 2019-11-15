@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# should be run as USER 
+# should be run as USER
+INSTALL_NODE_FOR_i386=false 
 script=https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -32,7 +33,9 @@ if [[ -n "$TRAVIS" ]]; then
     export CPPFLAGS="$CFLAGS"
 fi
 
-time nvm install --lts node  # 12.13
+if [[ "$INSTALL_NODE_FOR_i386" == "true" || "$ARCH" != i386 ]]; then 
+    time nvm install --lts node  # 12.13
+fi
 nvm cache clear
 df -h
 # Say "Installing NodeJS LATEST"
