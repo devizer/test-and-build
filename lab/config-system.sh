@@ -61,6 +61,7 @@ echo 'user    ALL=(ALL:ALL) NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo
 
 echo '
 ARCH='$ARCH'
+export ARCH
 ' >> /home/user/.bashrc
 
 echo '
@@ -80,3 +81,8 @@ fi
 ' > /home/user/.profile
 chmod +x /home/user/.profile
 chown user:user /home/user/.profile
+
+sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment yes/g' /etc/ssh/sshd_config
+Say "SSH config below:"
+cat /etc/ssh/sshd_config
+systemctl restart ssh
