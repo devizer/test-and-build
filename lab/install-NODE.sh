@@ -23,10 +23,15 @@ export NVM_DIR="/home/user/.nvm"
 ' | sudo tee -a /root/.bashrc >/dev/null
 
 Say "Installing NodeJS LTS"
+
+
+if [[ -n "$TRAVIS" ]]; then
 # without optimization it is also slow
-# export CFLAGS="-O0"
-# export CXXFLAGS="$CFLAGS"
-# export CPPFLAGS="$CFLAGS"
+    export CFLAGS="-O0"
+    export CXXFLAGS="$CFLAGS"
+    export CPPFLAGS="$CFLAGS"
+fi
+
 time nvm install --lts node  # 12.13
 nvm cache clear
 df -h

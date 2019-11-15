@@ -260,6 +260,8 @@ Say "TOTAL PHYSICAL CORE(s): $([Environment]::ProcessorCount). Building '$images
 $globalStartParams = @{Mem="2000M"; Cores=$cores; Port=2345};
 # $definitions | % {$globalStartParams.Port = $_.DefaultPort; Build $_ $globalStartParams;};
 
+$definitions | % {Say "Defenition of the $($_.Key)"; Write-Host (Pretty-Format $_)}
+
 $imagesToBuild | % {
     $nameToBuild=$_
     $definition = $definitions | where { $_.Key -eq $nameToBuild} | select -First 1
