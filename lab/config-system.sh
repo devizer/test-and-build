@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+# 1st parameter - swap size in megabytes
+swapSizeMb=$1
+
 sudo timedatectl set-timezone UTC
 
 echo "Content of /etc/default/locale:"; cat /etc/default/locale
@@ -28,3 +32,17 @@ echo "-----------------"
 echo "Info: /etc/localtime is a symlink to [$(readlink /etc/localtime)]"
 echo "Finally, try a sudo command"
 sudo true
+
+echo '
+APT::Install-Recommends "0";
+' | sudo tee /etc/apt/apt.conf.d/42NoRecommend >/dev/null
+
+if [[ -n "${swapSizeMb}" ]]; then
+    Say "Creating swap file $swapSizeMb Mb as /tmp/swap"
+    sudo dd if=/dev/zero of=/tmp/swap bs=1M count=${swapSizeMb}
+    sudo mkswap /tmp/swap
+    sudo swapon /tmp/swap
+ fi
+
+currentSwap=$(free -m | grep Swap | awk '{print $2}')
+Say "Current Swap Size: $currentSwap" 

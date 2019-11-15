@@ -1,6 +1,13 @@
 #!/usr/bin/env pwsh
-# mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf *; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; pwsh image-builder.ps1
-# sudo apt-get install sshpass sshfs
+
+# 1st run
+# mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf test-and-build; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; pwsh image-builder.ps1
+
+# next run
+# cd ~/build/devizer/test-and-build; git pull; pwsh image-builder.ps1
+
+# sudo apt-get install sshpass sshfs libguestfs-tools qemu-system-arm qemu-system-i386 
+# sudo apt-get install qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker
 
 $build_folder="/transient-builds/test-and-build"
 $ScriptPath=(pwd).Path
@@ -196,13 +203,8 @@ function Build { param($definition, $startParams)
     Remote-Command-Raw 'mkdir -p /tmp/build' "localhost" $startParams.Port "root" "pass"
     & cp $ScriptPath/lab/* $mapto/tmp/build
 
-    Say "Configure LC_ALL and UTC"
-    Remote-Command-Raw "bash /tmp/build/config-system.sh" "localhost" $startParams.Port "root" "pass"
-
-    Say "Configuring swap for guest"
-    if ($definition.SwapMb) {
-        Remote-Command-Raw "bash /tmp/build/SetUp.sh $(definition.SwapMb)" "localhost" $startParams.Port "root" "pass"
-    }
+    Say "Configure LC_ALL, UTC and optionally swap"
+    Remote-Command-Raw "bash /tmp/build/config-system.sh $(definition.SwapMb)" "localhost" $startParams.Port "root" "pass"
 
     Say "Greetings from Guest [$key]"
     $cmd='Say "Hello. I am the $(hostname) host"; sudo lscpu; echo "Content of /etc/default/locale:"; cat /etc/default/locale'
@@ -224,7 +226,7 @@ function Build { param($definition, $startParams)
     Say "Zeroing free space of [$key]"
     Remote-Command-Raw "bash /tmp/build/TearDown.sh; before-compact" "localhost" $startParams.Port "root" "pass"
 
-    Say "Dismounting guest's share of [$key]"
+    # Say "Dismounting guest's share of [$key]"
     # & umount -f $mapto # NOOOO shutdown?????
 
     Say "SHUTDOWN [$key] GUEST"
