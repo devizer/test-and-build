@@ -47,7 +47,7 @@ time yarn config set network-timeout 600000 -g
 
 
 node_base=/home/user/.nvm/versions/node
-node_path="${node_base}/$(ls -1 $node_base | sort -hr | head -1)/bin"
+node_path="${node_base}/$(ls -1 $node_base | sort -hr | head -1)bin"
 Say "Pre-loaded NodeJS LTS Path: [${node_path}]"
 
 
