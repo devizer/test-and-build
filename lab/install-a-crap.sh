@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-apt-get -y install sudo subversion git p7zip-full mc wget htop iotop curl ca-certificates sudo \
+apt-get -y install sudo subversion git p7zip-full wget htop iotop curl ca-certificates sudo \
    subversion git p7zip-full wget htop iotop curl ca-certificates \
    build-essential autoconf autoconf pkg-config libssl-dev \
    zlib1g zlib1g-dev make pv libncurses5-dev libncurses5 libncursesw5-dev libncursesw5 gettext \
@@ -9,8 +9,10 @@ apt-get -y install sudo subversion git p7zip-full mc wget htop iotop curl ca-cer
 apt clean
 
 # postgres
+export LC_ALL=en_US.UTF-8
 apt install postgresql postgresql-contrib -y
 apt clean
+pg_createcluster 11 main --start
 sudo -u postgres psql -c "SELECT version();"
 
 # mariadb
