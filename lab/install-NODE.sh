@@ -22,7 +22,9 @@ export NVM_DIR="/home/user/.nvm"
 ' | sudo tee -a /root/.bashrc >/dev/null
 
 Say "Installing NodeJS LTS"
+df -h
 time nvm install --lts node  # 12.13
+df -h
 # Say "Installing NodeJS LATEST"
 # time nvm install node          # 12.12
 Say "Default NodeJS version: $(nvm current)"
