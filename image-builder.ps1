@@ -10,7 +10,9 @@ $definitions=@(
     key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
     BaseUrl="file:///github.com/";
     DefaultPort=2344;
-    ExpandTargetSize="5000M"
+    ExpandTargetSize="5000M";
+    EnableKvm=$true;
+    SwapMb=256
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
 },
 @{
@@ -56,6 +58,8 @@ function Prepare-VM { param($definition, $rootDiskFullName)
     $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
     $p2 = if ($k -eq "arm64") { " -cpu cortex-a57 "; } else {""};
 
+    $hasKvm = (& sh -c "ls /dev/kvm 2>/dev/null") | Out-String
+
 $qemuCmd = "#!/usr/bin/env bash" + @" 
 
 qemu-system-${p1} \
@@ -72,9 +76,10 @@ qemu-system-${p1} \
 "@;  
 
     if ($definition.Key -eq "i386") {
+        $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm -cpu kvm32 "} else {""}
         $qemuCmd = "#!/usr/bin/env bash" + @"
 
-qemu-system-i386 -smp $($startParams.Cores) -m $($startParams.Mem) -M q35 \
+qemu-system-i386 -smp $($startParams.Cores) -m $($startParams.Mem) -M q35 $($kvmParameters) \
     -initrd initrd.img \
     -kernel vmlinuz -append "root=/dev/sda1 console=ttyS0" \
     -drive file=$($fileName) \
@@ -194,6 +199,11 @@ function Build { param($definition, $startParams)
     Say "Configure LC_ALL and UTC"
     Remote-Command-Raw "bash /tmp/build/config-system.sh" "localhost" $startParams.Port "root" "pass"
 
+    Say "Configuring swap for guest"
+    if ($definition.SwapMb) {
+        Remote-Command-Raw "bash /tmp/build/SetUp.sh $(definition.SwapMb)" "localhost" $startParams.Port "root" "pass"
+    }
+
     Say "Greetings from Guest [$key]"
     $cmd='Say "Hello. I am the $(hostname) host"; sudo lscpu; echo "Content of /etc/default/locale:"; cat /etc/default/locale'
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
@@ -212,7 +222,7 @@ function Build { param($definition, $startParams)
     }
 
     Say "Zeroing free space of [$key]"
-    Remote-Command-Raw "before-compact" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "bash /tmp/build/TearDown.sh; before-compact" "localhost" $startParams.Port "root" "pass"
 
     Say "Dismounting guest's share of [$key]"
     # & umount -f $mapto # NOOOO shutdown?????
@@ -252,6 +262,6 @@ function Build { param($definition, $startParams)
 
 }
 
-$globalStartParams = @{Mem="600M"; Cores=2; Port=2345};
+$globalStartParams = @{Mem="600M"; Cores=5; Port=2345};
 $definitions | % {$globalStartParams.Port = $_.DefaultPort; Build $_ $globalStartParams;};
 
