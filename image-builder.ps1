@@ -146,7 +146,7 @@ function Produce-Report {
     $probes | % { $cmd = $_.Cmd;
         $responseFile="/tmp/response-$(([Guid]::NewGuid()).ToString("N"))"
         Write-Host "Port: $($startParams.Port)" 
-        Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass" <#> $responseFile  2>&1#>
+        Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass" > $responseFile 2>&1
         $response=Get-Content $responseFile
         Write-Host "Response for [$cmd]:`n${$response}"
         "|$cmd|" >> $reportFile
