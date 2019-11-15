@@ -77,6 +77,6 @@ echo '
 if [ -f ~/.bashrc ]; then
   . ~/.bashrc
 fi
-' > /home/user/.bash_profile
-chmod +x /home/user/.bash_profile
-chown user:user /home/user/.bash_profile
+' > /home/user/.profile
+chmod +x /home/user/.profile
+chown user:user /home/user/.profile
