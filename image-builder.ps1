@@ -20,7 +20,8 @@ $definitions=@(
     EnableKvm=$true;
     SwapMb=256;
     # BaseUrl="file:///github.com/"
-    BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
+    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
+    BaseUrl="file://$ScriptPath/basic-images/"
 },
 @{
     key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw";
