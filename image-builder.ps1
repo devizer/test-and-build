@@ -135,6 +135,25 @@ function Inplace-Enlarge
     & virt-filesystems --all --long --uuid -h -a "$rootDiskFullName"
 }
 
+function Produce-Report {
+    param($definition, $startParams, $suffix)
+    $key=$definition.Key
+    Say "Produce Report for [$key]"
+    & mkdir "$ProjectPath/Public-Report"
+    $reportFile = "$ProjectPath/Public-Report/Debian-10-Buster-$key-$suffix.md"
+    "|  Debian 10 Buster $key |`n|------------------------|"@ > $reportFile
+
+    $probes | % { $cmd = $_.Cmd;
+        $responseFile="/tmp/response-$([Guid]::NewGuid("N"))"
+        Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass" > $responseFile  2>&1
+        $response=Get-Content $responseFile
+        Write-Host "Response for [$cmd]:`n${$response}"
+        "|$cmd|" >> $reportFile
+        "|$response|" >> $reportFile
+    }
+}
+    
+
 function Build { param($definition, $startParams)
     $key=$definition.key
     Say "Building $($definition.key)";
@@ -198,6 +217,8 @@ function Build { param($definition, $startParams)
     Say "Configure LC_ALL, UTC and optionally swap"
     Remote-Command-Raw "bash /tmp/build/config-system.sh $($definition.SwapMb) $key" "localhost" $startParams.Port "root" "pass"
 
+    Produce-Report $definition, $startParams, "onstart"
+
     Say "Greetings from Guest [$key]"
     $cmd='Say "Hello. I am the $(hostname) host"; sudo lscpu; echo "Content of /etc/default/locale:"; cat /etc/default/locale; echo "[env]"; printenv | sort'
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
@@ -235,6 +256,8 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
 
     Say "Installing a Crap [$key]"
     Remote-Command-Raw "cd /tmp/build; bash install-a-crap.sh" "localhost" $startParams.Port "root" "pass"
+
+    Produce-Report $definition, $startParams, "onfinish"
 
     Say "Zeroing free space of [$key]"
     Remote-Command-Raw "cd /tmp/build; bash TearDown.sh; before-compact" "localhost" $startParams.Port "root" "pass"
