@@ -264,6 +264,6 @@ function Build { param($definition, $startParams)
 
 }
 
-$globalStartParams = @{Mem="1200M"; Cores=5; Port=2345};
+$globalStartParams = @{Mem="2000M"; Cores=5; Port=2345};
 $definitions | % {$globalStartParams.Port = $_.DefaultPort; Build $_ $globalStartParams;};
 
