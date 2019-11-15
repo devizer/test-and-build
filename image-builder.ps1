@@ -289,6 +289,8 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
 
 }
 
-$globalStartParams = @{Mem="2000M"; Cores=5; Port=2345};
+$cores = [Environment]::ProcessorCount;
+Say "TOTAL PHYSICAL CORES: $cores"
+$globalStartParams = @{Mem="2000M"; Cores=$cores; Port=2345};
 $definitions | % {$globalStartParams.Port = $_.DefaultPort; Build $_ $globalStartParams;};
 
