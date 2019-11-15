@@ -86,3 +86,12 @@ sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment yes/g' /etc/ssh/sshd_c
 Say "SSH config below:"
 cat /etc/ssh/sshd_config
 systemctl restart ssh
+
+mkdir -p /home/user/.ssh
+echo '
+#!/usr/bin/env bash
+export ARCH='$ARCH'
+ARCH='$ARCH'
+' > /home/user/.ssh/environment
+chmod +x /home/user/.ssh/environment
+chown -R user:user /home/user/.ssh
