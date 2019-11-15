@@ -25,6 +25,9 @@ function Output-To-Markdown{
     if ($trimmedOutput -like "/tmp/cmd-*") {
         return "|ERR: _" + $trimmedOutput.Substring(51) + "_|"; 
     }    
+    elseif ($trimmedOutput -like "sudo: unknown user*") {
+        return "|ERR: _" + $trimmedOutput + "_|";
+    }
     Write-Host "trimmedOutput: $trimmedOutput"
     $outputAsArray=$trimmedOutput.Split([char]10)
     $outputAsMarkdown="";
