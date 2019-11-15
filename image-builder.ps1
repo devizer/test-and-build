@@ -141,7 +141,7 @@ function Produce-Report {
     Say "Produce Report for [$key]"
     & mkdir "$ProjectPath/Public-Report"
     $reportFile = "$ProjectPath/Public-Report/Debian-10-Buster-$key-$suffix.md"
-    "|  Debian 10 Buster $key |`n|------------------------|"@ > $reportFile
+    "|  Debian 10 Buster $key |`n|-------|" > $reportFile
 
     $probes | % { $cmd = $_.Cmd;
         $responseFile="/tmp/response-$([Guid]::NewGuid("N"))"
