@@ -218,7 +218,7 @@ function Build { param($definition, $startParams)
     Say "Configure LC_ALL, UTC and optionally swap"
     Remote-Command-Raw "bash /tmp/build/config-system.sh $($definition.SwapMb) $key" "localhost" $startParams.Port "root" "pass"
 
-    Produce-Report $definition, $startParams, "onstart"
+    Produce-Report $definition $startParams "onstart"
 
     Say "Greetings from Guest [$key]"
     $cmd='Say "Hello. I am the $(hostname) host"; sudo lscpu; echo "Content of /etc/default/locale:"; cat /etc/default/locale; echo "[env]"; printenv | sort'
