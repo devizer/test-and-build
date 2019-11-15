@@ -8,7 +8,7 @@ export NVM_DIR="$HOME/.nvm"
 if [ -n "$(uname -m | grep -E 'i.86' 2>/dev/null)" ]; then 
     Say "Installing build-essential"
     apt-update
-    time sudo apt-get install build-essential -y
+    time sudo apt-get install build-essential libssl-dev -y
 fi
 
 echo '
