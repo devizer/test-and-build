@@ -213,6 +213,9 @@ Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; command -v dotnet && 
 Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "user" "pass"
 # TODO: Add dotnet restore
 
+Say "Install Docker [$key]"
+Remote-Command-Raw "cd /tmp/build; bash -e Install-DOCKER.sh;" "localhost" $startParams.Port "root" "pass"
+
 Say "Installing Latest Mono [$key]"
 Remote-Command-Raw "cd /tmp/build; bash -e install-MONO.sh" "localhost" $startParams.Port "root" "pass"
 Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget | head -4' "localhost" $startParams.Port "root" "pass"
