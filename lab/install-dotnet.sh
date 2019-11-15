@@ -7,6 +7,8 @@ cat ~/.bashrc
 
 echo "I'm [$(whoami)]. Net Core Should be installed as USER. Arch is $ARCH"
 
+if [[ "$ARCH" == "i386" ]]; then exit 0; fi
+
       url=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-dependencies.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash
       DOTNET_Url=https://dot.net/v1/dotnet-install.sh; 
       mkdir -p ~/.dotnet/tools;
