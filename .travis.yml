@@ -9,7 +9,7 @@ before_script:
 - | 
   sudo apt update; 
   sudo apt install -y libguestfs-tools sshpass sshfs qemu-system-arm qemu-block-extra qemu-utils p7zip-full \
-    libguestfs-tools qemu-system-arm qemu-system-i386 \ 
+    libguestfs-tools qemu-system-arm qemu-system-i386 \
     qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker
   
   sudo modprobe kvm
