@@ -10,8 +10,8 @@
           uptime=$(printf "%.0f\n" "$uptime")       # 42645
           uptime=$(TZ=UTC date -d "@${uptime}" "+%H:%M:%S");
       fi
-      Gray='\033[1;37m'; LightGreen='\033[1;32m'; Yellow='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'; LightGray='\033[1;2m';
-      printf "${LightGray}$(hostname)${NC} ${LightGray}${uptime:-}${NC} ${LightGreen}$1${NC} ${Yellow}$2${NC}\n"; 
+      Blue='\033[1;34m'; Gray='\033[1;37m'; LightGreen='\033[1;32m'; Yellow='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'; LightGray='\033[1;2m';
+      printf "${Blue}$(hostname)${NC} ${LightGray}${uptime:-}${NC} ${LightGreen}$1${NC} ${Yellow}$2${NC}\n"; 
     }
     function SayIt() { 
       user="${LOGNAME:-$(whoami)}"
