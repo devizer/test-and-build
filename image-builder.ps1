@@ -118,7 +118,21 @@ function Final-Compact
     virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.compacting.qcow2
     qemu-img convert -O qcow2 -c -p disk.intermediate.compacting.qcow2 "$newPath"
     Prepare-VM $definition "$newPath"
-    & rm -f disk.intermediate.compacting.qcow2 
+    & rm -f disk.intermediate.compacting.qcow2
+}
+
+function Inplace-Enlarge
+{
+    param($definition, $rootDiskFullName, $newSize="32G")
+    $dir=[System.IO.Path]::GetDirectoryName($rootDiskFullName)
+    pushd "$dir"
+    qemu-img create -f qcow2 -o preallocation=metadata disk.intermediate.enlarge.qcow2 $newSize
+    virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.enlarge.qcow2
+    qemu-img convert -O qcow2 -c -p disk.intermediate.enlarge.qcow2 disk.intermediate.enlarge.qcow2.step2
+    & mv -f disk.intermediate.enlarge.qcow2.step2 $rootDiskFullName
+    & rm -f disk.intermediate.enlarge.qcow2
+    Say "New Size of the $rootDiskFullName should be $newSize [$($definition.Key)]"
+    & virt-filesystems --all --long --uuid -h -a "$rootDiskFullName"
 }
 
 function Build { param($definition, $startParams)
@@ -148,6 +162,13 @@ function Build { param($definition, $startParams)
     
     Say "Basic Image for $key exctracted: $qcowFile";
     & virt-filesystems --all --long --uuid -h -a "$qcowFile"
+
+    if ($definition.SizeForBuildingMb)
+    {
+        Say "Increase Image Size to $( $definition.SizeForBuildingMb ) Mb"
+        Inplace-Enlarge $definition "$qcowFile" "$( $definition.SizeForBuildingMb )M"
+    }
+
 
     Say "Prepare Image and launch: $key"
     $preparedVm = Prepare-VM $definition $qcowFile
@@ -271,6 +292,7 @@ $imagesToBuild | % {
     else
     {
         $globalStartParams.Port = $definition.DefaultPort;
+        $globalStartParams.Mem="$($definition.RamForBuildingMb)M"
         Write-Host "Next image:`n$(Pretty-Format $definition)" -ForegroundColor Yellow;
         Build $definition $globalStartParams;
     }

@@ -12,6 +12,7 @@ if [[ "$(command -v mono)" == "" ]]; then
   sudo apt clean; 
   # sudo rm -f /etc/apt/sources.list.d/mono-official-stable.list; 
   # sudo apt update
+  systemctl stop mono-xsp4
   systemctl disable mono-xsp4
 fi
 

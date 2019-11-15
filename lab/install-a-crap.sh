@@ -13,6 +13,7 @@ export LC_ALL=en_US.UTF-8
 apt install postgresql postgresql-contrib -y
 apt clean
 pg_createcluster 11 main --start
+pg_ctlcluster 11 main start
 sudo -u postgres psql -c 'SELECT version();'
 
 # mariadb
@@ -26,3 +27,11 @@ mysql --table -uroot -pPASS -e "SHOW VARIABLES LIKE '%Version%';"
 apt-get install -y redis-server
 apt clean
 echo info | redis-cli | grep version
+
+systemctl list-units --type=service
+for s in 'postgresql' 'redis-server' 'mariadb'; do
+    Say "Stop and disable $s"
+    systemctl stop $s
+    systemctl disable $s
+done
+

@@ -15,8 +15,8 @@ $probes=@(
 @{Cmd="yarn --version | head -1"},
 @{Cmd="docker | head -1"},
 @{Cmd="nvm --version | head -1"},
-@{Cmd="mysql --table -uroot -pPASS -e `"SHOW VARIABLES LIKE '%Version%';`""},
-@{Cmd="sudo -u postgres psql -c 'SELECT version();'"},
+@{Cmd="mysql -N -B -uroot -pPASS -e `"SHOW VARIABLES LIKE '%Version%';`""},
+@{Cmd="sudo -u postgres psql -t -c 'SELECT version();'"},
 @{Cmd="echo info | redis-cli | grep version" },
 @{Cmd="uname -a"},
 @{Cmd="lscpu"}
@@ -29,6 +29,8 @@ $BasicImagePath=(new-object System.IO.DirectoryInfo($p)).FullName + [IO.Path]::D
 $definitions=@(
 @{
     key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
+    RamForBuildingMb=1300; 
+    SizeForBuildingMb=6543;
     DefaultPort=2344;
     ExpandTargetSize="5000M";
     EnableKvm=$true;
@@ -39,8 +41,9 @@ $definitions=@(
 },
 @{
     key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw";
+    RamForBuildingMb=1200;
+    SizeForBuildingMb=6000;
     DefaultPort=2346;
-    ExpandTargetSize="5000M";
     SwapMb=32;
     # BaseUrl="file:///github.com/"
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
@@ -48,6 +51,7 @@ $definitions=@(
 },
 @{
     key="arm"; BasicParts=5; RootQcow="disk.expanded.qcow2.raw"
+    RamForBuildingMb=800;
     # BaseUrl="file:///github.com/"
     DefaultPort=2347;
     SwapMb=32;
