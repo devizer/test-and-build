@@ -127,6 +127,8 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     $tmpCmdLocalFullName="$mapto/tmp/$rnd"
     "#!/usr/bin/env bash`nsource ~/.bashrc`n$cmd" > $tmpCmdLocalFullName
+    Write-Host "Content of temp bash script"
+    & cat $tmpCmdLocalFullName
     & chmod +x $tmpCmdLocalFullName
     $localCmd="sshpass -p `'$($password)`' ssh -o 'StrictHostKeyChecking no' $($user)@$($ip) -p $($port) /tmp/$rnd"
     Write-Host "#: $cmd"
