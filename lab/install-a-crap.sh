@@ -13,7 +13,7 @@ export LC_ALL=en_US.UTF-8
 apt install postgresql postgresql-contrib -y
 apt clean
 pg_createcluster 11 main --start
-sudo -u postgres psql -c "SELECT version();"
+sudo -u postgres psql -c 'SELECT version();'
 
 # mariadb
 export DEBIAN_FRONTEND=noninteractive
@@ -21,7 +21,7 @@ sudo debconf-set-selections <<< 'mariadb-server-10.0 mysql-server/root_password 
 sudo debconf-set-selections <<< 'mariadb-server-10.0 mysql-server/root_password_again password PASS'
 sudo apt-get install -y mariadb-server
 apt clean
-mysql -uroot -pPASS -e "SHOW VARIABLES LIKE '%Version%';"
+mysql --table -uroot -pPASS -e "SHOW VARIABLES LIKE '%Version%';"
 
 apt-get install -y redis-server
 apt clean

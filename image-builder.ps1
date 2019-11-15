@@ -40,7 +40,7 @@ $definitions=@(
 }
 );
 # temprarily we build only ARM-64
-$definitions=@($definitions[0]);
+$definitions=@($definitions[2]);
 
 function Say
 {
@@ -223,7 +223,7 @@ function Build { param($definition, $startParams)
 
 
 Say "Installing DotNet Core on [$key]"
-Remote-Command-Raw "cd /tmp/build; bash -e install-dotnet.sh; command -v dotnet && dotnet --info || true" "localhost" $startParams.Port "user" "pass"
+Remote-Command-Raw "cd /tmp/build; bash -e install-dotnet.sh; command -v dotnet && dotnet --info || true" "localhost" $startParams.Port "root" "pass"
 Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "root" "pass"
 Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "user" "pass"
 # TODO: Add dotnet restore
@@ -237,7 +237,7 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
     if ($true)
     {
         Say "Installing Node [$key]"
-        Remote-Command-Raw "cd /tmp/build; bash install-NODE.sh" "localhost" $startParams.Port "user" "pass"
+        Remote-Command-Raw "cd /tmp/build; bash install-NODE.sh" "localhost" $startParams.Port "root" "pass"
         Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "user" "pass"
         Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "root" "pass"
     }
@@ -290,7 +290,8 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
 }
 
 $cores = [Environment]::ProcessorCount;
-Say "TOTAL PHYSICAL CORES: $cores"
+if ($cores -ge 8) { $cores-- }
+Say "TOTAL PHYSICAL CORE(s): $([Environment]::ProcessorCount). Building using $cores core(s)"
 $globalStartParams = @{Mem="2000M"; Cores=$cores; Port=2345};
 $definitions | % {$globalStartParams.Port = $_.DefaultPort; Build $_ $globalStartParams;};
 

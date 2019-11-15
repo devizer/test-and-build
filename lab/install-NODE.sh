@@ -23,10 +23,10 @@ export NVM_DIR="/home/user/.nvm"
 ' | sudo tee -a /root/.bashrc >/dev/null
 
 Say "Installing NodeJS LTS"
-df -h
-export CFLAGS="-O0"
-export CXXFLAGS="$CFLAGS"
-export CPPFLAGS="$CFLAGS"
+# without optimization it is also slow
+# export CFLAGS="-O0"
+# export CXXFLAGS="$CFLAGS"
+# export CPPFLAGS="$CFLAGS"
 time nvm install --lts node  # 12.13
 nvm cache clear
 df -h
@@ -50,6 +50,7 @@ pushd /tmp
 # npx create-react-app my-react
 # cd my-react
 # yarn install # --verbose
+# rm -rf 
 # cd .. 
 rm -rf my-react
 popd

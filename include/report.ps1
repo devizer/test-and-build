@@ -1,0 +1,23 @@
+$probes=@(
+@{Cmd="echo `$ARCH"},
+@{Cmd=". /etc/os-release && echo $PRETTY_NAME" },
+@{Cmd="dotnet --version"},
+@{Cmd="dotnet --list-sdks"},
+@{Cmd="dotnet --runtimes"},
+@{Cmd="pwsh --version"},
+@{Cmd="mono --version | head -1"},
+@{Cmd="msbuild /version | head -1"},
+@{Cmd="nuget | head -1"},
+@{Cmd="nunit3-console | head -1"},
+@{Cmd="xunit.console | head -1"},
+@{Cmd="node --version | head -1"},
+@{Cmd="npm --version | head -1"},
+@{Cmd="yarn --version | head -1"},
+@{Cmd="docker | head -1"},
+@{Cmd="nvm --version | head -1"},
+@{Cmd="mysql --table -uroot -pPASS -e `"SHOW VARIABLES LIKE '%Version%';`""},
+@{Cmd="sudo -u postgres psql -c 'SELECT version();'"},
+@{Cmd="echo info | redis-cli | grep version" },
+@{Cmd="uname -a"},
+@{Cmd="lscpu"}
+)

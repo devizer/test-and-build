@@ -14,3 +14,7 @@ if [[ "$(command -v mono)" == "" ]]; then
   # sudo apt update
   systemctl disable mono-xsp4
 fi
+
+set -e
+# it fails if nuget is absent 
+bash -e install-NET-TEST-Runners.sh
