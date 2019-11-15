@@ -15,19 +15,20 @@ $ScriptPath=(pwd).Path
 $definitions=@(
 @{
     key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
-    BaseUrl="file:///github.com/";
     DefaultPort=2344;
     ExpandTargetSize="5000M";
     EnableKvm=$true;
     SwapMb=256
-    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
+    # BaseUrl="file:///github.com/"
+    BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
 },
 @{
     key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw"
     BaseUrl="file:///github.com/";
     DefaultPort=2346;
-    ExpandTargetSize="5000M"
-    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
+    ExpandTargetSize="5000M";
+    # BaseUrl="file:///github.com/"
+    BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
 },
 @{
     key="arm"; BasicParts=5; RootQcow="disk.expanded.qcow2.raw"

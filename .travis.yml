@@ -6,7 +6,15 @@ git:
 
 # https://docs.travis-ci.com/user/caching/ (nothing to cache)
 before_script:
-- 'sudo apt update; sudo apt install -y libguestfs-tools sshpass sshfs qemu-system-arm qemu-block-extra qemu-utils p7zip-full' 
+- | 
+  sudo apt update; 
+  sudo apt install -y libguestfs-tools sshpass sshfs qemu-system-arm qemu-block-extra qemu-utils p7zip-full \
+    libguestfs-tools qemu-system-arm qemu-system-i386 \ 
+    qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker
+  
+  sudo modprobe kvm
+  kvm-ok
+  
 - |
     url=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-dependencies.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash
     script=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-and-nodejs.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash -s pwsh
