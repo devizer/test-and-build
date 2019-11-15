@@ -32,7 +32,6 @@ $definitions=@(
     RamForBuildingMb=1300; 
     SizeForBuildingMb=6543;
     DefaultPort=2344;
-    ExpandTargetSize="5000M";
     EnableKvm=$true;
     SwapMb=256;
     # BaseUrl="file:///github.com/"
