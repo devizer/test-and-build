@@ -91,7 +91,7 @@ mkdir -p /home/user/.ssh
 echo '
 #!/usr/bin/env bash
 export ARCH='$ARCH'
-ARCH='$ARCH'
+# ARCH='$ARCH'
 ' > /home/user/.ssh/environment
 chmod +x /home/user/.ssh/environment
 chown -R user:user /home/user/.ssh
