@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# should be run as user 
+# should be run as USER 
 script=https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -8,7 +8,7 @@ export NVM_DIR="$HOME/.nvm"
 if [ -n "$(uname -m | grep -E 'i.86' 2>/dev/null)" ]; then 
     Say "Installing build-essential"
     apt-update
-    time apt-get install build-essential -y
+    time sudo apt-get install build-essential -y
 fi
 
 echo '
