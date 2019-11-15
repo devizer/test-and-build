@@ -29,14 +29,16 @@ $definitions=@(
     ExpandTargetSize="5000M";
     SwapMb=32;
     # BaseUrl="file:///github.com/"
-    BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
+    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
+    BaseUrl="file://$ScriptPath/basic-images/"
 },
 @{
     key="arm"; BasicParts=5; RootQcow="disk.expanded.qcow2.raw"
     # BaseUrl="file:///github.com/"
     DefaultPort=2347;
     SwapMb=32;
-    BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/";
+    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/";
+    BaseUrl="file://$ScriptPath/basic-images/"
 }
 );
 # temprarily we build only ARM-64
