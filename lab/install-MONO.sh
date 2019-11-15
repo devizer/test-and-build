@@ -7,9 +7,10 @@ if [[ "$(command -v mono)" == "" ]]; then
   def="deb https://download.mono-project.com/repo/$ID stable-$(lsb_release -s -c) main"
   if [[ "$ID" == "raspbian" ]]; then def="deb https://download.mono-project.com/repo/debian stable-raspbian$(lsb_release -cs) main"; fi
   echo "$def" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-  sudo apt-get --allow-unauthenticated update && time sudo apt-get --allow-unauthenticated install mono-complete nuget msbuild -y \
-    && sudo apt purge 'monodoc*' -y &&  \
+  sudo apt-get --allow-unauthenticated update -qq && time sudo apt-get --allow-unauthenticated install mono-complete nuget msbuild -y -qq \
+    && sudo apt purge 'monodoc*' -y -qq &&  \
   sudo apt clean; 
-  sudo rm -f /etc/apt/sources.list.d/mono-official-stable.list; 
+  # sudo rm -f /etc/apt/sources.list.d/mono-official-stable.list; 
   # sudo apt update
+  systemctl disable mono-xsp4
 fi

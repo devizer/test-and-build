@@ -227,12 +227,12 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; command -v dotnet && 
 # TODO: Add dotnet restore
 
 Say "Installing Latest Mono [$key]"
-Remote-Command-Raw "cd /tmp/build; bash -e install-MONO.sh" "localhost" $startParams.Port "user" "pass"
+Remote-Command-Raw "cd /tmp/build; bash -e install-MONO.sh" "localhost" $startParams.Port "root" "pass"
 Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget | head -4' "localhost" $startParams.Port "root" "pass"
 Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget | head -4' "localhost" $startParams.Port "user" "pass"
 
 
-    if ($true)
+    if ($false)
     {
         Say "Installing Node [$key]"
         Remote-Command-Raw "cd /tmp/build; bash install-NODE.sh" "localhost" $startParams.Port "user" "pass"
