@@ -5,7 +5,7 @@ swapSizeMb=$1
 # 2nd parameter - arch (i386, arm, arm64)
 ARCH=$2
 
-sudo timedatectl set-timezone UTC
+timedatectl set-timezone UTC
 
 # echo "Content of /etc/default/locale:"; cat /etc/default/locale
 # echo "-----------------"
@@ -17,6 +17,9 @@ echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 # locale-gen "en_US.UTF-8" "en_GB.UTF-8" "es_ES.UTF-8 UTF-8"
 dpkg-reconfigure locales 
+
+Say "Purge man-db"
+apt-update; apt purge man-db
 
 echo '
 LC_ALL="en_US.UTF-8"
