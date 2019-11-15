@@ -23,3 +23,4 @@ before_script:
 
 script:
 - sudo pwsh -command ./image-builder.ps1 -Images i386
+- cat Public-Report/*onfinish*
