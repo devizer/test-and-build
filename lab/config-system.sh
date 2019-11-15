@@ -46,3 +46,10 @@ if [[ -n "${swapSizeMb}" ]]; then
 
 currentSwap=$(free -m | grep Swap | awk '{print $2}')
 Say "Current Swap Size: $currentSwap" 
+
+# SMART apt-update - only for built-in debian repos
+echo '#!/usr/bin/env bash
+ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || sudo apt update --allow-unauthenticated
+' > /usr/local/bin/apt-update
+chmod +x /usr/local/bin/apt-update
+
