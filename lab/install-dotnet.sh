@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-echo "I'm $(whoami). Should be installed as USER"
+echo "I'm $(whoami). Should be installed as USER. Arch is $ARCH"
 
       url=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-dependencies.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash
       DOTNET_Url=https://dot.net/v1/dotnet-install.sh; 

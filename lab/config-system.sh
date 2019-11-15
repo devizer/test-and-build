@@ -2,6 +2,8 @@
 
 # 1st parameter - swap size in megabytes
 swapSizeMb=$1
+# 2nd parameter - arch (i386, arm, arm64)
+ARCH=$2
 
 sudo timedatectl set-timezone UTC
 
@@ -56,3 +58,13 @@ chmod +x /usr/local/bin/apt-update
 
 Say "Adding user to nopasswd sudoers"
 echo 'user    ALL=(ALL:ALL) NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo
+
+echo '
+export ARCH='$ARCH'
+' >> ~/.bashrc
+
+echo '
+export ARCH='$ARCH'
+' >> /home/user/.bashrc
+chown user:user /home/user/.bashrc
+

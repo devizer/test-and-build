@@ -204,7 +204,7 @@ function Build { param($definition, $startParams)
     & cp $ScriptPath/lab/* $mapto/tmp/build
 
     Say "Configure LC_ALL, UTC and optionally swap"
-    Remote-Command-Raw "bash /tmp/build/config-system.sh $($definition.SwapMb)" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "bash /tmp/build/config-system.sh $($definition.SwapMb) $key" "localhost" $startParams.Port "root" "pass"
 
     Say "Greetings from Guest [$key]"
     $cmd='Say "Hello. I am the $(hostname) host"; sudo lscpu; echo "Content of /etc/default/locale:"; cat /etc/default/locale'
