@@ -86,6 +86,7 @@ qemu-system-${p1} \
 "@;  
 
     if ($definition.Key -eq "i386") {
+        # qemu-system-i386 --machine q35 -cpu ?
         $cpu="IvyBridge" # kvm32|IvyBridge
         $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm -cpu $(cpu) "} else {" -cpu $(cpu) "}
         $qemuCmd = "#!/usr/bin/env bash" + @"
@@ -233,7 +234,7 @@ Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbui
 Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget | head -4' "localhost" $startParams.Port "user" "pass"
 
 
-    if ($false)
+    if ($true)
     {
         Say "Installing Node [$key]"
         Remote-Command-Raw "cd /tmp/build; bash install-NODE.sh" "localhost" $startParams.Port "user" "pass"
