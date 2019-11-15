@@ -7,10 +7,17 @@ ARCH=$2
 
 sudo timedatectl set-timezone UTC
 
-echo "Content of /etc/default/locale:"; cat /etc/default/locale
-echo "-----------------"
+# echo "Content of /etc/default/locale:"; cat /etc/default/locale
+# echo "-----------------"
 
-sudo locale-gen "en_US.UTF-8" "en_GB.UTF-8"
+export DEBIAN_FRONTEND=noninteractive
+echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+locale-gen "en_US.UTF-8" "en_GB.UTF-8" "es_ES.UTF-8 UTF-8"
+dpkg-reconfigure locales 
+
 echo '
 LC_ALL="en_US.UTF-8"
 LANG="en_US.UTF-8"
@@ -84,6 +91,7 @@ chmod +x /home/user/.profile
 chown user:user /home/user/.profile
 
 sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment yes/g' /etc/ssh/sshd_config
+sed -i 's/AcceptEnv LANG LC_\*//g' /etc/ssh/sshd_config
 echo '
 SetEnv ARCH='$ARCH'
 ' >> /etc/ssh/sshd_config

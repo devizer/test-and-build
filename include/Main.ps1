@@ -57,3 +57,7 @@ $definitions=@(
 );
 # temprarily we build only ARM-64
 # $definitions=@($definitions[2]);
+
+
+
+
