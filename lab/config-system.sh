@@ -18,7 +18,7 @@ LC_ALL="en_GB.UTF-8"
 echo '
 export LC_ALL="en_GB.UTF-8"
 export TZ=Europe/London
-' | sudo tee ~/.bashrc > /dev/null
+' | sudo tee -a ~/.bashrc > /dev/null
 sudo timedatectl set-timezone UTC
 
 # cat /tmp/build/Say.sh >> ~/.bashrc

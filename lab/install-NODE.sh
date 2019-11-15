@@ -19,7 +19,7 @@ export NVM_DIR="$HOME/.nvm"
 echo '
 export NVM_DIR="/home/user/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-' | sudo tee /root/.bashrc >/dev/null
+' | sudo tee -a /root/.bashrc >/dev/null
 
 Say "Installing NodeJS LTS"
 time nvm install --lts node  # 12.13

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-echo "I'm $(whoami). Should be installed as USER. Arch is $ARCH"
+echo "I'm [$(whoami)]. Net .core Should be installed as USER. Arch is $ARCH"
 
       url=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-dependencies.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash
       DOTNET_Url=https://dot.net/v1/dotnet-install.sh; 
@@ -22,6 +22,6 @@ export DOTNET_ROOT="/opt/dotnet"
 echo '
 export PATH="/opt/dotnet:$PATH:$HOME/.dotnet/tools"  
 export DOTNET_ROOT="/opt/dotnet"
-' | sudo tee /root/.bashrc
+' | sudo tee -a /root/.bashrc
 
 # todo: BenchmarkDotNet.Tool for root

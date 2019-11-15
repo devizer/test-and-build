@@ -38,7 +38,7 @@ mount -t ext4 "${eph_disk}1" "${ephemeral_path}" -o "${options}"
 # mount on reboot
 echo '
 '${eph_disk}1' '${ephemeral_path}' ext4 '${options}' 0 0
-' | tee /etc/fstab
+' | tee -a /etc/fstab
 
 move_folder /home
 move_folder /root 
