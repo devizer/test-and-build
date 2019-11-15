@@ -79,4 +79,4 @@ if [ -f ~/.bashrc ]; then
 fi
 ' > /home/user/.bash_profile
 chmod +x /home/user/.bash_profile
-chown user:user /home/user/.bashrc_profile
+chown user:user /home/user/.bash_profile
