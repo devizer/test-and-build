@@ -24,7 +24,7 @@ $probes=@(
 
 Write-Host "Main PSScriptRoot: $PSScriptRoot"
 $p=$(Join-Path $PSScriptRoot ".." "basic-images")
-$ScriptPath=(new-object System.IO.DirectoryInfo($p)).FullName + [IO.Path]::DirectorySeparatorChar
+$BasicImagePath=(new-object System.IO.DirectoryInfo($p)).FullName + [IO.Path]::DirectorySeparatorChar
 
 $definitions=@(
 @{
@@ -35,7 +35,7 @@ $definitions=@(
     SwapMb=256;
     # BaseUrl="file:///github.com/"
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
-    BaseUrl="file://$ScriptPath"
+    BaseUrl="file://$BasicImagePath"
 },
 @{
     key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw";
@@ -44,7 +44,7 @@ $definitions=@(
     SwapMb=32;
     # BaseUrl="file:///github.com/"
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
-    BaseUrl="file://$ScriptPath"
+    BaseUrl="file://$BasicImagePath"
 },
 @{
     key="arm"; BasicParts=5; RootQcow="disk.expanded.qcow2.raw"
@@ -52,7 +52,7 @@ $definitions=@(
     DefaultPort=2347;
     SwapMb=32;
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/";
-    BaseUrl="file://$ScriptPath"
+    BaseUrl="file://$BasicImagePath"
 }
 );
 # temprarily we build only ARM-64

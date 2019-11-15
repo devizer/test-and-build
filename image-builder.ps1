@@ -5,6 +5,7 @@ param(
 )
 
 $imagesToBuild=$images
+$ProjectPath=$PSScriptRoot
 
 . "$($PSScriptRoot)\include\Main.ps1"
 . "$($PSScriptRoot)\include\Utilities.ps1"
@@ -19,13 +20,11 @@ $imagesToBuild=$images
 
 $build_folder="/transient-builds/test-and-build"
 
-
-
 function Prepare-VM { param($definition, $rootDiskFullName)
     $path=Split-Path -Path $rootDiskFullName;
     $fileName = [System.IO.Path]::GetFileName($rootDiskFullName)
     Write-Host "Copy kernel to '$($path)'"
-    Copy-Item "$ScriptPath/kernels/$($definition.Key)/*" "$($path)/"
+    Copy-Item "$ProjectPath/kernels/$($definition.Key)/*" "$($path)/"
     pushd $path
     & qemu-img create -f qcow2 ephemeral.qcow2 200G
     popd
@@ -173,7 +172,7 @@ function Build { param($definition, $startParams)
 
     Say "Copying ./lab/ to guest for [$key]"
     Remote-Command-Raw 'mkdir -p /tmp/build' "localhost" $startParams.Port "root" "pass"
-    & cp $ScriptPath/lab/* $mapto/tmp/build
+    & cp $ProjectPath/lab/* $mapto/tmp/build
 
     Say "Configure LC_ALL, UTC and optionally swap"
     Remote-Command-Raw "bash /tmp/build/config-system.sh $($definition.SwapMb) $key" "localhost" $startParams.Port "root" "pass"
