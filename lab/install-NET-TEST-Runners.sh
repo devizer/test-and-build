@@ -6,14 +6,19 @@ function create_launcher() {
   search_in=$2
   search_the=$3
   eval "pushd $search_in"
-    echo "[$search_in] found: [$(pwd)]"
-    full_path="$(pwd)/$search_the"
-    body="#!/usr/bin/env bash\n\nmono $full_path \"\$@\""
-    echo "Creating link to $full_path as $name[.exe]"
-    echo -e $body > /usr/local/bin/${name}
-    chmod +x /usr/local/bin/${name}
-    echo -e $body > /usr/local/bin/${name}.exe
-    chmod +x /usr/local/bin/${name}.exe
+    if [[ -f "$search_the" ]]; then 
+        echo "[$search_in] found: [$(pwd)]"
+        full_path="$(pwd)/$search_the"
+        body="#!/usr/bin/env bash\n\nmono $full_path \"\$@\""
+        echo "Creating link to $full_path as $name[.exe]"
+        echo -e $body > /usr/local/bin/${name}
+        chmod +x /usr/local/bin/${name}
+        echo -e $body > /usr/local/bin/${name}.exe
+        chmod +x /usr/local/bin/${name}.exe
+    else
+        Say "Unit Test runner [$search_the] NOT FOUND in [$search_in]. pwd is [$(pwd)]"   
+    fi
+    
   popd
 }
 

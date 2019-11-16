@@ -18,7 +18,7 @@ fi
 
 set -e
 # it fails if nuget is absent 
-bash -e install-NET-TEST-Runners.sh
+bash install-NET-TEST-Runners.sh
 set +e
 
 pushd TestRunners

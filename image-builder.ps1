@@ -255,8 +255,8 @@ Remote-Command-Raw "cd /tmp/build; bash -e Install-DOCKER.sh;" "localhost" $star
 
 Say "Installing Latest Mono [$key]"
 Remote-Command-Raw "cd /tmp/build; bash -e install-MONO.sh" "localhost" $startParams.Port "root" "pass"
-Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget | head -4' "localhost" $startParams.Port "root" "pass"
-Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget | head -4' "localhost" $startParams.Port "user" "pass"
+Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget >.tmp; cat .tmp | head -4' "localhost" $startParams.Port "root" "pass"
+Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget >.tmp; cat .tmp | head -4' "localhost" $startParams.Port "user" "pass"
 
     if ($Env:INSTALL_NODE_FOR_i386 -eq "True" -or $key -ne "i386")
     {
@@ -265,7 +265,7 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
         Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "user" "pass"
         Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "root" "pass"
     }
-    esle {
+    else {
         Say "Skipping NodeJS on i386"
     }
 
