@@ -17,10 +17,10 @@ function create_launcher() {
         chmod +x /usr/local/bin/${name}
         echo -e $body > /usr/local/bin/${name}.exe
         chmod +x /usr/local/bin/${name}.exe
-        Say "Unit Test Runner [$search_the] SUCCESSFULLY FOUND as [$full_path]"
+        echo "ok: Unit Test Runner [$search_the] SUCCESSFULLY LINKED as [$full_path] to /usr/local/bin/${name}"
     else
         errors=$((errors+1))
-        Say "ERROR: Unit Test runner [$search_the] NOT FOUND in [$search_in]. pwd is [$(pwd)]"   
+        echo "ERROR: Unit Test runner [$search_the] NOT FOUND in [$search_in]. pwd is [$(pwd)]"   
     fi
     
   popd
