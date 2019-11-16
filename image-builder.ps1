@@ -151,16 +151,16 @@ function Produce-Report {
     $reportFile = "$ProjectPath/Public-Report/Debian-10-Buster-$key-$suffix.md"
     "|  Debian 10 Buster <u>**$($key)**</u> |`n|-------|" > $reportFile
 
-    $probes | % { $cmd = $_.Cmd;
+    $probes | % { $probe=$_; $cmd = $_.Cmd;
         $responseFile="/tmp/response-$(([Guid]::NewGuid()).ToString("N"))"
         # Write-Host "Port: $($startParams.Port)" 
         Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass" > $responseFile 2>&1
         $response=Get-Content $responseFile -Raw
         Write-Host "Response for [$cmd]:`n$($response)"
-        $title = $cmd; if ($cmd.Name) { $title=$cmd.Name } 
+        $title = $probe.Cmd; if ($probe.Name) { $title=$probe.Name } 
         "| $title |" >> $reportFile
         # "| $response |" >> $reportFile
-        Output-To-Markdown $response $cmd >> $reportFile
+        Output-To-Markdown $response $probe >> $reportFile
         & rm -f "$responseFile" 
     }
 }
@@ -259,13 +259,10 @@ Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbui
 Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget | head -4' "localhost" $startParams.Port "user" "pass"
 
 
-    if ($true)
-    {
-        Say "Installing Node [$key]"
-        Remote-Command-Raw "cd /tmp/build; bash install-NODE.sh" "localhost" $startParams.Port "root" "pass"
-        Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "user" "pass"
-        Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "root" "pass"
-    }
+    Say "Installing Node [$key]"
+    Remote-Command-Raw "cd /tmp/build; bash install-NODE.sh" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "user" "pass"
+    Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "root" "pass"
 
     Say "Installing Docker [$key]"
     Remote-Command-Raw "cd /tmp/build; bash install-DOCKER.sh" "localhost" $startParams.Port "root" "pass"
