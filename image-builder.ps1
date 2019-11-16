@@ -207,7 +207,7 @@ function Build { param($definition, $startParams)
     if ($definition.SizeForBuildingMb)
     {
         Say "Increase Image Size to $( $definition.SizeForBuildingMb ) Mb"
-        Inplace-Enlarge $definition "$qcowFile" "$( $definition.SizeForBuildingMb )M" $true
+        Inplace-Enlarge $definition "$qcowFile" "$( $definition.SizeForBuildingMb )M" $false # true - to compact intermediate image
     }
 
 
