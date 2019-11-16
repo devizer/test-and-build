@@ -33,8 +33,8 @@ function Output-To-Markdown{
     $outputAsMarkdown="";
     $outputLine=0;
     @($outputAsArray) | % {
-        if ($outputAsMarkdown) { $outputAsMarkdown += "<br>" }
         if ((-not $probe.Head) -or ($outputLine -lt $probe.Head)) {
+            if ($outputAsMarkdown) { $outputAsMarkdown += "<br>" }
             $outputAsMarkdown += "**``" + $_ + "``**"
         }
         $outputLine++;
