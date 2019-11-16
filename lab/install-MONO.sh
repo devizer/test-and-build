@@ -16,10 +16,10 @@ if [[ "$(command -v mono)" == "" ]]; then
   systemctl disable mono-xsp4
 fi
 
-set -e
 # it fails if nuget is absent 
 bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh 
-set +e
+
+nuget locals all -clear
 
 pushd TestRunners
 Say "Run Nuget Restore for [$(pwd)]"
