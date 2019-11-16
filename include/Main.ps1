@@ -30,7 +30,7 @@ $BasicImagePath=(new-object System.IO.DirectoryInfo($p)).FullName + [IO.Path]::D
 $definitions=@(
 @{
     key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
-    RamForBuildingMb=1200; 
+    RamForBuildingMb=2000; 
     SizeForBuildingMb=5600; # from 3G
     DefaultPort=2344;
     EnableKvm=$true;
