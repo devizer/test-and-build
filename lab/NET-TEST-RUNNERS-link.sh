@@ -40,7 +40,7 @@ nunit3-console > /tmp/nunit3-console.version.tmp
 cat /tmp/nunit3-console.version.tmp | head -1
 rm -f /tmp/nunit3-console.version.tmp
 
-printf "Check xunit.console version ... "
+printf "Check xunit.console version .... "
 xunit.console > /tmp/xunit.console.version.tmp
 cat /tmp/xunit.console.version.tmp | head -1
 rm -f /tmp/xunit.console.version.tmp
