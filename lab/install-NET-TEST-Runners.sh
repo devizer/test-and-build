@@ -20,7 +20,7 @@ function create_launcher() {
 target=/opt/mono-test-runners
 mkdir -p $target
 pushd $target
-rm -rf packages
+rm -rf *
 
 packets='
 NUnit.Console NUnit.ConsoleRunner NUnit.Extension.NUnitProjectLoader NUnit.Extension.NUnitV2Driver

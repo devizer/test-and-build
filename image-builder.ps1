@@ -123,16 +123,24 @@ function Final-Compact
 
 function Inplace-Enlarge
 {
-    param($definition, $rootDiskFullName, $newSize="32G")
+    param($definition, $rootDiskFullName, $newSize="32G", [bool] $needCompacting = $false)
     $dir=[System.IO.Path]::GetDirectoryName($rootDiskFullName)
     pushd "$dir"
     qemu-img create -f qcow2 -o preallocation=metadata disk.intermediate.enlarge.qcow2 $newSize
     virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.enlarge.qcow2
-    qemu-img convert -O qcow2 -c -p disk.intermediate.enlarge.qcow2 disk.intermediate.enlarge.qcow2.step2
-    & mv -f disk.intermediate.enlarge.qcow2.step2 $rootDiskFullName
-    & rm -f disk.intermediate.enlarge.qcow2
-    Say "New Size of the $rootDiskFullName should be $newSize [$($definition.Key)]"
+    if (!$needCompacting)
+    {
+        & mv -f disk.intermediate.enlarge.qcow2 
+    }
+    else
+    {
+        qemu-img convert -O qcow2 -c -p disk.intermediate.enlarge.qcow2 disk.intermediate.enlarge.qcow2.step2
+        & mv -f disk.intermediate.enlarge.qcow2.step2 $rootDiskFullName
+        & rm -f disk.intermediate.enlarge.qcow2
+    }
+    Say "New Size of the $rootDiskFullName should be $newSize [$( $definition.Key )]"
     & virt-filesystems --all --long --uuid -h -a "$rootDiskFullName"
+    popd
 }
 
 function Produce-Report {
@@ -149,9 +157,10 @@ function Produce-Report {
         Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass" > $responseFile 2>&1
         $response=Get-Content $responseFile -Raw
         Write-Host "Response for [$cmd]:`n$($response)"
-        "| $cmd |" >> $reportFile
+        $title = $cmd; if ($cmd.Name) { $title=$cmd.Name } 
+        "| $title |" >> $reportFile
         # "| $response |" >> $reportFile
-        Output-To-Markdown $response >> $reportFile
+        Output-To-Markdown $response $cmd >> $reportFile
         & rm -f "$responseFile" 
     }
 }
@@ -188,7 +197,7 @@ function Build { param($definition, $startParams)
     if ($definition.SizeForBuildingMb)
     {
         Say "Increase Image Size to $( $definition.SizeForBuildingMb ) Mb"
-        Inplace-Enlarge $definition "$qcowFile" "$( $definition.SizeForBuildingMb )M"
+        Inplace-Enlarge $definition "$qcowFile" "$( $definition.SizeForBuildingMb )M" $false
     }
 
 
@@ -236,6 +245,9 @@ Remote-Command-Raw "cd /tmp/build; bash -e install-dotnet.sh; command -v dotnet 
 Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "root" "pass"
 Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "user" "pass"
 # TODO: Add dotnet restore
+
+Say "Installing Powershell for [$key]"
+Remote-Command-Raw "cd /tmp/build; bash -e install-POWERSHELL.sh" "localhost" $startParams.Port "root" "pass"
 
 Say "Install Docker [$key]"
 Remote-Command-Raw "cd /tmp/build; bash -e Install-DOCKER.sh;" "localhost" $startParams.Port "root" "pass"

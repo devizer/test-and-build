@@ -19,7 +19,7 @@ function Get-Elapsed
 }; Get-Elapsed | out-null;
 
 function Output-To-Markdown{
-    param([string] $output)
+    param([string] $output, $probe)
     
     $trimmedOutput=$output.Trim([char]13, [char]10)
     if ($trimmedOutput -like "/tmp/cmd-*") {
@@ -31,9 +31,13 @@ function Output-To-Markdown{
     Write-Host "trimmedOutput: $trimmedOutput"
     $outputAsArray=$trimmedOutput.Split([char]10)
     $outputAsMarkdown="";
+    $outputLine=0;
     @($outputAsArray) | % {
         if ($outputAsMarkdown) { $outputAsMarkdown += "<br>" }
-        $outputAsMarkdown += "**``" + $_ + "``**"
+        if ($probe.Head -and ()$outputLine -lt $probe.Head)) {
+            $outputAsMarkdown += "**``" + $_ + "``**"
+        }
+        $outputLine++;
     }
     "|$($outputAsMarkdown)|"
 }
