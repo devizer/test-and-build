@@ -4,7 +4,6 @@
 target=$HOME/build/devizer/NET-TEST-RUNNERS
 mkdir -p ${target}.tmp
 pushd ${target}.tmp
-rm -rf *
 
 packets='
 NUnit.Console NUnit.ConsoleRunner NUnit.Extension.NUnitProjectLoader NUnit.Extension.NUnitV2Driver
@@ -17,6 +16,7 @@ xunit.runner.reporters xunit.runner.utility
 
 mkdir -p packages
 pushd packages
+rm -rf *
 
 i=0
 errors=0
