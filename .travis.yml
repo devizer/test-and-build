@@ -31,3 +31,4 @@ before_script:
 script:
 - sudo pwsh -command ./image-builder.ps1 -Images $ARCH
 - cat Public-Report/*onfinish*
+- ls -la Public-Report

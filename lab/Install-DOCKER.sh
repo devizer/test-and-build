@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ ! "$ARCH" == i386 ]]; then
-  Say "Installing the latest docker from official docker repo"
+  Say "Installing the latest docker from the official docker repo"
   source /etc/os-release
   lazy-apt-update
   sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y && sudo apt-get clean

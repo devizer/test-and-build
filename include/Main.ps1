@@ -50,7 +50,8 @@ $definitions=@(
     BaseUrl="file://$BasicImagePath"
 },
 @{
-    key="arm"; BasicParts=5; RootQcow="disk.expanded.qcow2.raw"
+    key="arm"; BasicParts=5; 
+    RootQcow="disk.expanded.qcow2.raw" # 5Gb
     RamForBuildingMb=800;
     # BaseUrl="file:///github.com/"
     DefaultPort=2347;

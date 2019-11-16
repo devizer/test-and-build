@@ -287,6 +287,10 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
     Say "Store Guest Logs"
     & cp -f "$mapto/$($Global:GuestLog)-user" "$PublicReport/$key-guest-user.log"
     & cp -f "$mapto/$($Global:GuestLog)-root" "$PublicReport/$key-guest-root.log"
+    pushd "$mapto/tmp"
+    & cp -f Said-by-root.log $PublicReport/$key-said-by-root.log
+    & cp -f Said-by-user.log $PublicReport/$key-said-by-user.log
+    popd
 
     Say "Zeroing free space of [$key]"
     Remote-Command-Raw "cd /; bash /tmp/build/TearDown.sh; before-compact" "localhost" $startParams.Port "root" "pass"
