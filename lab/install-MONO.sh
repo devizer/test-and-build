@@ -25,7 +25,7 @@ pushd TestRunners
 Say "Run Nuget Restore for [$(pwd)]"
 nuget restore
 Say "Run msbuild for [$(pwd)]"
-msbuild msbuild /p:Configuration=Debug /v:q
+msbuild /t:Rebuild /p:Configuration=Debug /v:q
 
 pushd TestRunners.xUnit/bin/Debug
 Say "Test TestRunners.xUnit.dll at $(pwd)" 
