@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # need a permission to /opt and /usr/bin/local
 
+toClear=""; if [[ "$1" == "--clean" ]]; then toClear="true"; fi
+ 
 target=$HOME/build/devizer/NET-TEST-RUNNERS
-mkdir -p ${target}.tmp
-pushd ${target}.tmp
+target_tmp=${target}.$(basename "$(mktemp)")
+mkdir -p ${target_tmp}
+pushd ${target_tmp}
 
 packets='
 NUnit.ConsoleRunner NUnit.Extension.NUnitV2Driver
@@ -41,16 +44,17 @@ done
 rm -rf System* 
 find -name "*.nupkg" | xargs rm -f
 
-curl -ksSL -o ${target}.tmp/link-unit-test-runners.sh https://raw.githubusercontent.com/devizer/test-and-build/master/lab/NET-TEST-RUNNERS-link.sh
-chmod +x ${target}.tmp/link-unit-test-runners.sh
+curl -ksSL -o ${target_tmp}/link-unit-test-runners.sh https://raw.githubusercontent.com/devizer/test-and-build/master/lab/NET-TEST-RUNNERS-link.sh
+chmod +x ${target_tmp}/link-unit-test-runners.sh
 
 if [[ $errors == 0 ]]; then
     mkdir -p ${target}
-    cp -a ${target}.tmp/* ${target}
-    # rm -rf ${target}.tmp
+    cp -a ${target_tmp}/* ${target}
+    # rm -rf ${target_tmp}
 else
     echo "ERRORS: $errors packages cant be installed"
     exit $errors
 fi
 
+popd
 popd
