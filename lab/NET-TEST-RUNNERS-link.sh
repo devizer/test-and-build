@@ -35,4 +35,15 @@ create_launcher "xunit.console" "xunit.runner.console*/tools/net472" "xunit.cons
 
 popd
 
+nunit3-console > /tmp/nunit3-console.version.tmp
+cat /tmp/nunit3-console.version.tmp | head -3
+rm -f /tmp/nunit3-console.version.tmp
+
+xunit.console > /tmp/xunit.console.version.tmp
+cat /tmp/xunit.console.version.tmp | head -3
+rm -f /tmp/xunit.console.version.tmp
+
+set +e
+
+
 exit $errors
