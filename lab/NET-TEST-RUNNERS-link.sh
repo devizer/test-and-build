@@ -30,8 +30,8 @@ pushd "$(dirname $0)" >/dev/null; ScriptDir="$(pwd)"; popd >/dev/null
 
 pushd "${ScriptDir}"
 
-create_launcher "nunit3-console" "NUnit.ConsoleRunner*/tools" "nunit3-console.exe"
-create_launcher "xunit.console" "xunit.runner.console*/tools/net472" "xunit.console.exe"
+create_launcher "nunit3-console" "packages/NUnit.ConsoleRunner*/tools" "nunit3-console.exe"
+create_launcher "xunit.console"  "packages/xunit.runner.console*/tools/net472" "xunit.console.exe"
 
 popd
 
