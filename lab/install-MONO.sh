@@ -19,20 +19,22 @@ fi
 set -e
 # it fails if nuget is absent 
 bash -e install-NET-TEST-Runners.sh
-
 set +e
-Say "Run xunit tests"
-pushd TestRunners/TestRunners.xUnit
+
+pushd TestRunners
+Say "Run Nuget Restore for [$(pwd)]"
 nuget restore
-msbuild /t:Rebuild /p:Configuration=Debug
-cd bin/Debug 
+Say "Run msbuild for [$(pwd)]"
+msbuild msbuild /p:Configuration=Debug /v:q
+
+pushd TestRunners.xUnit/bin/Debug
+Say "Test TestRunners.xUnit.dll at $(pwd)" 
 xunit.console TestRunners.xUnit.dll
 popd
 
-Say "Run NUnit tests"
-pushd TestRunners/TestRunners.NUnit
-nuget restore
-msbuild /t:Rebuild /p:Configuration=Debug
-cd bin/Debug 
+pushd TestRunners.NUnit/bin/Debug
+Say "Test TestRunners.NUnit.dll at $(pwd)"
 nunit3-console TestRunners.NUnit.dll
 popd  
+
+popd
