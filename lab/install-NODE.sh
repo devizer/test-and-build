@@ -34,9 +34,9 @@ if [[ -n "$TRAVIS" ]]; then
     export CPPFLAGS="$CFLAGS"
 fi
 
-if [[ "$INSTALL_NODE_FOR_i386" == "true" || "$ARCH" != i386 ]]; then 
+# if [[ "$INSTALL_NODE_FOR_i386" == "true" || "$ARCH" != i386 ]]; then 
     time nvm install --lts node  # 12.13
-fi
+# fi
 nvm cache clear
 df -h
 # Say "Installing NodeJS LATEST"
