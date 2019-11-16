@@ -3,13 +3,16 @@ param(
     [ValidateSet("i386", "arm", "arm64")]    
     [string[]] $images
 )
-
 $imagesToBuild=$images
+
 $ProjectPath=$PSScriptRoot
 $PublicReport=$(Join-Path $ProjectPath "Public-Report")
+$build_folder="/transient-builds/test-and-build"
+$FinalSize="6G"
 
 . "$($PSScriptRoot)\include\Main.ps1"
 . "$($PSScriptRoot)\include\Utilities.ps1"
+
 # 1st run
 # mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf test-and-build; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; bash build-all.sh
 
@@ -19,7 +22,6 @@ $PublicReport=$(Join-Path $ProjectPath "Public-Report")
 # sudo apt-get install sshpass sshfs libguestfs-tools qemu-system-arm qemu-system-i386 
 # sudo apt-get install qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker
 
-$build_folder="/transient-builds/test-and-build"
 
 function Prepare-VM { param($definition, $rootDiskFullName)
     $path=Split-Path -Path $rootDiskFullName;
@@ -202,7 +204,7 @@ function Build { param($definition, $startParams)
     if ($definition.SizeForBuildingMb)
     {
         Say "Increase Image Size to $( $definition.SizeForBuildingMb ) Mb"
-        Inplace-Enlarge $definition "$qcowFile" "$( $definition.SizeForBuildingMb )M" $false
+        Inplace-Enlarge $definition "$qcowFile" "$( $definition.SizeForBuildingMb )M" $true
     }
 
 
@@ -302,7 +304,9 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
     & rm -rf *
     $finalQcow = "$(pwd)/debian-$key-final.qcow2"
     $finalQcowPath = "$(pwd)"
-    Final-Compact $definition "$qcowFile" "42G" $finalQcow 
+
+    
+    Final-Compact $definition "$qcowFile" "$finalSize" $finalQcow 
     popd
 
     Say "Final Image for [$key]: $finalQcow";
