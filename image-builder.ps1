@@ -287,7 +287,7 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
     & cp -f "$mapto/$($Global:GuestLog)-root" "$PublicReport/$key-guest-root.log"
 
     Say "Zeroing free space of [$key]"
-    Remote-Command-Raw "cd /tmp/build; bash TearDown.sh; before-compact" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "cd /; bash /tmp/build/TearDown.sh; before-compact" "localhost" $startParams.Port "root" "pass"
 
     # Say "Dismounting guest's share of [$key]"
     # & umount -f $mapto # NOOOO shutdown?????
