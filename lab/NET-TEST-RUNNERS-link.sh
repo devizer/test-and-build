@@ -7,7 +7,7 @@ function create_launcher() {
   name=$1
   search_in=$2
   search_the=$3
-  eval "pushd $search_in"
+  eval "pushd $search_in" >/dev/null
     if [[ -f "$search_the" ]]; then 
         echo "[$search_in] found: [$(pwd)]"
         full_path="$(pwd)/$search_the"
@@ -23,24 +23,26 @@ function create_launcher() {
         echo "ERROR: Unit Test runner [$search_the] NOT FOUND in [$search_in]. pwd is [$(pwd)]"   
     fi
     
-  popd
+  popd >/dev/null
 }
 
 pushd "$(dirname $0)" >/dev/null; ScriptDir="$(pwd)"; popd >/dev/null
 
-pushd "${ScriptDir}"
+pushd "${ScriptDir}" >/dev/null
 
 create_launcher "nunit3-console" "packages/NUnit.ConsoleRunner*/tools" "nunit3-console.exe"
 create_launcher "xunit.console"  "packages/xunit.runner.console*/tools/net472" "xunit.console.exe"
 
-popd
+popd >/dev/null
 
+printf "Check nunit3-console version ... "
 nunit3-console > /tmp/nunit3-console.version.tmp
-cat /tmp/nunit3-console.version.tmp | head -3
+cat /tmp/nunit3-console.version.tmp | head -1
 rm -f /tmp/nunit3-console.version.tmp
 
+printf "Check xunit.console version ... "
 xunit.console > /tmp/xunit.console.version.tmp
-cat /tmp/xunit.console.version.tmp | head -3
+cat /tmp/xunit.console.version.tmp | head -1
 rm -f /tmp/xunit.console.version.tmp
 
 set +e
