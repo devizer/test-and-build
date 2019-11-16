@@ -23,7 +23,9 @@ $FinalSize="42G"
 # sudo apt-get install qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker
 
 
-function Prepare-VM { param($definition, $rootDiskFullName)
+# port, mem and #cores are indirectly passed via $startParams
+function Prepare-VM { param($definition, $rootDiskFullName, $portNumber = 0)
+    if (-not $portNumber) { $portNumber=$startParams.Port }
     $path=Split-Path -Path $rootDiskFullName;
     $fileName = [System.IO.Path]::GetFileName($rootDiskFullName)
     Write-Host "Copy kernel to '$($path)'"
@@ -48,7 +50,7 @@ qemu-system-${p1} \
     -device virtio-scsi-device,id=scsi \
     -drive file=$($fileName),id=rootimg,cache=unsafe,if=none -device scsi-hd,drive=rootimg \
     -drive file=ephemeral.qcow2,id=ephemeral,cache=unsafe,if=none -device scsi-hd,drive=ephemeral \
-    -netdev user,hostfwd=tcp::$($startParams.Port)-:22,id=net0 -device virtio-net-device,netdev=net0 \
+    -netdev user,hostfwd=tcp::$($portNumber)-:22,id=net0 -device virtio-net-device,netdev=net0 \
     -nographic
 "@;  
 
@@ -62,7 +64,7 @@ qemu-system-i386 -smp $($startParams.Cores) -m $($startParams.Mem) -M q35 $($kvm
     -initrd initrd.img \
     -kernel vmlinuz -append "root=/dev/sda1 console=ttyS0" \
     -drive file=$($fileName) \
-    -netdev user,hostfwd=tcp::$($startParams.Port)-:22,id=unet -device rtl8139,netdev=unet \
+    -netdev user,hostfwd=tcp::$($portNumber)-:22,id=unet -device rtl8139,netdev=unet \
     -net user \
     -nographic
 "@; # -drive file=ephemeral.qcow2 \
@@ -121,7 +123,7 @@ function Final-Compact
     # qemu-img check newdisk.qcow2
     virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.compacting.qcow2
     qemu-img convert -O qcow2 -c -p disk.intermediate.compacting.qcow2 "$newPath"
-    Prepare-VM $definition "$newPath"
+    Prepare-VM $definition "$newPath" ($startParams.Port + 100)
     & rm -f disk.intermediate.compacting.qcow2
 }
 
