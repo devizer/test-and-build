@@ -19,9 +19,11 @@ mkdir -p packages
 pushd packages
 
 i=0
+errors=0
 for packet in $packets; do
     echo Enqueue loading the $packet package
-    nuget install $packet 2>&1 >.${packet}.log &
+    cmd="nuget install $packet 2>&1 >.${packet}.log"
+    eval $cmd || eval $cmd || eval $cmd || eval $cmd || eval $cmd || errors=$((errors+1)) &
     pids[${i}]=$!
     i=$((i+1))
     sleep 0.7
@@ -41,7 +43,12 @@ find -name "*.nupkg" | xargs rm -f
 curl -ksSL -o ${target}.tmp/link-unit-test-runners.sh https://raw.githubusercontent.com/devizer/test-and-build/master/lab/NET-TEST-RUNNERS-link.sh
 chmod +x ${target}.tmp/link-unit-test-runners.sh
 
-mkdir -p ${target}
-cp -a ${target}.tmp ${target}
+if [[ $errors == 0 ]]; then
+    mkdir -p ${target}
+    cp -a ${target}.tmp ${target}
+else
+    echo "ERRORS: $errors packages cant be installed"
+    exit $errors
+fi
 
 popd
