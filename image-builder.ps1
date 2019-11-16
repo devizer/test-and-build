@@ -267,6 +267,13 @@ Remote-Command-Raw "cd /tmp/build; bash -e install-MONO.sh" "localhost" $startPa
 Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget >.tmp; cat .tmp | head -4' "localhost" $startParams.Port "root" "pass"
 Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget >.tmp; cat .tmp | head -4' "localhost" $startParams.Port "user" "pass"
 
+Say "Building NET-TEST-RUNNERS on the host and installing to the guest"
+pushd lab; & bash NET-TEST-RUNNERS-build.sh; popd
+Say "Copying NET-TEST-RUNNERS to /opt/NET-TEST-RUNNERS on the guest"
+& cp ~/build/devizer/NET-TEST-RUNNERS "$mapto/opt"
+Say "Linking NET-TEST-RUNNERS on the guest"
+
+
     if ($Env:INSTALL_NODE_FOR_i386 -eq "True" -or $key -ne "i386")
     {
         Say "Installing Node [$key]"

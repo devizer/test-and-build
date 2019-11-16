@@ -17,7 +17,8 @@ if [[ "$(command -v mono)" == "" ]]; then
 fi
 
 # it fails if nuget is absent 
-bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || true 
+# TOO SLOW IN QEMU: moved to host
+# bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || true 
 
 pushd TestRunners
 Say "Run Nuget Restore for [$(pwd)]"
