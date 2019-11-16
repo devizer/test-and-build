@@ -223,8 +223,9 @@ function Build { param($definition, $startParams)
     & ls -la "$mapto"
 
     Say "Copying ./lab/ to guest for [$key]"
-    Remote-Command-Raw 'mkdir -p /tmp/build' "localhost" $startParams.Port "root" "pass"
-    & cp $ProjectPath/lab/* $mapto/tmp/build
+    # Remote-Command-Raw 'mkdir -p /tmp/build' "localhost" $startParams.Port "root" "pass"
+    & mkdir -p $mapto/tmp/build
+    & cp -a $ProjectPath/lab/* $mapto/tmp/build
 
     Say "Configure LC_ALL, UTC and optionally swap"
     Remote-Command-Raw "bash /tmp/build/config-system.sh $($definition.SwapMb) $key" "localhost" $startParams.Port "root" "pass"
