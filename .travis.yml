@@ -32,3 +32,5 @@ script:
 - sudo pwsh -command ./image-builder.ps1 -Images $ARCH
 - cat Public-Report/*onfinish*
 - ls -la Public-Report
+- cat Public-Report/$ARCH-said-by-user.log
+- cat Public-Report/$ARCH-said-by-root.log
