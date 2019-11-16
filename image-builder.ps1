@@ -33,16 +33,38 @@ function Prepare-VM { param($definition, $rootDiskFullName, $portNumber = 0)
     pushd $path
     & qemu-img create -f qcow2 ephemeral.qcow2 200G
     popd
-    
-    $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
-    $p2 = if ($k -eq "arm64") { " -cpu cortex-a57 "; } else {""};
 
-    $hasKvm = (& sh -c "ls /dev/kvm 2>/dev/null") | Out-String
+    if ($key -eq "arm") {
+        $guestName="buster-arm-v7"
+        $qemySystem="arm"
+        $paramCpu=""
+    }
+    elseif ($key -eq "arm64") {
+        $guestName="buster-arm-64"
+        $qemySystem="aarch64"
+        $paramCpu=" -cpu cortex-a57 "
+    }
+    elseif ($key -eq "i386") {
+        $guestName="buster-i386"
+        $qemySystem="i386"
+        $hasKvm = (& sh -c "ls /dev/kvm 2>/dev/null") | Out-String
+        # qemu-system-i386 --machine q35 -cpu ?
+        # CPU: kvm32|SandyBridge
+        $paramCpu=if ($hasKvm) { " -cpu kvm32 " } else { " -cpu qemu32 " } 
+        $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm "} else {" "}
+    }
+    else {
+        throw "Unknown definition.key = '$key'" 
+    }
+    
+    # $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
+    # $p2 = if ($k -eq "arm64") { " -cpu cortex-a57 "; } else {""};
+
 
 $qemuCmd = "#!/usr/bin/env bash" + @" 
 
-qemu-system-${p1} \
-    -smp $($startParams.Cores) -m $($startParams.Mem) -M virt ${p2} \
+qemu-system-${qemySystem} \
+    -smp $($startParams.Cores) -m $($startParams.Mem) -M virt ${paramCpu} \
     -initrd initrd.img \
     -kernel vmlinuz \
     -append 'root=/dev/sda1 console=ttyAMA0' \
@@ -55,12 +77,9 @@ qemu-system-${p1} \
 "@;  
 
     if ($definition.Key -eq "i386") {
-        # qemu-system-i386 --machine q35 -cpu ?
-        $cpu="kvm32" # kvm32|IvyBridge
-        $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm -cpu $($cpu) "} else {" -cpu $($cpu) "}
         $qemuCmd = "#!/usr/bin/env bash" + @"
 
-qemu-system-i386 -smp $($startParams.Cores) -m $($startParams.Mem) -M q35 $($kvmParameters) \
+qemu-system-i386 -smp $($startParams.Cores) -m $($startParams.Mem) -M q35  $($kvmParameters) $paramCpu \
     -initrd initrd.img \
     -kernel vmlinuz -append "root=/dev/sda1 console=ttyS0" \
     -drive file=$($fileName) \
