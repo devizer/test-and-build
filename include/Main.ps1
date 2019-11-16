@@ -31,7 +31,7 @@ $definitions=@(
 @{
     key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
     RamForBuildingMb=1300; 
-    SizeForBuildingMb=4567; # from 3G
+    SizeForBuildingMb=5600; # from 3G
     DefaultPort=2344;
     EnableKvm=$true;
     SwapMb=256;
