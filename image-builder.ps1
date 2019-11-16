@@ -91,9 +91,10 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
 }
 
 function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
+    if (-not $Global:GuestLog) { $Global:GuestLog="/tmp/$([Guid]::NewGuid().ToString("N"))"}
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     $tmpCmdLocalFullName="$mapto/tmp/$rnd"
-    "#!/usr/bin/env bash`nsource ~/.bashrc`n$cmd" > $tmpCmdLocalFullName
+    "#!/usr/bin/env bash`nsource ~/.bashrc`nexport DEBIAN_FRONTEND=noninteractive`n{$cmd} 2>&1 | tee $($Global:GuestLog)-$($user)" > $tmpCmdLocalFullName
     # Write-Host "Content of temp bash script"
     # & cat $tmpCmdLocalFullName
     & chmod +x $tmpCmdLocalFullName
@@ -280,6 +281,10 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
     Remote-Command-Raw "cd /tmp/build; bash install-a-crap.sh" "localhost" $startParams.Port "root" "pass"
 
     Produce-Report $definition $startParams "onfinish"
+
+    Say "Store Guest Logs"
+    & cp -f "$mapto/$($Global:GuestLog)-user" "$PublicReport/$key-guest-user.log"
+    & cp -f "$mapto/$($Global:GuestLog)-root" "$PublicReport/$key-guest-root.log"
 
     Say "Zeroing free space of [$key]"
     Remote-Command-Raw "cd /tmp/build; bash TearDown.sh; before-compact" "localhost" $startParams.Port "root" "pass"
