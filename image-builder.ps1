@@ -272,6 +272,7 @@ pushd lab; & bash NET-TEST-RUNNERS-build.sh; popd
 Say "Copying NET-TEST-RUNNERS to /opt/NET-TEST-RUNNERS on the guest"
 & cp ~/build/devizer/NET-TEST-RUNNERS "$mapto/opt"
 Say "Linking NET-TEST-RUNNERS on the guest"
+Remote-Command-Raw "bash /opt/NET-TEST-RUNNERS/link-unit-test-runners.sh" "localhost" $startParams.Port "root" "pass"
 
 Say "Run .net tests on guest [$key]"
 Remote-Command-Raw "cd /tmp/build; bash -e run-NET-UNIT-TESTS.sh" "localhost" $startParams.Port "root" "pass"
