@@ -28,7 +28,7 @@ function Output-To-Markdown{
     elseif ($trimmedOutput -like "sudo: unknown user*") {
         return "|ERR: _" + $trimmedOutput.Replace("`n", ". ") + "_|";
     }
-    Write-Host "trimmedOutput: $trimmedOutput"
+    # Write-Host "trimmedOutput: $trimmedOutput"
     $outputAsArray=$trimmedOutput.Split([char]10)
     $outputAsMarkdown="";
     $outputLine=0;

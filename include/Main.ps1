@@ -16,7 +16,7 @@ $probes=@(
 @{Cmd="yarn --version"; Head=1},
 @{Cmd="docker version --format '{{.Server.Version}}'"},
 @{Cmd="docker-compose version"; Head=1},
-@{Cmd="mysql -N -B -uroot -pPASS -e `"SHOW VARIABLES LIKE '%Version%';`""},
+@{Cmd="mysql -N -B -uroot -pPASS -e `"SHOW VARIABLES LIKE 'version';`""},
 @{Cmd="cd /tmp; sudo -u postgres psql -t -c 'SELECT version();'"},
 @{Cmd="echo info | redis-cli | grep version"; Head=1; Name="Redis Server" },
 @{Cmd="uname -a"},

@@ -94,7 +94,7 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
     if (-not $Global:GuestLog) { $Global:GuestLog="/tmp/$([Guid]::NewGuid().ToString("N"))"}
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     $tmpCmdLocalFullName="$mapto/tmp/$rnd"
-    "#!/usr/bin/env bash`nsource ~/.bashrc`nexport DEBIAN_FRONTEND=noninteractive`n($cmd) 2>&1 | tee $($Global:GuestLog)-$($user)" > $tmpCmdLocalFullName
+    "#!/usr/bin/env bash`nsource ~/.bashrc`nexport DEBIAN_FRONTEND=noninteractive`n($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)" > $tmpCmdLocalFullName
     # Write-Host "Content of temp bash script"
     # & cat $tmpCmdLocalFullName
     & chmod +x $tmpCmdLocalFullName
