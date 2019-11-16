@@ -24,7 +24,7 @@ set +e
 Say "Run xunit tests"
 pushd TestRunners/TestRunners.xUnit
 nuget restore
-msbuild /t:Rebuild /c:Debug
+msbuild /t:Rebuild /p:Configuration=Debug
 cd bin/Debug 
 xunit.console TestRunners.xUnit.dll
 popd
@@ -32,7 +32,7 @@ popd
 Say "Run NUnit tests"
 pushd TestRunners/TestRunners.NUnit
 nuget restore
-msbuild /t:Rebuild /c:Debug
+msbuild /t:Rebuild /p:Configuration=Debug
 cd bin/Debug 
 nunit3-console TestRunners.NUnit.dll
 popd  
