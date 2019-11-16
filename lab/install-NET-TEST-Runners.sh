@@ -30,10 +30,10 @@ rm -rf *
 packets='
 NUnit.Console NUnit.ConsoleRunner NUnit.Extension.NUnitProjectLoader NUnit.Extension.NUnitV2Driver
 NUnit.Extension.NUnitV2ResultWriter NUnit.Extension.TeamCityEventListener
-NUnit.Extension.VSProjectLoader NUnit3TestAdapter
-xunit xunit.abstractions xunit.analyzers xunit.assert xunit.core xunit.extensibility.core
+NUnit3TestAdapter
+xunit.abstractions xunit.analyzers xunit.assert xunit.core xunit.extensibility.core
 xunit.extensibility.execution xunit.runner.console xunit.runner.msbuild
-xunit.runner.reporters xunit.runner.utility xunit.runner.visualstudio
+xunit.runner.reporters xunit.runner.utility 
 '
 
 mkdir -p packages
