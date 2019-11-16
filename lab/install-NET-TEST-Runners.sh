@@ -15,6 +15,7 @@ function create_launcher() {
         chmod +x /usr/local/bin/${name}
         echo -e $body > /usr/local/bin/${name}.exe
         chmod +x /usr/local/bin/${name}.exe
+        Say "Unit Test Runner [$search_the] SUCCESSFULLY FOUND as [$full_path]"
     else
         Say "Unit Test runner [$search_the] NOT FOUND in [$search_in]. pwd is [$(pwd)]"   
     fi
