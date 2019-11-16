@@ -98,6 +98,7 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
     if (-not $Global:GuestLog) { $Global:GuestLog="/tmp/$([Guid]::NewGuid().ToString("N"))"}
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     $tmpCmdLocalFullName="$mapto/tmp/$rnd"
+    # next line fails on disconnected guest: DirectoryNotFoundException 
     "#!/usr/bin/env bash`nsource ~/.bashrc`nexport DEBIAN_FRONTEND=noninteractive`n($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)" > $tmpCmdLocalFullName
     # Write-Host "Content of temp bash script"
     # & cat $tmpCmdLocalFullName
@@ -268,7 +269,7 @@ Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbui
 Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >.tmp; cat .tmp | head -4' "localhost" $startParams.Port "user" "pass"
 
 Say "Building NET-TEST-RUNNERS on the host and installing to the guest"
-pushd lab; & bash NET-TEST-RUNNERS-build.sh; popd
+pushd "$ProjectPath/lab"; & bash NET-TEST-RUNNERS-build.sh; popd
 Say "Copying NET-TEST-RUNNERS to /opt/NET-TEST-RUNNERS on the guest"
 & cp ~/build/devizer/NET-TEST-RUNNERS "$mapto/opt"
 Say "Linking NET-TEST-RUNNERS on the guest"
