@@ -19,7 +19,7 @@ xunit.runner.reporters xunit.runner.utility
 # NUnit.Console NUnit3TestAdapter NUnit.Extension.NUnitProjectLoader  
 
 mkdir -p packages
-pushd packages >/dev/null
+cd packages >/dev/null
 rm -rf *
 
 i=0
@@ -44,6 +44,8 @@ done
 rm -rf System* 
 find -name "*.nupkg" | xargs rm -f
 
+popd >/dev/null
+
 curl -ksSL -o ${target_tmp}/link-unit-test-runners.sh https://raw.githubusercontent.com/devizer/test-and-build/master/lab/NET-TEST-RUNNERS-link.sh
 chmod +x ${target_tmp}/link-unit-test-runners.sh
 
@@ -56,5 +58,3 @@ else
     exit $errors
 fi
 
-popd >/dev/null
-popd >/dev/null
