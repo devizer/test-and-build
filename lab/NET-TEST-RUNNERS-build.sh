@@ -6,13 +6,14 @@ mkdir -p ${target}.tmp
 pushd ${target}.tmp
 
 packets='
-NUnit.Console NUnit.ConsoleRunner NUnit.Extension.NUnitProjectLoader NUnit.Extension.NUnitV2Driver
+NUnit.ConsoleRunner NUnit.Extension.NUnitV2Driver
 NUnit.Extension.NUnitV2ResultWriter NUnit.Extension.TeamCityEventListener
-NUnit3TestAdapter
 xunit.abstractions xunit.analyzers xunit.assert xunit.core xunit.extensibility.core
 xunit.extensibility.execution xunit.runner.console xunit.runner.msbuild
 xunit.runner.reporters xunit.runner.utility 
 '
+
+# NUnit.Console NUnit3TestAdapter NUnit.Extension.NUnitProjectLoader  
 
 mkdir -p packages
 pushd packages
