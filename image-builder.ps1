@@ -6,6 +6,7 @@ param(
 
 $imagesToBuild=$images
 $ProjectPath=$PSScriptRoot
+$PublicReport=$(Join-Path $ProjectPath "Public-Report")
 
 . "$($PSScriptRoot)\include\Main.ps1"
 . "$($PSScriptRoot)\include\Utilities.ps1"
@@ -130,7 +131,7 @@ function Inplace-Enlarge
     virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.enlarge.qcow2
     if (!$needCompacting)
     {
-        & mv -f disk.intermediate.enlarge.qcow2 
+        & mv -f disk.intermediate.enlarge.qcow2 "$($rootDiskFullName)"
     }
     else
     {
@@ -167,6 +168,9 @@ function Produce-Report {
     
 
 function Build { param($definition, $startParams)
+    
+    Start-Transcript -Path (Join-Path $PublicReport "$($definition.Key)-log.log") 
+
     $key=$definition.key
     Say "Building $($definition.key)";
     New-Item -Type Directory $build_folder -ea SilentlyContinue;
@@ -236,7 +240,7 @@ function Build { param($definition, $startParams)
     $cmd='Say "Hello. I am the $(hostname) host"; sudo lscpu; echo "Content of /etc/default/locale:"; cat /etc/default/locale; echo "[env]"; printenv | sort'
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
 
-    $mustHavePackages="apt-update; apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y && apt-get clean"
+    $mustHavePackages="lazy-apt-update; apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y && apt-get clean"
     Say "Installing must have packages on [$key]"
     Remote-Command-Raw "$mustHavePackages" "localhost" $startParams.Port "root" "pass"
 
@@ -315,6 +319,7 @@ Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbui
 
     Say "The End"
     popd
+    Stop-Transcript
 
 }
 

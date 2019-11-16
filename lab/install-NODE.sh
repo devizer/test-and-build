@@ -9,7 +9,7 @@ is_386="$(uname -m | grep -E 'i.86' 2>/dev/null)"
 
 if [[ "$ARCH" == i386 ]]; then
     Say "Installing build-essential"
-    apt-update
+    lazy-apt-update
     time sudo apt-get install build-essential libssl-dev -y
     apt clean -qq
 fi

@@ -19,7 +19,7 @@ echo "LANG=en_US.UTF-8" > /etc/locale.conf
 dpkg-reconfigure locales 
 
 Say "Purge man-db"
-apt-update; apt purge man-db
+lazy-apt-update; apt purge man-db
 
 echo '
 LC_ALL="en_US.UTF-8"
@@ -60,11 +60,11 @@ if [[ -n "${swapSizeMb}" ]]; then
 currentSwap=$(free -m | grep Swap | awk '{print $2}')
 Say "Current Swap Size: $currentSwap MB" 
 
-# SMART apt-update - only for built-in debian repos
+# SMART lazy-apt-update - only for built-in debian repos
 echo '#!/usr/bin/env bash
 ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || sudo apt update --allow-unauthenticated -qq
-' > /usr/local/bin/apt-update
-chmod +x /usr/local/bin/apt-update
+' > /usr/local/bin/lazy-apt-update
+chmod +x /usr/local/bin/lazy-apt-update
 
 
 Say "Adding user to nopasswd sudoers"

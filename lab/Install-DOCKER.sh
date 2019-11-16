@@ -3,7 +3,7 @@
 if [[ ! "$ARCH" == i386 ]]; then
   Say "Installing the latest docker from official docker repo"
   source /etc/os-release
-  apt-update
+  lazy-apt-update
   sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y && sudo apt-get clean
   curl -fsSL https://download.docker.com/linux/$ID/gpg | sudo apt-key add -
 
@@ -25,7 +25,7 @@ if [[ ! "$ARCH" == i386 ]]; then
   
 else
     Say "Installing the Docker 18.09.1, docker compose 1.21.0 (format 2.4) from debian repo "
-    apt-update
+    lazy-apt-update
     apt install docker.io docker-compose
 fi
 sudo apt-get clean
