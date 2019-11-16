@@ -23,7 +23,7 @@ set +e
 
 pushd TestRunners
 Say "Run Nuget Restore for [$(pwd)]"
-nuget restore
+nuget restore -Verbosity quiet
 Say "Run msbuild for [$(pwd)]"
 msbuild /t:Rebuild /p:Configuration=Debug /v:q
 
