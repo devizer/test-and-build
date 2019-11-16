@@ -38,6 +38,9 @@ done
 rm -rf System* 
 find -name "*.nupkg" | xargs rm -f
 
+curl -ksSL -o ${target}.tmp/link-unit-test-runners.sh https://raw.githubusercontent.com/devizer/test-and-build/master/lab/NET-TEST-RUNNERS-link.sh
+chmod +x ${target}.tmp/link-unit-test-runners.sh
+
 mkdir -p ${target}
 cp -a ${target}.tmp ${target}
 
