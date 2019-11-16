@@ -354,6 +354,7 @@ Remote-Command-Raw "cd /tmp/build; bash -e run-NET-UNIT-TESTS.sh" "localhost" $s
 
 $cores = [Environment]::ProcessorCount;
 if ($cores -ge 8) { $cores-- }
+$cores=4
 $globalStartParams = @{Mem="2000M"; Cores=$cores; Port=2345};
 
 $definitions | % {Say "Defenition of the $($_.Key)"; Write-Host (Pretty-Format $_)}

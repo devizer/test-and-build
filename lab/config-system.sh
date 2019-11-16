@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
 
+sudo cp /tmp/build/Say.sh /usr/local/bin/Say
+chmod +x /usr/local/bin/Say
+
+# SMART lazy-apt-update - only for built-in debian repos
+echo '#!/usr/bin/env bash
+ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || {
+    Say "Updating apt metadata (/var/lib/apt/lists/)"
+    sudo apt update --allow-unauthenticated -qq
+}
+' > /usr/local/bin/lazy-apt-update
+chmod +x /usr/local/bin/lazy-apt-update
+
+
 # 1st parameter - swap size in megabytes
 swapSizeMb=$1
 # 2nd parameter - arch (i386, arm, arm64)
@@ -32,11 +45,6 @@ export TZ=Europe/London
 ' | sudo tee -a ~/.bashrc > /dev/null
 sudo timedatectl set-timezone UTC
 
-# cat /tmp/build/Say.sh >> ~/.bashrc
-# cat /tmp/build/Say.sh >> ~/.profile
-sudo cp /tmp/build/Say.sh /usr/local/bin/Say
-chmod +x /usr/local/bin/Say
-
 # apt-get install -qq libunwind8 -y 
 echo "Environment:"; 
 printenv | sort
@@ -59,12 +67,6 @@ if [[ -n "${swapSizeMb}" ]]; then
 
 currentSwap=$(free -m | grep Swap | awk '{print $2}')
 Say "Current Swap Size: $currentSwap MB" 
-
-# SMART lazy-apt-update - only for built-in debian repos
-echo '#!/usr/bin/env bash
-ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || sudo apt update --allow-unauthenticated -qq
-' > /usr/local/bin/lazy-apt-update
-chmod +x /usr/local/bin/lazy-apt-update
 
 
 Say "Adding user to nopasswd sudoers"
