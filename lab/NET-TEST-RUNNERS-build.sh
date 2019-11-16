@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # need a permission to /opt and /usr/bin/local
 
-target=$HOME/build/NET-TEST-RUNNERS
+target=$HOME/build/devizer/NET-TEST-RUNNERS
 mkdir -p ${target}.tmp
 pushd ${target}.tmp
 rm -rf *
@@ -46,6 +46,7 @@ chmod +x ${target}.tmp/link-unit-test-runners.sh
 if [[ $errors == 0 ]]; then
     mkdir -p ${target}
     cp -a ${target}.tmp ${target}
+    # rm -rf ${target}.tmp
 else
     echo "ERRORS: $errors packages cant be installed"
     exit $errors
