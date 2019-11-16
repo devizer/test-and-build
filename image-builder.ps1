@@ -258,11 +258,16 @@ Remote-Command-Raw "cd /tmp/build; bash -e install-MONO.sh" "localhost" $startPa
 Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget | head -4' "localhost" $startParams.Port "root" "pass"
 Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; nuget | head -4' "localhost" $startParams.Port "user" "pass"
 
-
-    Say "Installing Node [$key]"
-    Remote-Command-Raw "cd /tmp/build; bash install-NODE.sh" "localhost" $startParams.Port "root" "pass"
-    Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "user" "pass"
-    Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "root" "pass"
+    if ($Env:INSTALL_NODE_FOR_i386 -eq "True" -or $key -ne "i386")
+    {
+        Say "Installing Node [$key]"
+        Remote-Command-Raw "cd /tmp/build; bash install-NODE.sh" "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "user" "pass"
+        Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "root" "pass"
+    }
+    esle {
+        Say "Skipping NodeJS on i386"
+    }
 
     Say "Installing Docker [$key]"
     Remote-Command-Raw "cd /tmp/build; bash install-DOCKER.sh" "localhost" $startParams.Port "root" "pass"

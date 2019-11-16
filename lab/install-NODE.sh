@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # should be run as USER
-INSTALL_NODE_FOR_i386=false 
 script=https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 # [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-if [ -n "$(uname -m | grep -E 'i.86' 2>/dev/null)" ]; then 
+is_386="$(uname -m | grep -E 'i.86' 2>/dev/null)"
+
+if [[ "$ARCH" == i386 ]]; then
     Say "Installing build-essential"
     apt-update
     time sudo apt-get install build-essential libssl-dev -y
