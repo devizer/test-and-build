@@ -6,7 +6,7 @@ toClear=""; if [[ "$1" == "--clean" ]]; then toClear="true"; fi
 target=$HOME/build/devizer/NET-TEST-RUNNERS
 target_tmp=${target}.$(basename "$(mktemp)")
 mkdir -p ${target_tmp}
-pushd ${target_tmp}
+pushd ${target_tmp} >/dev/null
 
 packets='
 NUnit.ConsoleRunner NUnit.Extension.NUnitV2Driver
@@ -19,7 +19,7 @@ xunit.runner.reporters xunit.runner.utility
 # NUnit.Console NUnit3TestAdapter NUnit.Extension.NUnitProjectLoader  
 
 mkdir -p packages
-pushd packages
+pushd packages >/dev/null
 rm -rf *
 
 i=0
@@ -56,5 +56,5 @@ else
     exit $errors
 fi
 
-popd
-popd
+popd >/dev/null
+popd >/dev/null
