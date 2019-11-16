@@ -30,11 +30,11 @@ $BasicImagePath=(new-object System.IO.DirectoryInfo($p)).FullName + [IO.Path]::D
 $definitions=@(
 @{
     key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
-    RamForBuildingMb=2000; 
-    SizeForBuildingMb=5600; # from 3G
+    RamForBuildingMb=2500; 
+    SizeForBuildingMb=7000; # from 3G
     DefaultPort=2344;
     EnableKvm=$true;
-    SwapMb=256;
+    SwapMb=1024;
     # BaseUrl="file:///github.com/"
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
     BaseUrl="file://$BasicImagePath"
