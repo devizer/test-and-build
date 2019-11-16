@@ -4,8 +4,15 @@ dist: bionic # xenial's qemu is too old
 git:
   depth: false
 
-# https://docs.travis-ci.com/user/caching/ (nothing to cache)
+matrix:
+  include:
+    - env: [ARCH=i386]
+    - env: [ARCH=arm]
+    - env: [ARCH=arm64]
+
+    # https://docs.travis-ci.com/user/caching/ (nothing to cache)
 before_script:
+- 'echo ARCH: $ARCH'
 - | 
   sudo apt update; 
   sudo apt install -y libguestfs-tools sshpass sshfs qemu-system-arm qemu-block-extra qemu-utils p7zip-full \
@@ -22,5 +29,5 @@ before_script:
     script=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-and-nodejs.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash -s pwsh
 
 script:
-- sudo pwsh -command ./image-builder.ps1 -Images i386
+- sudo pwsh -command ./image-builder.ps1 -Images $ARCH
 - cat Public-Report/*onfinish*
