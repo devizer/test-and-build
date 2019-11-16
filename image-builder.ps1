@@ -24,7 +24,7 @@ $FinalSize="42G"
 
 
 # port, mem and #cores are indirectly passed via $startParams
-function Prepare-VM { param($definition, $rootDiskFullName, $portNumber = 0)
+function Prepare-VM { param($definition, $rootDiskFullName, $guestNamePrefix="", $portNumber = 0)
     if (-not $portNumber) { $portNumber=$startParams.Port }
     $path=Split-Path -Path $rootDiskFullName;
     $fileName = [System.IO.Path]::GetFileName($rootDiskFullName)
@@ -45,9 +45,9 @@ function Prepare-VM { param($definition, $rootDiskFullName, $portNumber = 0)
         $paramCpu=" -cpu cortex-a57 "
     }
     elseif ($key -eq "i386") {
-        $guestName="buster-i386"
-        $qemySystem="i386"
         $hasKvm = (& sh -c "ls /dev/kvm 2>/dev/null") | Out-String
+        $guestName=if ($hasKvm) { "buster-i386-KVM" } else { "buster-i386-EMU" }
+        $qemySystem="i386"
         # qemu-system-i386 --machine q35 -cpu ?
         # CPU: kvm32|SandyBridge
         $paramCpu=if ($hasKvm) { " -cpu kvm32 " } else { " -cpu qemu32 " } 
@@ -56,6 +56,8 @@ function Prepare-VM { param($definition, $rootDiskFullName, $portNumber = 0)
     else {
         throw "Unknown definition.key = '$key'" 
     }
+
+    if ($guestNamePrefix) { $guestName="$guestNamePrefix-$guestName" }
     
     # $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
     # $p2 = if ($k -eq "arm64") { " -cpu cortex-a57 "; } else {""};
@@ -63,7 +65,7 @@ function Prepare-VM { param($definition, $rootDiskFullName, $portNumber = 0)
 
 $qemuCmd = "#!/usr/bin/env bash" + @" 
 
-qemu-system-${qemySystem} \
+qemu-system-${qemySystem} -name $guestName \
     -smp $($startParams.Cores) -m $($startParams.Mem) -M virt ${paramCpu} \
     -initrd initrd.img \
     -kernel vmlinuz \
@@ -143,7 +145,7 @@ function Final-Compact
     # qemu-img check newdisk.qcow2
     virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.compacting.qcow2
     qemu-img convert -O qcow2 -c -p disk.intermediate.compacting.qcow2 "$newPath"
-    Prepare-VM $definition "$newPath" ($startParams.Port + 100)
+    Prepare-VM $definition "$newPath" "final" ($startParams.Port + 100)
     & rm -f disk.intermediate.compacting.qcow2
 }
 
@@ -231,7 +233,7 @@ function Build { param($definition, $startParams)
 
 
     Say "Prepare Image and launch: $key"
-    $preparedVm = Prepare-VM $definition $qcowFile
+    $preparedVm = Prepare-VM $definition $qcowFile "building"
     Write-Host "Command prepared: [$($preparedVm.Command)]"
 
     $si = new-object System.Diagnostics.ProcessStartInfo($preparedVm.Command, "")
