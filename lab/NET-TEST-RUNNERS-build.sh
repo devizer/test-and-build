@@ -50,7 +50,7 @@ chmod +x ${target_tmp}/link-unit-test-runners.sh
 if [[ $errors == 0 ]]; then
     mkdir -p ${target}
     cp -a ${target_tmp}/* ${target}
-    # rm -rf ${target_tmp}
+    rm -rf ${target_tmp}
 else
     echo "ERRORS: $errors packages cant be installed"
     exit $errors
