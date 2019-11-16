@@ -30,7 +30,7 @@ $BasicImagePath=(new-object System.IO.DirectoryInfo($p)).FullName + [IO.Path]::D
 $definitions=@(
 @{
     key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
-    RamForBuildingMb=1300; 
+    RamForBuildingMb=1200; 
     SizeForBuildingMb=5600; # from 3G
     DefaultPort=2344;
     EnableKvm=$true;
@@ -60,8 +60,6 @@ $definitions=@(
     BaseUrl="file://$BasicImagePath"
 }
 );
-# temprarily we build only ARM-64
-# $definitions=@($definitions[2]);
 
 
 
