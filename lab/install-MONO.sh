@@ -17,9 +17,14 @@ if [[ "$(command -v mono)" == "" ]]; then
 fi
 
 # it fails if nuget is absent 
-bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh 
+bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || bash -e install-NET-TEST-Runners.sh || true 
 
+Say "Clearing mono cache"
+du -h -d 1 ~/.nuget 
 nuget locals all -clear
+du -h -d 1 ~/.nuget
+Say "Cleared mono cache"
+ 
 
 pushd TestRunners
 Say "Run Nuget Restore for [$(pwd)]"
