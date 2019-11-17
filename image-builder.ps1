@@ -155,9 +155,9 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password, [bool] $
     # next line fails on disconnected guest: DirectoryNotFoundException 
 $remoteCmd = @"
 #!/usr/bin/env bash
-if [ -d /etc/profile.d ]; then
+if [[ -d /etc/profile.d ]]; then
   for i in /etc/profile.d/*.sh; do
-    if [ -r `$i ]; then
+    if [[ -r `$i ]] && [[ ! `$i == *"bash_completion.sh"* ]]; then # if [ -r `$i ]; then
       . `$i
     fi
   done
