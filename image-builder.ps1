@@ -391,7 +391,7 @@ $imagesToBuild | % {
         $globalStartParams.Port = $definition.DefaultPort;
         $globalStartParams.Mem="$($definition.RamForBuildingMb)M"
         Write-Host "Next image:`n$(Pretty-Format $definition)" -ForegroundColor Yellow;
-        $Global:BuildConsoleTitle = "$($definition.Key) $($globalStartParams.Mem)Mb $($globalStartParams.Cores)*Cores"
+        $Global:BuildConsoleTitle = "--=== $($definition.Key) $($globalStartParams.Mem) $($globalStartParams.Cores)*Cores ===--"
         Build $definition $globalStartParams;
     }
 }
