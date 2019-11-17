@@ -178,7 +178,7 @@ if [[ -f ~/.profile ]]; then
     . ~/.profile
 fi
 # export PATH="`$PATH:/boot"
-# export DEBIAN_FRONTEND=noninteractive
+export DEBIAN_FRONTEND=noninteractive
 ($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)
 "@
 
