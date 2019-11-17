@@ -19,7 +19,12 @@ if [[ "$ARCH" == i386 ]]; then
 fi
 
 echo '#!/usr/bin/env bash
-[[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+NVM_DIR=/opt/nvm
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then 
+    . "$NVM_DIR/nvm.sh"  # This loads nvm
+else
+    unset NVM_DIR
+fi 
 ' > /etc/profile.d/NVM.sh
 
 # cat > /tmp/nvm-env << EOL
