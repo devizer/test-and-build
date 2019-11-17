@@ -162,6 +162,8 @@ export DEBIAN_FRONTEND=noninteractive
 ($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)
 "@
 
+Write-Host "REMOTE-SCRIPT: [$remoteCmd]"
+
 $remoteCmd > $tmpCmdLocalFullName
 
 # "#!/usr/bin/env bash`necho SOURCING ~/.bashrc`n. ~/.bashrc; source ~/.bashrc`nexport DEBIAN_FRONTEND=noninteractive`n($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)" > $tmpCmdLocalFullName
