@@ -181,8 +181,7 @@ export DEBIAN_FRONTEND=noninteractive
 ($cmd) 2>&1 | tee -a "$($Global:GuestLog)-$($user)"
 "@
 
-    # & mkdir 
-    Write-Host "REMOTE-SCRIPT: [$remoteCmd]"
+    # Write-Host "REMOTE-SCRIPT: [$remoteCmd]"
     $remoteCmd > $tmpCmdLocalFullName
     & chmod +x $tmpCmdLocalFullName
     if ($false -and $reconnect) {
