@@ -14,6 +14,15 @@ chmod +x /usr/local/bin/Add-Shared-Env
 
 sshId=$(pgrep -f "sshd -D")
 Say "Configure ssh environment and restarting ssh server (id is $sshId)"
+mkdir -p /home/user/.ssh
+echo '
+#!/usr/bin/env bash
+# export ARCH='$ARCH'
+ARCH='$ARCH'
+' > /home/user/.ssh/environment
+chmod +x /home/user/.ssh/environment
+chown -R user:user /home/user/.ssh
+
 Say "Restarting ssh server"
 sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment yes/g' /etc/ssh/sshd_config
 sed -i 's/AcceptEnv LANG LC_\*//g' /etc/ssh/sshd_config
@@ -47,16 +56,24 @@ echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
-echo '
-LC_ALL="en_US.UTF-8"
-LANG="en_US.UTF-8"
-' | sudo tee /etc/default/locale > /dev/null
 # locale-gen "en_US.UTF-8" "en_GB.UTF-8" "es_ES.UTF-8 UTF-8"
 dpkg-reconfigure locales 
 
 Say "Purge man-db"
 lazy-apt-update; apt purge man-db
 
+echo '
+LC_ALL="en_US.UTF-8"
+LANG="en_US.UTF-8"
+' | sudo tee /etc/default/locale > /dev/null
+
+echo '
+export LC_ALL="en_US.UTF-8"
+export TZ=Europe/London
+' | sudo tee -a ~/.bashrc > /dev/null
+sudo timedatectl set-timezone UTC
+
+# apt-get install -qq libunwind8 -y 
 echo "Environment:"; 
 printenv | sort
 echo "-----------------"
@@ -83,6 +100,31 @@ Say "Current Swap Size: $currentSwap MB"
 Say "Adding user to nopasswd sudoers"
 echo 'user    ALL=(ALL:ALL) NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo
 
+echo '
+ARCH='$ARCH'
+export ARCH
+' >> /home/user/.bashrc
+
+echo '
+export ARCH='$ARCH'
+' >> ~/.bashrc
+
+echo '
+export ARCH='$ARCH'
+' >> /home/user/.bashrc
+chown user:user /home/user/.bashrc
+
+echo '
+#!/usr/bin/env bash
+if [ -f ~/.bashrc ]; then
+  . ~/.bashrc
+fi
+' > /home/user/.profile
+chmod +x /home/user/.profile
+chown user:user /home/user/.profile
+
+
+
 Say "Disable apparmor"
 systemctl stop apparmor
 systemctl disable apparmor
@@ -90,19 +132,32 @@ systemctl disable apparmor
 Say "Add user to sudo group"
 usermod -aG sudo user
 
+mkdir /home/user/.ssh
+a=(/home/user/.bashrc /home/user/.profile /root/.bashrc /root/.profile /etc/bash.bashrc /etc/profile)
+for f in "${a[@]}"; do 
+    sed -i '1 i\echo "'"$f"' was read"\n' "$f";
+    if [[ "$f" == "/home/user"* ]]; then chown user:user "$f"; fi 
+done
+
 # https://en.wikibooks.org/wiki/OpenSSH/Client_Configuration_Files#~/.ssh/rc
 echo "export Var_WITH_Export=here" >> /home/user/.ssh/environment
 echo "Var_WITHOUT_Export=here" >> /home/user/.ssh/environment
 # echo 'PATH="$PATH:/tmp"' >> /home/user/.ssh/environment
 # echo 'export PATH="$PATH:/usr"' >> /home/user/.ssh/environment
 
-sudo -u user mkdir -p /home/user/bin 
-mkdir -p /home/user/bin 
 echo '#!/usr/bin/env bash
-if [[ -d "$HOME/bin" ]]; then
-    export PATH="$PATH:$HOME/bin"
-fi
-' > /etc/profile.d/Path-To-Bin-At-Home.sh
+Ssh_Rc_Var=here
+export Ssh_Rc_Var_With_Export=here
+# echo I AM /home/user/.ssh/rc SCRIPT
+' > /home/user/.ssh/rc
 
+echo '#!/usr/bin/env bash
+Profile_Rc_Var=here
+export Profile_Rc_Var_With_Export=here
+echo I AM /home/user/.profile SCRIPT
+PATH="$PATH:/tmp"
+export PATH="$PATH:/usr"
+' > /home/user/.profile
 
-# chown user:user /home/user/.profile
+chown -R user:user /home/user/.ssh 
+chown user:user /home/user/.profile

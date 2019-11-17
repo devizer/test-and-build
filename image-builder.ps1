@@ -155,12 +155,21 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password, [bool] $
     # next line fails on disconnected guest: DirectoryNotFoundException 
 $remoteCmd = @"
 #!/usr/bin/env bash
+if [ -d /etc/profile.d ]; then
+  for i in /etc/profile.d/*.sh; do
+    if [ -r `$i ]; then
+      . `$i
+    fi
+  done
+  unset i
+fi
+
 if [[ -f ~/.profile ]]; then 
-    echo SOURCING ~/.profile 
-    . ~/.profile 2>&1 | tee -a $($Global:GuestLog)-$($user)
+#    echo SOURCING ~/.profile 
+#    . ~/.profile 2>&1 | tee -a $($Global:GuestLog)-$($user)
     . ~/.profile
-else 
-    echo ~/.profile NOT FOUND | tee -a $($Global:GuestLog)-$($user)
+#else 
+#    echo ~/.profile NOT FOUND | tee -a $($Global:GuestLog)-$($user)
 fi
 export PATH="`$PATH:/boot"
 # echo SOURCING ~/.bashrc  2>&1 | tee -a $($Global:GuestLog)-$($user)
