@@ -153,9 +153,7 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password, [bool] $
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     $tmpCmdLocalFullName="$mapto/tmp/$rnd"
     # next line fails on disconnected guest: DirectoryNotFoundException 
-$remoteCmd = @
-
-@"
+$remoteCmd = @"
 "#!/usr/bin/env bash
 echo SOURCING ~/.bashrc  2>&1 | tee -a $($Global:GuestLog)-$($user)
 . ~/.bashrc              2>&1 | tee -a $($Global:GuestLog)-$($user)
