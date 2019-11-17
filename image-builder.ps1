@@ -115,11 +115,12 @@ qemu-system-${qemySystem} -name $guestName \
     if ($definition.Key -eq "i386") {
         $qemuCmd = "#!/usr/bin/env bash" + @"
 
+#-device rtl8139 is not stable
 $($sudoPrefix)qemu-system-i386 -name $guestName -smp $($startParams.Cores) -m $($startParams.Mem) -M q35  $($kvmParameters) $paramCpu \
     -initrd initrd.img \
     -kernel vmlinuz -append "root=/dev/sda1 console=ttyS0" \
     -drive file=$($fileName) \
-    -netdev user,hostfwd=tcp::$($portNumber)-:22,id=unet -device rtl8139,netdev=unet \
+    -netdev user,hostfwd=tcp::$($portNumber)-:22,id=unet -device e1000,netdev=unet \
     -net user \
     -nographic
 "@; # -drive file=ephemeral.qcow2 \
