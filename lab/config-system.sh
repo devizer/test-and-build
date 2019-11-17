@@ -135,7 +135,15 @@ for f in "${a[@]}"; do
     sed -i '1 i\echo "'"$f"' was read"\n' "$f";
     if [[ "$f" == "/home/user"* ]]; then chown user:user "$f"; fi 
 done
-echo "export Var_WITH_Export=here" >> /home/user/.ssh/environment
-echo "Var_WITHOUT_Export=here" >> /home/user/.ssh/environment
-echo "echo sourcing /home/user/.ssh/environment" >> /home/user/.ssh/environment
+# echo "export Var_WITH_Export=here" >> /home/user/.ssh/environment
+# echo "Var_WITHOUT_Export=here" >> /home/user/.ssh/environment
+# echo "echo sourcing /home/user/.ssh/environment" >> /home/user/.ssh/environment
+
+# https://en.wikibooks.org/wiki/OpenSSH/Client_Configuration_Files#~/.ssh/rc
+echo '#!/usr/bin/env bash
+Ssh_Rc_Var=here
+export Ssh_Rc_Var_With_Export=here
+echo I AM /home/user/.ssh/rc SCRIPT
+' > /home/user/.ssh/rc
+
 chown -R user:user /home/user/.ssh 
