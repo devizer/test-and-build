@@ -27,18 +27,6 @@ else
 fi 
 ' > /etc/profile.d/NVM.sh
 
-# cat > /tmp/nvm-env << EOL
-# NVM_DIR='$NVM_DIR'
-# export NVM_DIR 
-# [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"  # This loads nvm
-# EOL
-
-# for file in "/etc/profile.d/nvm" "$HOME/.profile" "$HOME/.bashrc" "/home/user/.profile" "/home/user/.bashrc"; do
-#    cat /tmp/nvm-env >> "$file"
-#    chmod +x "$file"
-#    if [[ "$file" == "/home/user"* ]]; then chown user:user "$file"; fi
-#done
-
 Say "Installing NodeJS LTS"
 
 if [[ -n "$TRAVIS" ]]; then
@@ -48,9 +36,7 @@ if [[ -n "$TRAVIS" ]]; then
     export CPPFLAGS="$CFLAGS"
 fi
 
-# if [[ "$INSTALL_NODE_FOR_i386" == "true" || "$ARCH" != i386 ]]; then 
-    time nvm install --lts node  # 12.13
-# fi
+time nvm install --lts node  # 12.13
 nvm cache clear
 df -h
 # Say "Installing NodeJS LATEST"

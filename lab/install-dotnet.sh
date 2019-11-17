@@ -26,14 +26,21 @@ fi
       time dotnet tool install -g BenchmarkDotNet.Tool || true
       # time dotnet --info || true
 
-      echo '
-export PATH="/opt/dotnet:$PATH:$HOME/.dotnet/tools"  
-export DOTNET_ROOT="/opt/dotnet"
-' >> ~/.bashrc      
-
-echo '
-export PATH="/opt/dotnet:$PATH:$HOME/.dotnet/tools"  
-export DOTNET_ROOT="/opt/dotnet"
-' | sudo tee -a /root/.bashrc
+Say "Configuring shared environment for .NET Core"
+sudo -u user mkdir /home/user/.dotnet/tools
+mkdir ~/.dotnet/tools
+echo '#!/usr/bin/env bash
+if [[ -s "/opt/dotnet/dotnet" ]]; then 
+    DOTNET_ROOT=/opt/dotnet
+    PATH="/opt/dotnet:$PATH"
+    if [[ -d "$HOME/.dotnet/tools" ]]; then
+        PATH="$PATH:$HOME/.dotnet/tools"
+    fi
+    DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+    DOTNET_CLI_TELEMETRY_OPTOUT=1
+fi
+' > /etc/profile.d/NVM.sh
+Say "Configured shared environment for .NET Core"
 
 # todo: BenchmarkDotNet.Tool for root

@@ -348,7 +348,7 @@ function Build
     Remote-Command-Raw "bash /tmp/build/config-system.sh $key $( $definition.SwapMb )" "localhost" $startParams.Port "root" "pass" $true # re-connect
     
     Produce-Report $definition $startParams "onstart"
-
+    
     Say "Greetings from Guest [$key]"
     $cmd = 'Say "Hello from $(whoami). I am the $(hostname) host"; sudo lscpu; echo [PATH] is: $PATH; echo "Content of /etc/default/locale:"; cat /etc/default/locale; echo "[env]"; printenv | sort'
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
@@ -382,8 +382,8 @@ function Build
     {
         Say "Installing DotNet Core on [$key]"
         Remote-Command-Raw "cd /tmp/build; bash -e install-dotnet.sh; command -v dotnet && dotnet --info || true" "localhost" $startParams.Port "root" "pass"
-        Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "root" "pass"
-        Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "user" "pass"
+        Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; dotnet --info' "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; dotnet --info' "localhost" $startParams.Port "user" "pass"
         # TODO: Add dotnet restore
     }
 
