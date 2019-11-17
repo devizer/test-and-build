@@ -30,7 +30,7 @@ function Is-Requested-Specific-Feature{
     }
     
     if ($needIgnore) {
-        Say "Skipping. Feature ($idFeature) is configured to be ignored by -Ignore option"
+        # Say "Skipping. Feature ($idFeature) is configured to be ignored by -Ignore option"
         return $false; 
     }
     
@@ -38,7 +38,7 @@ function Is-Requested-Specific-Feature{
     if ($Global_Only_Features) {
         $needPreinstall = " $Global_Only_Features " -like "* $($idFeature) *"
         if (!$needPreinstall){
-            Say "Skipping. Feature ($idFeature) is not specified by -Only option"
+            # Say "Skipping. Feature ($idFeature) is not specified by -Only option"
             return $false
         }
     }
