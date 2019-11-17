@@ -273,9 +273,7 @@ function Build
 {
     param($definition, $startParams)
 
-    & ls -la
     Start-Transcript -Path (Join-Path $PrivateReport "$( $definition.Key )-log.log")
-    & 7z
 
     $Is_Requested_Mono = Is-Requested-Specific-Feature("mono");
     $Is_Requested_Dotnet = Is-Requested-Specific-Feature("dotnet");
@@ -336,7 +334,8 @@ function Build
     $isOnline = Wait-For-Ssh "localhost" $startParams.Port "root" "pass"
     if (! $isOnline)
     {
-        return $false;
+        $Global:IsBuildSuccess=$false;
+        return;
     }
 
     Say "Mapping guest FS to localfs"
@@ -504,6 +503,8 @@ function Build
     Say "The End"
     popd
     Stop-Transcript
+    $Global:IsBuildSuccess=$true;
+
 
 }
 
@@ -530,8 +531,8 @@ $imagesToBuild | % {
         $globalStartParams.Mem="$($definition.RamForBuildingMb)M"
         Write-Host "Next image:`n$(Pretty-Format $definition)" -ForegroundColor Yellow;
         $Global:BuildConsoleTitle = "|>$($definition.Key) $($globalStartParams.Mem) $($globalStartParams.Cores)*Cores ===--"
-        $isBuildSuccess = Build $definition $globalStartParams;
-        $allTheFine = $allTheFine -and $isBuildSuccess; 
+        Build $definition $globalStartParams;
+        $allTheFine = $allTheFine -and $Global:IsBuildSuccess; 
     }
 }
 
