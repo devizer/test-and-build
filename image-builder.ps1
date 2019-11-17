@@ -83,7 +83,7 @@ function Prepare-VM { param($definition, $rootDiskFullName, $guestNamePrefix="",
         $qemySystem="i386"
         # qemu-system-i386 --machine q35 -cpu ?
         # CPU: kvm32|SandyBridge
-        $paramCpu=if ($hasKvm) { " -cpu kvm32 " } else { " -cpu qemu32 " } 
+        $paramCpu=if ($hasKvm) { " -cpu IvyBridge " } else { " -cpu qemu32 " } 
         $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm "} else {" "}
     }
     else {
@@ -181,13 +181,8 @@ fi
 "@
 
 # Write-Host "REMOTE-SCRIPT: [$remoteCmd]"
-
 $remoteCmd > $tmpCmdLocalFullName
 
-# "#!/usr/bin/env bash`necho SOURCING ~/.bashrc`n. ~/.bashrc; source ~/.bashrc`nexport DEBIAN_FRONTEND=noninteractive`n($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)" > $tmpCmdLocalFullName
-
-    # Write-Host "Content of temp bash script"
-    # & cat $tmpCmdLocalFullName
     & chmod +x $tmpCmdLocalFullName
     if ($false -and $reconnect) {
         Write-Host "Temparary un-mount guest's root fs"
