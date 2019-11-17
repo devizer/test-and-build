@@ -8,9 +8,10 @@ swapSizeMb=$2
 
 sudo cp /tmp/build/Say.sh /usr/local/bin/Say
 chmod +x /usr/local/bin/Say
+echo "Say command: $(command -v Say)"
 
-sudo cp /tmp/build/Add-Shared-Env.sh /usr/local/bin/Add-Shared-Env
-chmod +x /usr/local/bin/Add-Shared-Env
+# sudo cp /tmp/build/Add-Shared-Env.sh /usr/local/bin/Add-Shared-Env
+# chmod +x /usr/local/bin/Add-Shared-Env
 
 sshId=$(pgrep -f "sshd -D")
 Say "Configure ssh environment and restarting ssh server (id is $sshId)"
@@ -19,6 +20,7 @@ sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment yes/g' /etc/ssh/sshd_c
 sed -i 's/AcceptEnv LANG LC_\*//g' /etc/ssh/sshd_config
 echo '
 SetEnv ARCH='$ARCH'
+AcceptEnv Build_*
 ' >> /etc/ssh/sshd_config
 # systemctl restart ssh
 sudo kill -SIGHUP $sshId
