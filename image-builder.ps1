@@ -436,7 +436,7 @@ function Build
     & cp -f Said-by-user.log $PublicReport/$key-said-by-user.log
     popd
     
-    pushd "$mapto/tmp"
+    pushd "$mapto"
     & 7z a $PublicReport/$key-user-profile.7z etc/profile.d home/user
     popd
 
