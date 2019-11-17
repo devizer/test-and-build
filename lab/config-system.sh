@@ -130,16 +130,18 @@ Say "Add user to sudo group"
 usermod -aG sudo user
 
 mkdir /home/user/.ssh
-a=(/home/user/.bashrc /home/user/.profile /root/.bashrc /root/.profile /etc/bash.bashrc /etc/profile /home/user/.ssh/environment)
+a=(/home/user/.bashrc /home/user/.profile /root/.bashrc /root/.profile /etc/bash.bashrc /etc/profile)
 for f in "${a[@]}"; do 
     sed -i '1 i\echo "'"$f"' was read"\n' "$f";
     if [[ "$f" == "/home/user"* ]]; then chown user:user "$f"; fi 
 done
-# echo "export Var_WITH_Export=here" >> /home/user/.ssh/environment
-# echo "Var_WITHOUT_Export=here" >> /home/user/.ssh/environment
-# echo "echo sourcing /home/user/.ssh/environment" >> /home/user/.ssh/environment
 
 # https://en.wikibooks.org/wiki/OpenSSH/Client_Configuration_Files#~/.ssh/rc
+echo "export Var_WITH_Export=here" >> /home/user/.ssh/environment
+echo "Var_WITHOUT_Export=here" >> /home/user/.ssh/environment
+echo 'PATH="$PATH:/tmp"' >> /home/user/.ssh/environment
+echo 'export PATH="$PATH:/usr"' >> /home/user/.ssh/environment
+
 echo '#!/usr/bin/env bash
 Ssh_Rc_Var=here
 export Ssh_Rc_Var_With_Export=here
