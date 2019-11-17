@@ -1,8 +1,13 @@
 #!/usr/bin/env pwsh
 param(
     [ValidateSet("i386", "arm", "arm64")]    
-    [string[]] $images
+    [string[]] $images,
+    [string] $Only,
+    [string] $Ignore
 )
+$Env:Ignore_Features=$Ignore
+$Env:PreInstall_Only_Features=$Only
+
 $imagesToBuild=$images
 
 $ProjectPath=$PSScriptRoot
