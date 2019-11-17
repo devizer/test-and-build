@@ -80,6 +80,7 @@ function Prepare-VM { param($definition, $rootDiskFullName, $guestNamePrefix="",
     }
 
     if ($guestNamePrefix) { $guestName="$guestNamePrefix-$guestName" }
+    $sudoPrefix=if ($hasKvm) {"sudo "} else {""};
     
     # $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
     # $p2 = if ($k -eq "arm64") { " -cpu cortex-a57 "; } else {""};
@@ -103,7 +104,7 @@ qemu-system-${qemySystem} -name $guestName \
     if ($definition.Key -eq "i386") {
         $qemuCmd = "#!/usr/bin/env bash" + @"
 
-qemu-system-i386 -name $guestName -smp $($startParams.Cores) -m $($startParams.Mem) -M q35  $($kvmParameters) $paramCpu \
+$($sudoPrefix)qemu-system-i386 -name $guestName -smp $($startParams.Cores) -m $($startParams.Mem) -M q35  $($kvmParameters) $paramCpu \
     -initrd initrd.img \
     -kernel vmlinuz -append "root=/dev/sda1 console=ttyS0" \
     -drive file=$($fileName) \
