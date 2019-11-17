@@ -8,7 +8,6 @@ param(
 $Global_Ignore_Features=$Skip
 $Global_Only_Features=$Only
 
-& 7z
 
 $imagesToBuild=$Images
 
@@ -274,7 +273,9 @@ function Build
 {
     param($definition, $startParams)
 
+    & ls -la
     Start-Transcript -Path (Join-Path $PrivateReport "$( $definition.Key )-log.log")
+    & 7z
 
     $Is_Requested_Mono = Is-Requested-Specific-Feature("mono");
     $Is_Requested_Dotnet = Is-Requested-Specific-Feature("dotnet");
