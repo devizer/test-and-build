@@ -42,7 +42,7 @@ $definitions=@(
 @{
     key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw";
     RamForBuildingMb=1200;
-    SizeForBuildingMb=6000;
+    SizeForBuildingMb=6000; # from 2G
     DefaultPort=2346;
     SwapMb=64;
     # BaseUrl="file:///github.com/"
@@ -51,7 +51,7 @@ $definitions=@(
 },
 @{
     key="arm"; BasicParts=5; 
-    RootQcow="disk.expanded.qcow2.raw" # 5Gb
+    RootQcow="disk.expanded.qcow2.raw" # it is 5Gb
     RamForBuildingMb=800;
     # BaseUrl="file:///github.com/"
     DefaultPort=2347;
