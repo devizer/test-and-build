@@ -18,6 +18,7 @@ Say "Configure ssh environment and restarting ssh server (id is $sshId)"
 Say "Restarting ssh server"
 sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment yes/g' /etc/ssh/sshd_config
 sed -i 's/AcceptEnv LANG LC_\*//g' /etc/ssh/sshd_config
+sed -i 's/#Compression delayed/Compression no/g' /etc/ssh/sshd_config
 echo '
 SetEnv ARCH='$ARCH'
 AcceptEnv Build_*
