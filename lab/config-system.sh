@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-# 1st parameter - swap size in megabytes
-swapSizeMb=$1
-# 2nd parameter - arch (i386, arm, arm64)
-ARCH=$2
+# 1st parameter - arch (i386, arm, arm64)
+ARCH=$1
+# 2nd parameter - swap size in megabytes
+swapSizeMb=$2
 
 
 sudo cp /tmp/build/Say.sh /usr/local/bin/Say

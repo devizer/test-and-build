@@ -345,7 +345,7 @@ function Build
     & cp -a $ProjectPath/lab/* $mapto/tmp/build
 
     Say "Configure LC_ALL, UTC and optionally swap"
-    Remote-Command-Raw "bash /tmp/build/config-system.sh $( $definition.SwapMb ) $key" "localhost" $startParams.Port "root" "pass" $true # re-connect
+    Remote-Command-Raw "bash /tmp/build/config-system.sh $key $( $definition.SwapMb )" "localhost" $startParams.Port "root" "pass" $true # re-connect
     
     Produce-Report $definition $startParams "onstart"
 
