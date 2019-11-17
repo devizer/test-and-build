@@ -154,7 +154,7 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password, [bool] $
     $tmpCmdLocalFullName="$mapto/tmp/$rnd"
     # next line fails on disconnected guest: DirectoryNotFoundException 
 $remoteCmd = @"
-"#!/usr/bin/env bash
+#!/usr/bin/env bash
 echo SOURCING ~/.bashrc  2>&1 | tee -a $($Global:GuestLog)-$($user)
 . ~/.bashrc              2>&1 | tee -a $($Global:GuestLog)-$($user)
 source ~/.bashrc         2>&1 | tee -a $($Global:GuestLog)-$($user)
@@ -162,7 +162,7 @@ export DEBIAN_FRONTEND=noninteractive
 ($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)
 "@
 
-Write-Host "REMOTE-SCRIPT: [$remoteCmd]"
+# Write-Host "REMOTE-SCRIPT: [$remoteCmd]"
 
 $remoteCmd > $tmpCmdLocalFullName
 
