@@ -131,7 +131,7 @@ $($sudoPrefix)qemu-system-i386 -name $guestName -smp $($startParams.Cores) -m $(
 
 function Wait-For-Ssh {param($ip, $port, $user, $password)
     $at = [System.Diagnostics.Stopwatch]::StartNew();
-    $pingCounter = 0;
+    $pingCounter = 1;
     do
     {
         Write-Host "#$($pingCounter): Waiting for ssh connection to $($ip):$($port) ... " -ForegroundColor Gray
