@@ -41,7 +41,7 @@ script:
     export PreInstall_Only_Features="nothing"
   fi
 - sudo pwsh -command ./image-builder.ps1 -Images $ARCH -Only \"$PreInstall_Only_Features\" -Skip \"$Ignore_Features\"
-- cat Private-Report/*onfinish*
-- ls -la Private-Report
-- cat Private-Report/$ARCH-said-by-user.log
-- cat Private-Report/$ARCH-said-by-root.log
+- cat Private-Report/*/*onfinish*
+- 'pushd Private-Report; find .; popd'
+- cat Private-Report/*/$ARCH-said-by-user.log
+- cat Private-Report/*/$ARCH-said-by-root.log
