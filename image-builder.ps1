@@ -29,7 +29,7 @@ function Is-Requested-Specific-Feature{
     
     $needPreinstall=$true;
     if ($Env:PreInstall_Only_Features) {
-        $needPreinstall " $($Env:PreInstall_Only_Features) " -like "* $($idFeature) *"
+        $needPreinstall = " $($Env:PreInstall_Only_Features) " -like "* $($idFeature) *"
     }
     $true
 }
