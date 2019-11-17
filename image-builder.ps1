@@ -8,6 +8,7 @@ param(
 $Global_Ignore_Features=$Skip
 $Global_Only_Features=$Only
 
+& 7z
 
 $imagesToBuild=$Images
 
