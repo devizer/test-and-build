@@ -145,7 +145,14 @@ echo "Var_WITHOUT_Export=here" >> /home/user/.ssh/environment
 echo '#!/usr/bin/env bash
 Ssh_Rc_Var=here
 export Ssh_Rc_Var_With_Export=here
-echo I AM /home/user/.ssh/rc SCRIPT
+# echo I AM /home/user/.ssh/rc SCRIPT
 ' > /home/user/.ssh/rc
 
+echo '#!/usr/bin/env bash
+Profile_Rc_Var=here
+export Profile_Rc_Var_With_Export=here
+echo I AM /home/user/.profile SCRIPT
+' > /home/user/.profile
+
 chown -R user:user /home/user/.ssh 
+chown user:user /home/user/.profile
