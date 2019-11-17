@@ -9,6 +9,7 @@ $Global_Ignore_Features=$Skip
 $Global_Only_Features=$Only
 
 
+
 $imagesToBuild=$Images
 
 $ProjectPath=$PSScriptRoot
@@ -185,10 +186,13 @@ export DEBIAN_FRONTEND=noninteractive
 "@
 
     # Write-Host "REMOTE-SCRIPT: [$remoteCmd]"
-    $remoteCmd > $tmpCmdLocalFullName
+    
+    try { $remoteCmd > $tmpCmdLocalFullName; $errorInfo = $null; }
+    catch { $errorInfo = "Fail store command as the $($tmpCmdLocalFullName) file: $($_.Exception)" }
+
     & chmod +x $tmpCmdLocalFullName
     if ($false -and $reconnect) {
-        Write-Host "Temparary un-mount guest's root fs"
+        Write-Host "Temparary un-mount guest root fs"
         & umount -f $mapto        
     }
     $localCmd="sshpass -p `'$($password)`' ssh -o 'StrictHostKeyChecking no' $($user)@$($ip) -p $($port) /tmp/$rnd"
@@ -199,8 +203,21 @@ export DEBIAN_FRONTEND=noninteractive
         & ls -la $mapto
     }
     Write-Host "#: $cmd"
-    & bash -c "$localCmd"
-    & rm -f $tmpCmdLocalFullName
+    if ($errorInfo -eq $null) {
+        & bash -c "$localCmd"
+        if (-not $?) { $errorInfo = "Failed to execute remote command: [$cmd]" }
+        else {
+            & rm -f $tmpCmdLocalFullName
+            if (-not $?) { $errorInfo = "Failed to clean up remote command: [$cmd]" }
+        }
+    }
+
+    $Global:BuildResult.TotalCommandCount++;
+    
+    if ($errorInfo) {
+        $Global:BuildResult.FailedCommands += "#: $cmd`n$errorInfo";
+        $Global:BuildResult.IsSccessful=$false;
+    }
 }
 
 function Wait-For-Process
@@ -249,7 +266,7 @@ function Produce-Report {
     $key=$definition.Key
     Say "Produce Report for [$key]"
     # & mkdir -p "$PrivateReport"
-    $reportFile = "$PrivateReport/Debian-10-Buster-$key-$suffix.md"
+    $reportFile = "$PrivateReport/$key/Debian-10-Buster-$key-$suffix.md"
     "|  Debian 10 Buster <u>**$($key)**</u> |`n|-------|" > $reportFile
 
     $probes | % { $probe=$_; $cmd = $_.Cmd;
@@ -271,7 +288,19 @@ function Build
 {
     param($definition, $startParams)
 
-    Start-Transcript -Path (Join-Path $PrivateReport "$( $definition.Key )-log.log")
+    & mkdir -p $PrivateReport/$key
+    & rm -rf "$PrivateReport/$key/*"
+
+    $Global:BuildResult = @{
+            IsSccessful=$true;
+            FailedCommands=@();
+            TotalCommandCount=0;
+    };
+    
+    $allTheFine = $allTheFine -and ($Global:BuildResult).IsSccessful;
+
+
+    Start-Transcript -Path (Join-Path $PrivateReport $key "$( $definition.Key )-log.log")
 
     $Is_Requested_Mono = Is-Requested-Specific-Feature("mono");
     $Is_Requested_Dotnet = Is-Requested-Specific-Feature("dotnet");
@@ -445,16 +474,16 @@ function Build
     Produce-Report $definition $startParams "onfinish"
 
     Say "Store Guest Logs"
-    & cp -f "$mapto/$($Global:GuestLog)-user" "$PrivateReport/$key-guest-user.log"
-    & cp -f "$mapto/$($Global:GuestLog)-root" "$PrivateReport/$key-guest-root.log"
+    & cp -f "$mapto/$($Global:GuestLog)-user" "$PrivateReport/$key/$key-guest-user.log"
+    & cp -f "$mapto/$($Global:GuestLog)-root" "$PrivateReport/$key/$key-guest-root.log"
     pushd "$mapto/tmp"
-    & cp -f Said-by-root.log $PrivateReport/$key-said-by-root.log
-    & cp -f Said-by-user.log $PrivateReport/$key-said-by-user.log
+    & cp -f Said-by-root.log $PrivateReport/$key/$key-said-by-root.log
+    & cp -f Said-by-user.log $PrivateReport/$key/$key-said-by-user.log
     popd
     
     pushd "$mapto"
-    & rm -f $PrivateReport/$key-user-profile.7z
-    & 7z a $PrivateReport/$key-user-profile.7z etc/profile.d home/user
+    & rm -f $PrivateReport/$key/$key-user-profile.7z
+    & 7z a  $PrivateReport/$key/$key-user-profile.7z etc/profile.d home/user
     popd
 
     Say "Zeroing free space of [$key]"
@@ -526,8 +555,23 @@ $imagesToBuild | % {
         $globalStartParams.Mem="$($definition.RamForBuildingMb)M"
         Write-Host "Next image:`n$(Pretty-Format $definition)" -ForegroundColor Yellow;
         $Global:BuildConsoleTitle = "|>$($definition.Key) $($globalStartParams.Mem) $($globalStartParams.Cores)*Cores {$featuresToInstall} ===--"
+
+        $Global:BuildResult = ${
+            IsSccessful=true;
+            FailedCommands=@();
+            TotalCommandCount=0;
+        };
+        
         Build $definition $globalStartParams;
-        $allTheFine = $allTheFine -and $Global:IsBuildSuccess; 
+        $allTheFine = $allTheFine -and ($Global:BuildResult).IsSccessful;
+        $summaryFileName = "$PrivateReport/$key/summary.log"
+        "Total Commands: $($Global:BuildResult.TotalCommandCount)" >  $summaryFileName
+        "Failed Commands: $($Global:BuildResult.FailedCommands)"   >> $summaryFileName
+        "Elapsed: $(Get-Elapsed)"   >> $summaryFileName
+        @($Global:BuildResult.FailedCommands) | % {
+            $_ >> $summaryFileName
+        } 
+        
     }
 }
 
