@@ -3,6 +3,28 @@
 sudo cp /tmp/build/Say.sh /usr/local/bin/Say
 chmod +x /usr/local/bin/Say
 
+sshId=$(pgrep -f "sshd -D")
+Say "Configure ssh environment and restarting ssh server (id is $sshId)"
+mkdir -p /home/user/.ssh
+echo '
+#!/usr/bin/env bash
+# export ARCH='$ARCH'
+ARCH='$ARCH'
+' > /home/user/.ssh/environment
+chmod +x /home/user/.ssh/environment
+chown -R user:user /home/user/.ssh
+
+Say "Restarting ssh server"
+sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment yes/g' /etc/ssh/sshd_config
+sed -i 's/AcceptEnv LANG LC_\*//g' /etc/ssh/sshd_config
+echo '
+SetEnv ARCH='$ARCH'
+' >> /etc/ssh/sshd_config
+# systemctl restart ssh
+sudo kill -SIGHUP $sshId
+Say "Restarted ssh server. The /etc/ssh/sshd_config is below"
+cat /etc/ssh/sshd_config
+
 # SMART lazy-apt-update - only for built-in debian repos
 echo '#!/usr/bin/env bash
 ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || {
@@ -95,23 +117,7 @@ fi
 chmod +x /home/user/.profile
 chown user:user /home/user/.profile
 
-sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment yes/g' /etc/ssh/sshd_config
-sed -i 's/AcceptEnv LANG LC_\*//g' /etc/ssh/sshd_config
-echo '
-SetEnv ARCH='$ARCH'
-' >> /etc/ssh/sshd_config
-Say "SSH config below:"
-cat /etc/ssh/sshd_config
-systemctl restart ssh
 
-mkdir -p /home/user/.ssh
-echo '
-#!/usr/bin/env bash
-# export ARCH='$ARCH'
-ARCH='$ARCH'
-' > /home/user/.ssh/environment
-chmod +x /home/user/.ssh/environment
-chown -R user:user /home/user/.ssh
 
 Say "Disable apparmor"
 systemctl stop apparmor

@@ -151,12 +151,12 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password, [bool] $
     # Write-Host "Content of temp bash script"
     # & cat $tmpCmdLocalFullName
     & chmod +x $tmpCmdLocalFullName
-    if ($reconnect) {
+    if ($false -and $reconnect) {
         Write-Host "Temparary un-mount guest's root fs"
         & umount -f $mapto        
     }
     $localCmd="sshpass -p `'$($password)`' ssh -o 'StrictHostKeyChecking no' $($user)@$($ip) -p $($port) /tmp/$rnd"
-    if ($reconnect) {
+    if ($false -and $reconnect) {
         $mountCmd = "echo pass | sshfs -o password_stdin 'root@localhost:/' -p $( $startParams.Port ) '$mapto'"
         Write-Host "RE-Mount command: [$mountCmd]"
         & bash -c "$mountCmd"
@@ -307,7 +307,7 @@ function Build
 
     Say "Configure LC_ALL, UTC and optionally swap"
     Remote-Command-Raw "bash /tmp/build/config-system.sh $( $definition.SwapMb ) $key" "localhost" $startParams.Port "root" "pass" $true # re-connect
-
+    
     Produce-Report $definition $startParams "onstart"
 
     Say "Greetings from Guest [$key]"
