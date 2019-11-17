@@ -317,8 +317,9 @@ function Build
     Produce-Report $definition $startParams "onstart"
 
     Say "Greetings from Guest [$key]"
-    $cmd = 'Say "Hello. I am the $(hostname) host"; sudo lscpu; echo "Content of /etc/default/locale:"; cat /etc/default/locale; echo "[env]"; printenv | sort'
+    $cmd = 'Say "Hello from $(whoami). I am the $(hostname) host"; sudo lscpu; echo [PATH] is: $PATH; echo "Content of /etc/default/locale:"; cat /etc/default/locale; echo "[env]"; printenv | sort'
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw $cmd "localhost" $startParams.Port "user" "pass"
 
     $mustHavePackages = "lazy-apt-update; apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y && apt-get clean"
     Say "Installing must have packages on [$key]"
