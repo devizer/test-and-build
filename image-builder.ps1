@@ -181,12 +181,13 @@ fi
 echo "WTH!!!!!!!!!!! Path is [`$PATH]"
 # export PATH="`$PATH:/boot"
 export DEBIAN_FRONTEND=noninteractive
-($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)
+# ($cmd) 2>&1 | tee -a "$($Global:GuestLog)-$($user)"
+$cmd
 "@
 
-# Write-Host "REMOTE-SCRIPT: [$remoteCmd]"
-$remoteCmd > $tmpCmdLocalFullName
-
+    # & mkdir 
+    Write-Host "REMOTE-SCRIPT: [$remoteCmd]"
+    $remoteCmd > $tmpCmdLocalFullName
     & chmod +x $tmpCmdLocalFullName
     if ($false -and $reconnect) {
         Write-Host "Temparary un-mount guest's root fs"
