@@ -167,9 +167,7 @@ unset PS1
 if [[ -d /etc/profile.d ]]; then
   for i in /etc/profile.d/*.sh; do
     if [[ -r `$i ]] && [[ ! `$i == *"bash_completion.sh"* ]]; then  
-    # if [ -r `$i ]; then
-    #  . `$i
-        echo "skipping `$i"
+     . `$i
     fi
   done
   unset i
@@ -178,11 +176,9 @@ fi
 if false && [[ -f ~/.profile ]]; then 
     . ~/.profile
 fi
-echo "WTH!!!!!!!!!!! Path is [`$PATH]"
 # export PATH="`$PATH:/boot"
 export DEBIAN_FRONTEND=noninteractive
-# ($cmd) 2>&1 | tee -a "$($Global:GuestLog)-$($user)"
-$cmd
+($cmd) 2>&1 | tee -a "$($Global:GuestLog)-$($user)"
 "@
 
     # & mkdir 
