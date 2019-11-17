@@ -33,15 +33,15 @@ script:
 - sudo mkdir -p /transient-builds/test-and-build
 - sudo chown -R travis:travis /transient-builds
 - | 
-  if [[ "$ARCH" != "i386" ]]; then
-    # on arm/arm64 we install mono only 
-    export PreInstall_Only_Features="nothing"
-  else
+  if [[ "$ARCH" == "i386" ]]; then
     # on i386 we skip nodejs only
     export Ignore_Features="nodejs" 
+  else
+    # on arm/arm64 we install nothing only 
+    export PreInstall_Only_Features="nothing"
   fi
 - sudo pwsh -command ./image-builder.ps1 -Images $ARCH -Only \"$PreInstall_Only_Features\" -Skip \"$Ignore_Features\"
-- cat Public-Report/*onfinish*
-- ls -la Public-Report
-- cat Public-Report/$ARCH-said-by-user.log
-- cat Public-Report/$ARCH-said-by-root.log
+- cat Private-Report/*onfinish*
+- ls -la Private-Report
+- cat Private-Report/$ARCH-said-by-user.log
+- cat Private-Report/$ARCH-said-by-root.log
