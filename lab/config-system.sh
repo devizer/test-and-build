@@ -129,8 +129,13 @@ systemctl disable apparmor
 Say "Add user to sudo group"
 usermod -aG sudo user
 
-a=(/home/user/.bashrc /home/user/.profile /root/.bashrc /root/.profile /etc/bash.bashrc /etc/profile)
+mkdir /home/user/.ssh
+a=(/home/user/.bashrc /home/user/.profile /root/.bashrc /root/.profile /etc/bash.bashrc /etc/profile /home/user/.ssh/environment)
 for f in "${a[@]}"; do 
     sed -i '1 i\echo "'"$f"' was read"\n' "$f";
     if [[ "$f" == "/home/user"* ]]; then chown user:user "$f"; fi 
 done
+echo "export Var_WITH_Export=here" >> /home/user/.ssh/environment
+echo "Var_WITHOUT_Export=here" >> /home/user/.ssh/environment
+echo "echo sourcing /home/user/.ssh/environment" >> /home/user/.ssh/environment
+chown -R user:user /home/user/.ssh 
