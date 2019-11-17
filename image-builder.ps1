@@ -175,8 +175,8 @@ if [[ -d /etc/profile.d ]]; then
   unset i
 fi
 
-if [[ -f ~/.profile ]]; then 
-    # . ~/.profile
+if false && [[ -f ~/.profile ]]; then 
+    . ~/.profile
 fi
 echo WTH!!!!!!!!!!!
 # export PATH="`$PATH:/boot"
