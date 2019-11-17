@@ -35,7 +35,7 @@ script:
 - | 
   if [[ "$ARCH" != "i386" ]]; then
     # on arm/arm64 we install mono only 
-    export PreInstall_Only_Features="mono"
+    export PreInstall_Only_Features="nothing"
   else
     # on i386 we skip nodejs only
     export Ignore_Features="nodejs" 
