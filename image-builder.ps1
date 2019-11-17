@@ -23,13 +23,17 @@ function Is-Requested-Specific-Feature{
     }
     
     if ($needIgnore) {
-        Say "Feature ($idFeature) is configured to be ignored"
+        Say "Feature ($idFeature) is configured to be ignored by `$Ignore_Features"
         return $false; 
     }
     
     $needPreinstall=$true;
     if ($Env:PreInstall_Only_Features) {
         $needPreinstall = " $($Env:PreInstall_Only_Features) " -like "* $($idFeature) *"
+        if (!$needPreinstall){
+            Say "Feature ($idFeature) is not specified by `$PreInstall_Only_Features"
+            return $false
+        }
     }
     $true
 }
