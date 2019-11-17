@@ -565,6 +565,7 @@ $imagesToBuild | % {
         Build $definition $globalStartParams;
         $allTheFine = $allTheFine -and ($Global:BuildResult).IsSccessful;
         $summaryFileName = "$PrivateReport/$key/summary.log"
+        Say "Summary file name: $summaryFileName" 
         "Total Commands: $($Global:BuildResult.TotalCommandCount)" >  $summaryFileName
         "Failed Commands: $($Global:BuildResult.FailedCommands)"   >> $summaryFileName
         "Elapsed: $(Get-Elapsed)"   >> $summaryFileName
