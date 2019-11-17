@@ -281,7 +281,7 @@ function Build
 
     $featuresToInstall = $FeatureFilters | % { if (Is-Requested-Specific-Feature $_) { $_ } };
     $featuresToSkip = $FeatureFilters | % { if (-not (Is-Requested-Specific-Feature $_)) { $_ } };
-    Say "To INSTALL: [$featuresToInstall], To Skip: [$featuresToSkip]"  
+    Say "To INSTALL: $(@($featuresToInstall).Count) [$featuresToInstall], To Skip: $(@($featuresToSkip).Count) [$featuresToSkip]"  
     
     $key = $definition.key
     Say "Building $( $definition.key )";
