@@ -41,11 +41,13 @@ ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || {
 chmod +x /usr/local/bin/lazy-apt-update
 
 
+Say "Set UTC time-zone"
 timedatectl set-timezone UTC
 
 # echo "Content of /etc/default/locale:"; cat /etc/default/locale
 # echo "-----------------"
 
+Say "Set configure locales"
 export DEBIAN_FRONTEND=noninteractive
 echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
@@ -126,3 +128,9 @@ systemctl disable apparmor
 
 Say "Add user to sudo group"
 usermod -aG sudo user
+
+a=(/home/user/.bashrc /home/user/.profile /root/.bashrc /root/.profile /etc/bash.bashrc /etc/profile)
+for f in "${a[@]}"; do 
+    sed -i '1 i\echo "'"$f"' was read"\n' "$f";
+    if [[ "$f" == "/home/user"* ]]; then chown user:user "$f"; fi 
+done

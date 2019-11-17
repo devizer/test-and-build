@@ -24,7 +24,7 @@ export NVM_DIR
 [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"  # This loads nvm
 EOL
 
-for file in "/etc/profile.d/nvm" "~/.profile" "~/.bashrc" "/home/user/.profile" "/home/user/.bashrc"; do
+for file in "/etc/profile.d/nvm" "$HOME/.profile" "$HOME/.bashrc" "/home/user/.profile" "/home/user/.bashrc"; do
     cat /tmp/nvm-env >> "$file"
     chmod +x "$file"
     if [[ "$file" == "/home/user"* ]]; then chown user:user "$file"; fi
