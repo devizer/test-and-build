@@ -18,17 +18,21 @@ if [[ "$ARCH" == i386 ]]; then
     apt clean -qq
 fi
 
-cat > /tmp/nvm-env << EOL
-NVM_DIR='$NVM_DIR'
-export NVM_DIR 
-[ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"  # This loads nvm
-EOL
+echo '#!/usr/bin/env bash
+[[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+' > /etc/profile.d/NVM.sh
 
-for file in "/etc/profile.d/nvm" "$HOME/.profile" "$HOME/.bashrc" "/home/user/.profile" "/home/user/.bashrc"; do
-    cat /tmp/nvm-env >> "$file"
-    chmod +x "$file"
-    if [[ "$file" == "/home/user"* ]]; then chown user:user "$file"; fi
-done
+# cat > /tmp/nvm-env << EOL
+# NVM_DIR='$NVM_DIR'
+# export NVM_DIR 
+# [ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"  # This loads nvm
+# EOL
+
+# for file in "/etc/profile.d/nvm" "$HOME/.profile" "$HOME/.bashrc" "/home/user/.profile" "/home/user/.bashrc"; do
+#    cat /tmp/nvm-env >> "$file"
+#    chmod +x "$file"
+#    if [[ "$file" == "/home/user"* ]]; then chown user:user "$file"; fi
+#done
 
 Say "Installing NodeJS LTS"
 
