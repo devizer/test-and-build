@@ -27,8 +27,6 @@ fi
       # time dotnet --info || true
 
 Say "Configuring shared environment for .NET Core"
-sudo -u user mkdir /home/user/.dotnet/tools
-mkdir ~/.dotnet/tools
 echo '#!/usr/bin/env bash
 if [[ -s "/opt/dotnet/dotnet" ]]; then 
     DOTNET_ROOT=/opt/dotnet
@@ -41,6 +39,8 @@ if [[ -s "/opt/dotnet/dotnet" ]]; then
     DOTNET_CLI_TELEMETRY_OPTOUT=1
 fi
 ' > /etc/profile.d/NVM.sh
+sudo -u user mkdir -p /home/user/.dotnet/tools
+mkdir -p ~/.dotnet/tools
 Say "Configured shared environment for .NET Core"
 
 # todo: BenchmarkDotNet.Tool for root
