@@ -146,7 +146,8 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
             return $true;
         }
         if ($at.ElapsedMilliseconds -ge ($waitForSshTimeout*1000)) {
-            Say "Error. SSH Connection Timeouted. Building aborted. $($at)"
+            Say "Error. SSH Connection Timeouted. Building aborted. Guest pid #$($Global:qemuProcess) should be killed. $($at.Elapled)"
+            & sudo kill "-SIGTERM" "$($Global:qemuProcess)"
             return $false;
         }
         Start-Sleep 1;
@@ -324,8 +325,8 @@ function Build
     $si = new-object System.Diagnostics.ProcessStartInfo($preparedVm.Command, "")
     $si.UseShellExecute = $false
     $si.WorkingDirectory = $preparedVm.Path
-    $process = [System.Diagnostics.Process]::Start($si)
-    $isExited = $process.WaitForExit(7000)
+    $Global:qemuProcess = [System.Diagnostics.Process]::Start($si)
+    $isExited = $Global:qemuProcess.WaitForExit(7000)
 
     $isOnline = Wait-For-Ssh "localhost" $startParams.Port "root" "pass"
     if (! $isOnline)
@@ -465,7 +466,7 @@ function Build
 
     Say "SHUTDOWN [$key] GUEST"
     Remote-Command-Raw "rm -rf /tmp/build; Say 'Size of the /tmp again:'; du /tmp -d 1 -h; sudo shutdown now" "localhost" $startParams.Port "root" "pass"
-    Wait-For-Process $process $key
+    Wait-For-Process $Global:qemuProcess $key
 
     Say "Final compact [$key]"
     & mkdir -p "final-$key"
