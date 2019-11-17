@@ -55,6 +55,9 @@ function Is-Requested-Specific-Feature{
 # sudo apt-get install sshpass sshfs libguestfs-tools qemu-system-arm qemu-system-i386 
 # sudo apt-get install qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker
 
+$featuresToInstall = $FeatureFilters | % { if (Is-Requested-Specific-Feature $_) { $_ } };
+$featuresToSkip = $FeatureFilters | % { if (-not (Is-Requested-Specific-Feature $_)) { $_ } };
+
 
 # port, mem and #cores are indirectly passed via $startParams
 function Prepare-VM { param($definition, $rootDiskFullName, $guestNamePrefix="", $portNumber = 0)
@@ -279,10 +282,6 @@ function Build
     $Is_Requested_Local_Mariadb = Is-Requested-Specific-Feature("local-mariadb");
     $Is_Requested_Local_Redis = Is-Requested-Specific-Feature("local-redis");
 
-    $featuresToInstall = $FeatureFilters | % { if (Is-Requested-Specific-Feature $_) { $_ } };
-    $featuresToSkip = $FeatureFilters | % { if (-not (Is-Requested-Specific-Feature $_)) { $_ } };
-    Say "To INSTALL: $(@($featuresToInstall).Count) [$featuresToInstall], To Skip: $(@($featuresToSkip).Count) [$featuresToSkip]"  
-    
     $key = $definition.key
     Say "Building $( $definition.key )";
     New-Item -Type Directory $build_folder -ea SilentlyContinue;
@@ -297,6 +296,7 @@ function Build
     $arch1 = join-Path -Path "." -ChildPath "*.001" -Resolve
     popd
 
+    Say "To INSTALL: $(@($featuresToInstall).Count) [$featuresToInstall], To Skip: $(@($featuresToSkip).Count) [$featuresToSkip]"
     Say "Extracting basic image: $key"
     Write-Host "archive: $arch1";
     & mkdir -p basic-image-$key;
@@ -525,7 +525,7 @@ $imagesToBuild | % {
         $globalStartParams.Port = $definition.DefaultPort;
         $globalStartParams.Mem="$($definition.RamForBuildingMb)M"
         Write-Host "Next image:`n$(Pretty-Format $definition)" -ForegroundColor Yellow;
-        $Global:BuildConsoleTitle = "|>$($definition.Key) $($globalStartParams.Mem) $($globalStartParams.Cores)*Cores ===--"
+        $Global:BuildConsoleTitle = "|>$($definition.Key) $($globalStartParams.Mem) $($globalStartParams.Cores)*Cores {$featuresToInstall} ===--"
         Build $definition $globalStartParams;
         $allTheFine = $allTheFine -and $Global:IsBuildSuccess; 
     }
