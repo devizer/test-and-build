@@ -14,7 +14,7 @@ $imagesToBuild=$Images
 
 $ProjectPath=$PSScriptRoot
 $PrivateReport=$(Join-Path $ProjectPath "Private-Report")
-& mkdir -p "$PrivateReport"
+& mkdir "-p" "$PrivateReport"
 $build_folder="/transient-builds/test-and-build"
 $FinalSize="13G"
 
@@ -292,14 +292,13 @@ function Build
     & mkdir -p $PrivateReport/$key
     & rm -rf "$PrivateReport/$key/*"
 
-    $Global:BuildResult = @{
-            IsSccessful=$true;
-            FailedCommands=@();
-            TotalCommandCount=0;
+    $Global:BuildResult = new-object PSObject -Property @{
+        IsSccessful=$true;
+        FailedCommands=@();
+        TotalCommandCount=0;
     };
-    
-    $allTheFine = $allTheFine -and ($Global:BuildResult).IsSccessful;
 
+    $allTheFine = $allTheFine -and ($Global:BuildResult).IsSccessful;
 
     Start-Transcript -Path (Join-Path $PrivateReport $key "$( $definition.Key )-log.log")
 
@@ -556,17 +555,32 @@ $imagesToBuild | % {
         Write-Host "Next image:`n$(Pretty-Format $definition)" -ForegroundColor Yellow;
         $Global:BuildConsoleTitle = "|>$($definition.Key) $($globalStartParams.Mem) $($globalStartParams.Cores)*Cores {$featuresToInstall} ===--"
 
-        $Global:BuildResult = ${
-            IsSccessful=true;
-            FailedCommands=@();
+<#
+        $Global:BuildResult = new-object PSObject -Property @{ 
+            IsSccessful=$true; 
+            FailedCommands=@(); 
             TotalCommandCount=0;
-        };
+        }; 
+        # ${X=42} | Add-Member -NotePropertyMembers 
+        $Global:BuildResult.IsSccessful
+        $Global:BuildResult.TotalCommandCount++;
+        $Global:BuildResult.TotalCommandCount
+        return;
+
+        $gr=$Global:BuildResult;
+        $gr.TotalCommandCount = 5;
+        $gr.TotalCommandCount
+        return;
+#>
+        
         
         Build $definition $globalStartParams;
         $allTheFine = $allTheFine -and ($Global:BuildResult).IsSccessful;
         $summaryFileName = "$PrivateReport/$key/summary.log"
-        Say "Summary file name: $summaryFileName" 
-        "Total Commands: $($Global:BuildResult.TotalCommandCount)" >  $summaryFileName
+        Say "Summary file name: $summaryFileName"
+        
+        $gr=$Global:BuildResult;
+        "Total Commands: $(.TotalCommandCount)" >  $summaryFileName
         "Failed Commands: $($Global:BuildResult.FailedCommands)"   >> $summaryFileName
         "Elapsed: $(Get-Elapsed)"   >> $summaryFileName
         @($Global:BuildResult.FailedCommands) | % {
