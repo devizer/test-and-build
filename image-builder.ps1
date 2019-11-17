@@ -287,6 +287,7 @@ function Produce-Report {
 function Build
 {
     param($definition, $startParams)
+    $key = $definition.key
 
     & mkdir -p $PrivateReport/$key
     & rm -rf "$PrivateReport/$key/*"
@@ -311,7 +312,6 @@ function Build
     $Is_Requested_Local_Mariadb = Is-Requested-Specific-Feature("local-mariadb");
     $Is_Requested_Local_Redis = Is-Requested-Specific-Feature("local-redis");
 
-    $key = $definition.key
     Say "Building $( $definition.key )";
     New-Item -Type Directory $build_folder -ea SilentlyContinue;
     pushd $build_folder
