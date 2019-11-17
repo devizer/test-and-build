@@ -178,7 +178,7 @@ fi
 if false && [[ -f ~/.profile ]]; then 
     . ~/.profile
 fi
-echo WTH!!!!!!!!!!!
+echo "WTH!!!!!!!!!!! Path is [`$PATH]"
 # export PATH="`$PATH:/boot"
 export DEBIAN_FRONTEND=noninteractive
 ($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)
