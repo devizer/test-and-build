@@ -81,7 +81,7 @@ qemu-system-${qemySystem} -name $guestName \
     if ($definition.Key -eq "i386") {
         $qemuCmd = "#!/usr/bin/env bash" + @"
 
-qemu-system-i386 -smp $($startParams.Cores) -m $($startParams.Mem) -M q35  $($kvmParameters) $paramCpu \
+qemu-system-i386 -name $guestName -smp $($startParams.Cores) -m $($startParams.Mem) -M q35  $($kvmParameters) $paramCpu \
     -initrd initrd.img \
     -kernel vmlinuz -append "root=/dev/sda1 console=ttyS0" \
     -drive file=$($fileName) \
@@ -230,7 +230,6 @@ function Build { param($definition, $startParams)
         Say "Increase Image Size to $( $definition.SizeForBuildingMb ) Mb"
         Inplace-Enlarge $definition "$qcowFile" "$( $definition.SizeForBuildingMb )M" $false # true - to compact intermediate image
     }
-
 
     Say "Prepare Image and launch: $key"
     $preparedVm = Prepare-VM $definition $qcowFile "building"
@@ -392,6 +391,7 @@ $imagesToBuild | % {
         $globalStartParams.Port = $definition.DefaultPort;
         $globalStartParams.Mem="$($definition.RamForBuildingMb)M"
         Write-Host "Next image:`n$(Pretty-Format $definition)" -ForegroundColor Yellow;
+        $Global:BuildConsoleTitle = "$($definition.Key) $($globalStartParams.Mem)Mb $($globalStartParams.Cores)*Cores"
         Build $definition $globalStartParams;
     }
 }

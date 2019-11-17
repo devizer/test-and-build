@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+swapoff /tmp/swap
 for s in 'postgresql' 'redis-server' 'mariadb' 'docker'; do
     Say "Stop and disable [$s]"
     systemctl stop $s

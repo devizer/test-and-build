@@ -5,11 +5,25 @@ function Pretty-Format {
     $arg.Keys | sort | % { "$($space)$($_): $(if ($arg[$_].GetType().Name -eq "string") {[string]::Concat("'",$arg[$_].ToString(),"'")} else {$arg[$_]})"; } | Join-String -Separator "`n"
 }
 
+function Set-Console-Title {
+    param($title)
+    $Global:SayCounter++;
+    $title="#$($SayCounter) $title";
+    if ($Global:BuildConsoleTitle) { $title = "$($Global:BuildConsoleTitle) $title" }
+    try
+    {
+        [Console]::Title = $title;
+    }
+    catch {}
+}
+
 function Say
 {
     param([string] $message)
-    Write-Host "$( Get-Elapsed ) " -NoNewline -ForegroundColor Magenta
+    $Local:elapsed="$( Get-Elapsed ) "
+    Write-Host $Local:elapsed -NoNewline -ForegroundColor Magenta
     Write-Host "$message" -ForegroundColor Yellow
+    Set-Console-Title "$($Local:elapsed) $message"; 
 }
 
 function Get-Elapsed
