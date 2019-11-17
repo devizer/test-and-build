@@ -65,4 +65,7 @@ pushd /tmp
 rm -rf my-react
 popd
 
+sed -i '/bash_completion/d' ~/.bashrc
+Say "Deleted bash_completion from ~/.bashrc. Content of ~/.bashrc after cleanup"
+cat ~/.bashrc
 

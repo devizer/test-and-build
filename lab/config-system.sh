@@ -104,3 +104,6 @@ fi
 
 
 # chown user:user /home/user/.profile
+echo '
+export SORRY_BASH_completion_is_ALIVE_and_Kicking=true
+' >> /etc/profile.d/bash_completion.sh

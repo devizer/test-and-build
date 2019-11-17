@@ -12,7 +12,8 @@ $Global_Only_Features=$Only
 $imagesToBuild=$Images
 
 $ProjectPath=$PSScriptRoot
-$PublicReport=$(Join-Path $ProjectPath "Public-Report")
+$PrivateReport=$(Join-Path $ProjectPath "Private-Report")
+& mkdir -p "$PrivateReport"
 $build_folder="/transient-builds/test-and-build"
 $FinalSize="13G"
 
@@ -131,6 +132,7 @@ $($sudoPrefix)qemu-system-i386 -name $guestName -smp $($startParams.Cores) -m $(
 
 function Wait-For-Ssh {param($ip, $port, $user, $password)
     $at = [System.Diagnostics.Stopwatch]::StartNew();
+    $waitForSshTimeout=5*60;
     $pingCounter = 1;
     do
     {
@@ -141,6 +143,10 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
         {
             Write-Host "SSH on $($ip):$($port) is online" -ForegroundColor Green
             return $true;
+        }
+        if ($at.ElapsedMilliseconds -ge ($waitForSshTimeout*1000)) {
+            Say "Error. SSH Connection Timeouted. Building aborted. $($at)"
+            return $false;
         }
         Start-Sleep 1;
         $pingCounter++;
@@ -158,8 +164,8 @@ $remoteCmd = @"
 unset PS1
 if [[ -d /etc/profile.d ]]; then
   for i in /etc/profile.d/*.sh; do
-    # if [[ -r `$i ]] && [[ ! `$i == *"bash_completion.sh"* ]]; then  
-    if [ -r `$i ]; then
+    if [[ -r `$i ]] && [[ ! `$i == *"bash_completion.sh"* ]]; then  
+    # if [ -r `$i ]; then
       . `$i
     fi
   done
@@ -167,16 +173,9 @@ if [[ -d /etc/profile.d ]]; then
 fi
 
 if [[ -f ~/.profile ]]; then 
-#    echo SOURCING ~/.profile 
-#    . ~/.profile 2>&1 | tee -a $($Global:GuestLog)-$($user)
     . ~/.profile
-#else 
-#    echo ~/.profile NOT FOUND | tee -a $($Global:GuestLog)-$($user)
 fi
-export PATH="`$PATH:/boot"
-# echo SOURCING ~/.bashrc  2>&1 | tee -a $($Global:GuestLog)-$($user)
-# . ~/.bashrc              2>&1 | tee -a $($Global:GuestLog)-$($user)
-# source ~/.bashrc         2>&1 | tee -a $($Global:GuestLog)-$($user)
+# export PATH="`$PATH:/boot"
 # export DEBIAN_FRONTEND=noninteractive
 ($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)
 "@
@@ -251,8 +250,8 @@ function Produce-Report {
     param($definition, $startParams, $suffix)
     $key=$definition.Key
     Say "Produce Report for [$key]"
-    & mkdir -p "$ProjectPath/Public-Report"
-    $reportFile = "$ProjectPath/Public-Report/Debian-10-Buster-$key-$suffix.md"
+    # & mkdir -p "$PrivateReport"
+    $reportFile = "$PrivateReport/Debian-10-Buster-$key-$suffix.md"
     "|  Debian 10 Buster <u>**$($key)**</u> |`n|-------|" > $reportFile
 
     $probes | % { $probe=$_; $cmd = $_.Cmd;
@@ -274,7 +273,7 @@ function Build
 {
     param($definition, $startParams)
 
-    Start-Transcript -Path (Join-Path $PublicReport "$( $definition.Key )-log.log")
+    Start-Transcript -Path (Join-Path $PrivateReport "$( $definition.Key )-log.log")
 
     $Is_Requested_Mono = Is-Requested-Specific-Feature("mono");
     $Is_Requested_Dotnet = Is-Requested-Specific-Feature("dotnet");
@@ -329,6 +328,10 @@ function Build
     $isExited = $process.WaitForExit(7000)
 
     $isOnline = Wait-For-Ssh "localhost" $startParams.Port "root" "pass"
+    if (! $isOnline)
+    {
+        return $false;
+    }
 
     Say "Mapping guest FS to localfs"
     $mapto = "$build_folder/rootfs-$( $key )"
@@ -442,16 +445,16 @@ function Build
     Produce-Report $definition $startParams "onfinish"
 
     Say "Store Guest Logs"
-    & cp -f "$mapto/$($Global:GuestLog)-user" "$PublicReport/$key-guest-user.log"
-    & cp -f "$mapto/$($Global:GuestLog)-root" "$PublicReport/$key-guest-root.log"
+    & cp -f "$mapto/$($Global:GuestLog)-user" "$PrivateReport/$key-guest-user.log"
+    & cp -f "$mapto/$($Global:GuestLog)-root" "$PrivateReport/$key-guest-root.log"
     pushd "$mapto/tmp"
-    & cp -f Said-by-root.log $PublicReport/$key-said-by-root.log
-    & cp -f Said-by-user.log $PublicReport/$key-said-by-user.log
+    & cp -f Said-by-root.log $PrivateReport/$key-said-by-root.log
+    & cp -f Said-by-user.log $PrivateReport/$key-said-by-user.log
     popd
     
     pushd "$mapto"
-    & rm -f $PublicReport/$key-user-profile.7z
-    & 7z a $PublicReport/$key-user-profile.7z etc/profile.d home/user
+    & rm -f $PrivateReport/$key-user-profile.7z
+    & 7z a $PrivateReport/$key-user-profile.7z etc/profile.d home/user
     popd
 
     Say "Zeroing free space of [$key]"
@@ -508,6 +511,7 @@ $globalStartParams = @{Mem="2000M"; Cores=$cores; Port=2345};
 $definitions | % {Say "Defenition of the $($_.Key)"; Write-Host (Pretty-Format $_)}
 Say "TOTAL PHYSICAL CORE(s): $([Environment]::ProcessorCount). Building '$imagesToBuild' using $cores core(s)"
 
+$allTheFine = $true; 
 $imagesToBuild | % {
     $nameToBuild=$_
     $definition = $definitions | where { $_.Key -eq $nameToBuild} | select -First 1
@@ -520,6 +524,13 @@ $imagesToBuild | % {
         $globalStartParams.Mem="$($definition.RamForBuildingMb)M"
         Write-Host "Next image:`n$(Pretty-Format $definition)" -ForegroundColor Yellow;
         $Global:BuildConsoleTitle = "|>$($definition.Key) $($globalStartParams.Mem) $($globalStartParams.Cores)*Cores ===--"
-        Build $definition $globalStartParams;
+        $isBuildSuccess = Build $definition $globalStartParams;
+        $allTheFine = $allTheFine -and $isBuildSuccess; 
     }
+}
+
+if (! $allTheFine)
+{
+    Say "A Build failed";
+    throw "A Build failed";
 }
