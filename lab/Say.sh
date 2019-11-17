@@ -24,4 +24,5 @@
       echo $counter > "$file"
     }; 
 
+echo WTH: "$@" 
 SayIt "$@"
