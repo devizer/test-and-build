@@ -333,7 +333,7 @@ Remote-Command-Raw "cd /tmp/build; bash -e run-NET-UNIT-TESTS.sh" "localhost" $s
     # & umount -f $mapto # NOOOO shutdown?????
 
     Say "SHUTDOWN [$key] GUEST"
-    Remote-Command-Raw "rm -rf /tmp/build; sudo shutdown now" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "rm -rf /tmp/build; Say 'Size of the /tmp again:'; du /tmp -d 1 -h; sudo shutdown now" "localhost" $startParams.Port "root" "pass"
     Wait-For-Process $process $key
 
     Say "Final compact [$key]"
