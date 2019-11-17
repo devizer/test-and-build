@@ -1,15 +1,12 @@
 $probes=@(
 @{Cmd="echo `$ARCH"},
-@{Cmd='. /etc/os-release && echo $PRETTY_NAME' },
-@{Cmd="dotnet --version"},
-@{Cmd="dotnet --list-sdks"; Name=".NET Core SDKs"},
-@{Cmd="dotnet --list-runtimes"},
-@{Cmd="pwsh --version"},
-@{Cmd="mono --version"; Head=1},
-@{Cmd="msbuild /version"; Head=1},
 @{Cmd="nuget"; Head=1},
 @{Cmd="nunit3-console --version"; Head=1},
 @{Cmd="xunit.console"; Head=1},
+@{Cmd="dotnet --list-sdks"; Name=".NET Core SDKs"},
+@{Cmd="mono --version"; Head=1},
+@{Cmd="msbuild /version"; Head=1},
+@{Cmd="pwsh --version"},
 @{Cmd="nvm --version "; Head=1},
 @{Cmd="node --version"; Head=1},
 @{Cmd="npm --version"; Head=1},
@@ -20,6 +17,7 @@ $probes=@(
 @{Cmd="cd /tmp; sudo -u postgres psql -t -c 'SELECT version();'"},
 @{Cmd="echo info | redis-cli | grep version"; Head=1; Name="Redis Server" },
 @{Cmd="uname -a"},
+@{Cmd='. /etc/os-release && echo $PRETTY_NAME' },
 @{Cmd="lscpu"}
 )
 

@@ -298,8 +298,6 @@ function Build
         TotalCommandCount=0;
     };
 
-    $allTheFine = $allTheFine -and ($Global:BuildResult).IsSccessful;
-
     Start-Transcript -Path (Join-Path $PrivateReport $key "$( $definition.Key )-log.log")
 
     $Is_Requested_Mono = Is-Requested-Specific-Feature("mono");
@@ -575,12 +573,11 @@ $imagesToBuild | % {
         
         
         Build $definition $globalStartParams;
-        $allTheFine = $allTheFine -and ($Global:BuildResult).IsSccessful;
-        $summaryFileName = "$PrivateReport/$key/summary.log"
+        $allTheFine = $allTheFine -and $Global:BuildResult.IsSccessful;
+        $summaryFileName = "$PrivateReport/$($definition.Key)/summary.log"
         Say "Summary file name: $summaryFileName"
         
-        $gr=$Global:BuildResult;
-        "Total Commands: $(.TotalCommandCount)" >  $summaryFileName
+        "Total Commands:  $($Global:BuildResult.TotalCommandCount)" > $summaryFileName
         "Failed Commands: $($Global:BuildResult.FailedCommands)"   >> $summaryFileName
         "Elapsed: $(Get-Elapsed)"   >> $summaryFileName
         @($Global:BuildResult.FailedCommands) | % {
