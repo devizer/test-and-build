@@ -152,6 +152,8 @@ echo '#!/usr/bin/env bash
 Profile_Rc_Var=here
 export Profile_Rc_Var_With_Export=here
 echo I AM /home/user/.profile SCRIPT
+PATH="$PATH:/tmp"
+export PATH="$PATH:/usr"
 ' > /home/user/.profile
 
 chown -R user:user /home/user/.ssh 
