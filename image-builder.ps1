@@ -435,6 +435,10 @@ function Build
     & cp -f Said-by-root.log $PublicReport/$key-said-by-root.log
     & cp -f Said-by-user.log $PublicReport/$key-said-by-user.log
     popd
+    
+    pushd "$mapto/tmp"
+    & 7z a $PublicReport/$key-user-profile.7z etc/profile.d home/user
+    popd
 
     Say "Zeroing free space of [$key]"
     Remote-Command-Raw "cd /; bash /tmp/build/TearDown.sh; before-compact" "localhost" $startParams.Port "root" "pass"
