@@ -139,8 +139,8 @@ done
 # https://en.wikibooks.org/wiki/OpenSSH/Client_Configuration_Files#~/.ssh/rc
 echo "export Var_WITH_Export=here" >> /home/user/.ssh/environment
 echo "Var_WITHOUT_Export=here" >> /home/user/.ssh/environment
-echo 'PATH="$PATH:/tmp"' >> /home/user/.ssh/environment
-echo 'export PATH="$PATH:/usr"' >> /home/user/.ssh/environment
+# echo 'PATH="$PATH:/tmp"' >> /home/user/.ssh/environment
+# echo 'export PATH="$PATH:/usr"' >> /home/user/.ssh/environment
 
 echo '#!/usr/bin/env bash
 Ssh_Rc_Var=here
