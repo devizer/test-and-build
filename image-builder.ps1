@@ -160,7 +160,7 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
     
 }
 
-function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password, [bool] $reconnect = $false)
+function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password, [bool] $reconnect = $false, [bool] $destructive = $false)
     if (-not $Global:GuestLog) { $Global:GuestLog="/tmp/$([Guid]::NewGuid().ToString("N"))"}
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     $tmpCmdLocalFullName="$mapto/tmp/$rnd"
@@ -205,10 +205,10 @@ export DEBIAN_FRONTEND=noninteractive
     Write-Host "#: $cmd"
     if ($errorInfo -eq $null) {
         & bash -c "$localCmd"
-        if (-not $?) { $errorInfo = "Failed to execute remote command: [$cmd]" }
+        if (-not $? -and (-not $destructive)) { $errorInfo = "Failed to execute remote command: [$cmd]" }
         else {
             & rm -f $tmpCmdLocalFullName
-            if (-not $?) { $errorInfo = "Failed to clean up remote command: [$cmd]" }
+            if (-not $? -and (-not $destructive)) { $errorInfo = "Failed to clean up remote command: [$cmd]" }
         }
     }
 
@@ -490,7 +490,7 @@ function Build
     # & umount -f $mapto # NOOOO shutdown?????
 
     Say "SHUTDOWN [$key] GUEST"
-    Remote-Command-Raw "rm -rf /tmp/build; Say 'Size of the /tmp again:'; du /tmp -d 1 -h; sudo shutdown now" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "rm -rf /tmp/build; Say 'Size of the /tmp again:'; du /tmp -d 1 -h; sudo shutdown now" "localhost" $startParams.Port "root" "pass" $false $true
     Wait-For-Process $Global:qemuProcess $key
 
     Say "Final compact [$key]"
@@ -578,8 +578,9 @@ $imagesToBuild | % {
         Say "Summary file name: $summaryFileName"
         
         "Total Commands:  $($Global:BuildResult.TotalCommandCount)" > $summaryFileName
-        "Failed Commands: $($Global:BuildResult.FailedCommands)"   >> $summaryFileName
+        "Failed Commands: $($Global:BuildResult.FailedCommands.Count)"   >> $summaryFileName
         "Elapsed: $(Get-Elapsed)"   >> $summaryFileName
+        "" >> $summaryFileName
         @($Global:BuildResult.FailedCommands) | % {
             $_ >> $summaryFileName
         } 
