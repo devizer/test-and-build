@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# 1st parameter - swap size in megabytes
+swapSizeMb=$1
+# 2nd parameter - arch (i386, arm, arm64)
+ARCH=$2
+
+
 sudo cp /tmp/build/Say.sh /usr/local/bin/Say
 chmod +x /usr/local/bin/Say
 
@@ -34,11 +40,6 @@ ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || {
 ' > /usr/local/bin/lazy-apt-update
 chmod +x /usr/local/bin/lazy-apt-update
 
-
-# 1st parameter - swap size in megabytes
-swapSizeMb=$1
-# 2nd parameter - arch (i386, arm, arm64)
-ARCH=$2
 
 timedatectl set-timezone UTC
 
