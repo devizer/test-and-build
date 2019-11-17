@@ -13,6 +13,28 @@ $FinalSize="42G"
 . "$($PSScriptRoot)\include\Main.ps1"
 . "$($PSScriptRoot)\include\Utilities.ps1"
 
+$FeatureFilters=@("mono", "dotnet", "powershell", "docker", "nodejs", "local-postgres", "local-mariadb", "local-redis")
+function Is-Requested-Specific-Feature{
+    param([string] $idFeature)
+    
+    $needIgnore=$false
+    if ($Env:Ignore_Features) {
+        $needIgnore = " $($Env:Ignore_Features) " -like "* $($idFeature) *"
+    }
+    
+    if ($needIgnore) {
+        Say "Feature ($idFeature) is configured to be ignored"
+        return $false; 
+    }
+    
+    $needPreinstall=$true;
+    if ($Env:PreInstall_Only_Features) {
+        $needPreinstall " $($Env:PreInstall_Only_Features) " -like "* $($idFeature) *"
+    }
+    $true
+}
+
+
 # 1st run
 # mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf test-and-build; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; bash build-all.sh
 
@@ -194,19 +216,30 @@ function Produce-Report {
 }
     
 
-function Build { param($definition, $startParams)
-    
-    Start-Transcript -Path (Join-Path $PublicReport "$($definition.Key)-log.log") 
+function Build
+{
+    param($definition, $startParams)
 
-    $key=$definition.key
-    Say "Building $($definition.key)";
+    Start-Transcript -Path (Join-Path $PublicReport "$( $definition.Key )-log.log")
+
+    $Is_Requested_Mono = Is-Requested-Specific-Feature("mono");
+    $Is_Requested_Dotnet = Is-Requested-Specific-Feature("dotnet");
+    $Is_Requested_Powershell = Is-Requested-Specific-Feature("powershell");
+    $Is_Requested_Docker = Is-Requested-Specific-Feature("docker");
+    $Is_Requested_NodeJS = Is-Requested-Specific-Feature("nodejs");
+    $Is_Requested_local_postgres = Is-Requested-Specific-Feature("local-postgres");
+    $Is_Requested_Local_Mariadb = Is-Requested-Specific-Feature("local-mariadb");
+    $Is_Requested_Local_Redis = Is-Requested-Specific-Feature("local-redis");
+
+    $key = $definition.key
+    Say "Building $( $definition.key )";
     New-Item -Type Directory $build_folder -ea SilentlyContinue;
     pushd $build_folder
 
     Say "Downloading basic image: $key"
-    $download_cmd="curl $($definition.BaseUrl)debian-$($definition.Key).qcow2.7z.00[1-$($definition.BasicParts)] -o 'debian-$($definition.Key).qcow2.7z.00#1'";
+    $download_cmd = "curl $( $definition.BaseUrl )debian-$( $definition.Key ).qcow2.7z.00[1-$( $definition.BasicParts )] -o 'debian-$( $definition.Key ).qcow2.7z.00#1'";
     Write-Host "shell command: [$download_cmd]";
-    & mkdir -p downloads-$key; 
+    & mkdir -p downloads-$key;
     pushd downloads-$key
     & bash -c $download_cmd
     $arch1 = join-Path -Path "." -ChildPath "*.001" -Resolve
@@ -214,14 +247,14 @@ function Build { param($definition, $startParams)
 
     Say "Extracting basic image: $key"
     Write-Host "archive: $arch1";
-    & mkdir -p basic-image-$key; 
-    pushd basic-image-$key 
+    & mkdir -p basic-image-$key;
+    pushd basic-image-$key
     & rm -rf *
     & 7z -y x $arch1
     # & bash -c 'rm -f *.7z.*'
-    $qcowFile = join-Path -Path "." -ChildPath "*$($definition.RootQcow)*" -Resolve
+    $qcowFile = join-Path -Path "." -ChildPath "*$( $definition.RootQcow )*" -Resolve
     popd
-    
+
     Say "Basic Image for $key exctracted: $qcowFile";
     & virt-filesystems --all --long --uuid -h -a "$qcowFile"
 
@@ -233,7 +266,7 @@ function Build { param($definition, $startParams)
 
     Say "Prepare Image and launch: $key"
     $preparedVm = Prepare-VM $definition $qcowFile "building"
-    Write-Host "Command prepared: [$($preparedVm.Command)]"
+    Write-Host "Command prepared: [$( $preparedVm.Command )]"
 
     $si = new-object System.Diagnostics.ProcessStartInfo($preparedVm.Command, "")
     $si.UseShellExecute = $false
@@ -244,10 +277,10 @@ function Build { param($definition, $startParams)
     $isOnline = Wait-For-Ssh "localhost" $startParams.Port "root" "pass"
 
     Say "Mapping guest FS to localfs"
-    $mapto="$build_folder/rootfs-$($key)"
+    $mapto = "$build_folder/rootfs-$( $key )"
     Write-Host "Mapping Folder is [$mapto]";
     & mkdir -p "$mapto"
-    $mountCmd = "echo pass | sshfs -o password_stdin 'root@localhost:/' -p $($startParams.Port) '$mapto'"
+    $mountCmd = "echo pass | sshfs -o password_stdin 'root@localhost:/' -p $( $startParams.Port ) '$mapto'"
     Write-Host "Mount command: [$mountCmd]"
     & bash -c "$mountCmd"
     & ls -la "$mapto"
@@ -258,63 +291,98 @@ function Build { param($definition, $startParams)
     & cp -a $ProjectPath/lab/* $mapto/tmp/build
 
     Say "Configure LC_ALL, UTC and optionally swap"
-    Remote-Command-Raw "bash /tmp/build/config-system.sh $($definition.SwapMb) $key" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "bash /tmp/build/config-system.sh $( $definition.SwapMb ) $key" "localhost" $startParams.Port "root" "pass"
 
     Produce-Report $definition $startParams "onstart"
 
     Say "Greetings from Guest [$key]"
-    $cmd='Say "Hello. I am the $(hostname) host"; sudo lscpu; echo "Content of /etc/default/locale:"; cat /etc/default/locale; echo "[env]"; printenv | sort'
+    $cmd = 'Say "Hello. I am the $(hostname) host"; sudo lscpu; echo "Content of /etc/default/locale:"; cat /etc/default/locale; echo "[env]"; printenv | sort'
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
 
-    $mustHavePackages="lazy-apt-update; apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y && apt-get clean"
+    $mustHavePackages = "lazy-apt-update; apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y && apt-get clean"
     Say "Installing must have packages on [$key]"
     Remote-Command-Raw "$mustHavePackages" "localhost" $startParams.Port "root" "pass"
 
+    if ($Is_Requested_Mono)
+    {
+        Say "Installing Latest Mono [$key]"
+        Remote-Command-Raw "cd /tmp/build; bash -e install-MONO.sh" "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >.tmp; cat .tmp | head -4' "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >.tmp; cat .tmp | head -4' "localhost" $startParams.Port "user" "pass"
 
-Say "Installing DotNet Core on [$key]"
-Remote-Command-Raw "cd /tmp/build; bash -e install-dotnet.sh; command -v dotnet && dotnet --info || true" "localhost" $startParams.Port "root" "pass"
-Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "root" "pass"
-Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "user" "pass"
-# TODO: Add dotnet restore
+        Say "Building NET-TEST-RUNNERS on the host and installing to the guest"
+        pushd "$ProjectPath/lab"; & bash NET-TEST-RUNNERS-build.sh; popd
+        Say "Copying NET-TEST-RUNNERS to /opt/NET-TEST-RUNNERS on the guest"
+        & cp -a ~/build/devizer/NET-TEST-RUNNERS "$mapto/opt"
+        Say "Linking NET-TEST-RUNNERS on the guest"
+        Remote-Command-Raw "bash /opt/NET-TEST-RUNNERS/link-unit-test-runners.sh" "localhost" $startParams.Port "root" "pass"
 
-Say "Installing Powershell for [$key]"
-Remote-Command-Raw "cd /tmp/build; bash -e install-POWERSHELL.sh" "localhost" $startParams.Port "root" "pass"
-
-Say "Install Docker [$key]"
-Remote-Command-Raw "cd /tmp/build; bash -e Install-DOCKER.sh;" "localhost" $startParams.Port "root" "pass"
-
-Say "Installing Latest Mono [$key]"
-Remote-Command-Raw "cd /tmp/build; bash -e install-MONO.sh" "localhost" $startParams.Port "root" "pass"
-Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >.tmp; cat .tmp | head -4' "localhost" $startParams.Port "root" "pass"
-Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >.tmp; cat .tmp | head -4' "localhost" $startParams.Port "user" "pass"
-
-Say "Building NET-TEST-RUNNERS on the host and installing to the guest"
-pushd "$ProjectPath/lab"; & bash NET-TEST-RUNNERS-build.sh; popd
-Say "Copying NET-TEST-RUNNERS to /opt/NET-TEST-RUNNERS on the guest"
-& cp -a ~/build/devizer/NET-TEST-RUNNERS "$mapto/opt"
-Say "Linking NET-TEST-RUNNERS on the guest"
-Remote-Command-Raw "bash /opt/NET-TEST-RUNNERS/link-unit-test-runners.sh" "localhost" $startParams.Port "root" "pass"
-
-Say "Run .net tests on guest [$key]"
-Remote-Command-Raw "cd /tmp/build; bash -e run-NET-UNIT-TESTS.sh" "localhost" $startParams.Port "root" "pass"
+        Say "Run .net tests on guest [$key]"
+        Remote-Command-Raw "cd /tmp/build; bash -e run-NET-UNIT-TESTS.sh" "localhost" $startParams.Port "root" "pass"
+    }
 
 
-    if ($Env:INSTALL_NODE_FOR_i386 -eq "True" -or $key -ne "i386")
+
+    if ($Is_Requested_Dotnet)
+    {
+        Say "Installing DotNet Core on [$key]"
+        Remote-Command-Raw "cd /tmp/build; bash -e install-dotnet.sh; command -v dotnet && dotnet --info || true" "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; command -v dotnet && dotnet --info || true' "localhost" $startParams.Port "user" "pass"
+        # TODO: Add dotnet restore
+    }
+
+    if ($Is_Requested_Powershell)
+    {
+        Say "Installing Powershell for [$key]"
+        Remote-Command-Raw "cd /tmp/build; bash -e install-POWERSHELL.sh" "localhost" $startParams.Port "root" "pass"
+    }
+
+    if ($Is_Requested_Docker)
+    {
+        Say "Install Docker [$key]"
+        Remote-Command-Raw "cd /tmp/build; bash Install-DOCKER.sh;" "localhost" $startParams.Port "root" "pass"
+    }
+
+    if ($Is_Requested_local_postgres)
+    {
+        Say "Install Local Postgres SQL [$key]"
+        Remote-Command-Raw "cd /tmp/build; bash install-POSTGRES.sh;" "localhost" $startParams.Port "root" "pass"
+    }
+
+    if ($Is_Requested_Local_Mariadb)
+    {
+        Say "Install Local MariaDB [$key]"
+        Remote-Command-Raw "cd /tmp/build; bash Install-MARIADB.sh;" "localhost" $startParams.Port "root" "pass"
+    }
+
+    if ($Is_Requested_Local_Redis)
+    {
+        Say "Install Local Redis Server [$key]"
+        Remote-Command-Raw "cd /tmp/build; bash install-REDIS.sh;" "localhost" $startParams.Port "root" "pass"
+    }
+
+
+    # if ($Env:INSTALL_NODE_FOR_i386 -eq "True" -or $key -ne "i386")
+    if ($Is_Requested_NodeJS)
     {
         Say "Installing Node [$key]"
         Remote-Command-Raw "cd /tmp/build; bash install-NODE.sh" "localhost" $startParams.Port "root" "pass"
         Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "user" "pass"
         Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "root" "pass"
     }
+<#
     else {
         Say "Skipping NodeJS on i386"
     }
+#>
 
-    Say "Installing Docker [$key]"
-    Remote-Command-Raw "cd /tmp/build; bash install-DOCKER.sh" "localhost" $startParams.Port "root" "pass"
 
-    Say "Installing a Crap [$key]"
-    Remote-Command-Raw "cd /tmp/build; bash install-a-crap.sh" "localhost" $startParams.Port "root" "pass"
+    if ($true)
+    {
+        Say "Installing a Crap [$key]"
+        Remote-Command-Raw "cd /tmp/build; bash install-a-crap.sh" "localhost" $startParams.Port "root" "pass"
+    }
 
     Produce-Report $definition $startParams "onfinish"
 
