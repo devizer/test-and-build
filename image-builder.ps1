@@ -153,7 +153,21 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password, [bool] $
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     $tmpCmdLocalFullName="$mapto/tmp/$rnd"
     # next line fails on disconnected guest: DirectoryNotFoundException 
-    "#!/usr/bin/env bash`necho SOURCING ~/.bashrc`n. ~/.bashrc; source ~/.bashrc`nexport DEBIAN_FRONTEND=noninteractive`n($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)" > $tmpCmdLocalFullName
+$remoteCmd = @
+
+@"
+"#!/usr/bin/env bash
+echo SOURCING ~/.bashrc  2>&1 | tee -a $($Global:GuestLog)-$($user)
+. ~/.bashrc              2>&1 | tee -a $($Global:GuestLog)-$($user)
+source ~/.bashrc         2>&1 | tee -a $($Global:GuestLog)-$($user)
+export DEBIAN_FRONTEND=noninteractive
+($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)
+"@
+
+$remoteCmd > $tmpCmdLocalFullName
+
+# "#!/usr/bin/env bash`necho SOURCING ~/.bashrc`n. ~/.bashrc; source ~/.bashrc`nexport DEBIAN_FRONTEND=noninteractive`n($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)" > $tmpCmdLocalFullName
+
     # Write-Host "Content of temp bash script"
     # & cat $tmpCmdLocalFullName
     & chmod +x $tmpCmdLocalFullName
