@@ -40,7 +40,7 @@ script:
     # on i386 we skip nodejs only
     export Ignore_Features="nodejs" 
   fi
-- pwsh -command ./image-builder.ps1 -Images $ARCH
+- sudo pwsh -command ./image-builder.ps1 -Images $ARCH
 - cat Public-Report/*onfinish*
 - ls -la Public-Report
 - cat Public-Report/$ARCH-said-by-user.log
