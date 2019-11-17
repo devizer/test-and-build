@@ -280,7 +280,7 @@ function Build
     $Is_Requested_Local_Redis = Is-Requested-Specific-Feature("local-redis");
 
     $featuresToInstall = $FeatureFilters | % { Is-Requested-Specific-Feature($_) };
-    $featuresToSkip = $FeatureFilters | % { (-not Is-Requested-Specific-Feature($_)) };
+    $featuresToSkip = $FeatureFilters | % { (-not (Is-Requested-Specific-Feature $_)) };
     Say "To INSTALL: [$featuresToInstall], To Skip: [$featuresToSkip]"  
     
     $key = $definition.key
