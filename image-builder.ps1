@@ -156,7 +156,10 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password, [bool] $
 $remoteCmd = @"
 #!/usr/bin/env bash
 if [[ -f ~/.profile ]]; then 
+    echo SOURCING ~/.profile 
     . ~/.profile 2>&1 | tee -a $($Global:GuestLog)-$($user)
+else 
+    echo ~/.profile NOT FOUND | tee -a $($Global:GuestLog)-$($user)
 fi
 # echo SOURCING ~/.bashrc  2>&1 | tee -a $($Global:GuestLog)-$($user)
 # . ~/.bashrc              2>&1 | tee -a $($Global:GuestLog)-$($user)
