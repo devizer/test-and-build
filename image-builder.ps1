@@ -161,6 +161,7 @@ if [[ -f ~/.profile ]]; then
 else 
     echo ~/.profile NOT FOUND | tee -a $($Global:GuestLog)-$($user)
 fi
+export PATH="`$PATH:/boot"
 # echo SOURCING ~/.bashrc  2>&1 | tee -a $($Global:GuestLog)-$($user)
 # . ~/.bashrc              2>&1 | tee -a $($Global:GuestLog)-$($user)
 # source ~/.bashrc         2>&1 | tee -a $($Global:GuestLog)-$($user)
