@@ -40,7 +40,7 @@ script:
     # on i386 we skip nodejs only
     export Ignore_Features="nodejs" 
   fi
-- sudo pwsh -command ./image-builder.ps1 -Images $ARCH -Only "$PreInstall_Only_Features" -Ignore "$Ignore_Features"
+- sudo pwsh -command ./image-builder.ps1 -Images $ARCH -Only `"$PreInstall_Only_Features`" -Skip `"$Ignore_Features`"
 - cat Public-Report/*onfinish*
 - ls -la Public-Report
 - cat Public-Report/$ARCH-said-by-user.log

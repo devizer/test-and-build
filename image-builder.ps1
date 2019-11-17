@@ -1,14 +1,15 @@
 #!/usr/bin/env pwsh
 param(
     [ValidateSet("i386", "arm", "arm64")]    
-    [string[]] $images,
+    [string[]] $Images,
     [string] $Only,
-    [string] $Ignore
+    [string] $Skip
 )
-$Env:Ignore_Features=$Ignore
-$Env:PreInstall_Only_Features=$Only
+$Global_Ignore_Features=$Skip
+$Global_Only_Features=$Only
 
-$imagesToBuild=$images
+
+$imagesToBuild=$Images
 
 $ProjectPath=$PSScriptRoot
 $PublicReport=$(Join-Path $ProjectPath "Public-Report")
@@ -23,20 +24,20 @@ function Is-Requested-Specific-Feature{
     param([string] $idFeature)
     
     $needIgnore=$false
-    if ($Env:Ignore_Features) {
-        $needIgnore = " $($Env:Ignore_Features) " -like "* $($idFeature) *"
+    if ($Global_Ignore_Features) {
+        $needIgnore = " $Global_Ignore_Features " -like "* $($idFeature) *"
     }
     
     if ($needIgnore) {
-        Say "Feature ($idFeature) is configured to be ignored by `$Ignore_Features"
+        Say "Skipping. Feature ($idFeature) is configured to be ignored by -Ignore option"
         return $false; 
     }
     
     $needPreinstall=$true;
-    if ($Env:PreInstall_Only_Features) {
-        $needPreinstall = " $($Env:PreInstall_Only_Features) " -like "* $($idFeature) *"
+    if ($Global_Only_Features) {
+        $needPreinstall = " $Global_Only_Features " -like "* $($idFeature) *"
         if (!$needPreinstall){
-            Say "Feature ($idFeature) is not specified by `$PreInstall_Only_Features"
+            Say "Skipping. Feature ($idFeature) is not specified by -Only option"
             return $false
         }
     }
