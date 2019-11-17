@@ -71,9 +71,9 @@ echo '
 APT::Install-Recommends "0";
 ' | sudo tee /etc/apt/apt.conf.d/42NoRecommend >/dev/null
 
-if [[ -n "${swapSizeMb}" ]]; then
+if [[ "${swapSizeMb}" -gt 0 ]]; then
     Say "Creating swap file $swapSizeMb Mb as /tmp/swap"
-    sudo dd if=/dev/zero of=/tmp/swap bs=1M count=${swapSizeMb}
+    sudo dd if=/dev/zero of=/tmp/swap bs=1048577 count=${swapSizeMb}
     sudo mkswap /tmp/swap
     sudo swapon /tmp/swap
  fi

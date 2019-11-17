@@ -168,15 +168,17 @@ if [[ -d /etc/profile.d ]]; then
   for i in /etc/profile.d/*.sh; do
     if [[ -r `$i ]] && [[ ! `$i == *"bash_completion.sh"* ]]; then  
     # if [ -r `$i ]; then
-      . `$i
+    #  . `$i
+        echo "skipping `$i"
     fi
   done
   unset i
 fi
 
 if [[ -f ~/.profile ]]; then 
-    . ~/.profile
+    # . ~/.profile
 fi
+echo WTH!!!!!!!!!!!
 # export PATH="`$PATH:/boot"
 export DEBIAN_FRONTEND=noninteractive
 ($cmd) 2>&1 | tee -a $($Global:GuestLog)-$($user)
