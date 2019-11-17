@@ -437,6 +437,7 @@ function Build
     popd
     
     pushd "$mapto"
+    & rm -f $PublicReport/$key-user-profile.7z
     & 7z a $PublicReport/$key-user-profile.7z etc/profile.d home/user
     popd
 
