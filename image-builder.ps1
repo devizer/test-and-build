@@ -158,6 +158,7 @@ $remoteCmd = @"
 if [[ -f ~/.profile ]]; then 
     echo SOURCING ~/.profile 
     . ~/.profile 2>&1 | tee -a $($Global:GuestLog)-$($user)
+    . ~/.profile
 else 
     echo ~/.profile NOT FOUND | tee -a $($Global:GuestLog)-$($user)
 fi
