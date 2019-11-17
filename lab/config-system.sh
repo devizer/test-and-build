@@ -41,7 +41,7 @@ timedatectl set-timezone UTC
 # echo "Content of /etc/default/locale:"; cat /etc/default/locale
 # echo "-----------------"
 
-Say "Set configure locales"
+Say "Configure locales"
 export DEBIAN_FRONTEND=noninteractive
 echo "LC_ALL=en_US.UTF-8" >> /etc/environment
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
