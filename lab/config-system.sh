@@ -91,13 +91,11 @@ Say "Add user to sudo group"
 usermod -aG sudo user
 
 # https://en.wikibooks.org/wiki/OpenSSH/Client_Configuration_Files#~/.ssh/rc
-echo "export Var_WITH_Export=here" >> /home/user/.ssh/environment
-echo "Var_WITHOUT_Export=here" >> /home/user/.ssh/environment
 # echo 'PATH="$PATH:/tmp"' >> /home/user/.ssh/environment
 # echo 'export PATH="$PATH:/usr"' >> /home/user/.ssh/environment
 
-sudo -u user mkdir -p /home/user/bin 
-mkdir -p /home/user/bin 
+sudo -u user mkdir -p /home/user/bin /home/user/.ssh
+echo "A_VAR_via_SSH_Environment='here is it'" | sudo-u user tee -a /home/user/.ssh/environment
 echo '#!/usr/bin/env bash
 if [[ -d "$HOME/bin" ]]; then
     export PATH="$PATH:$HOME/bin"
