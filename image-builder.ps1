@@ -142,7 +142,7 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
     
 }
 
-function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
+function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password, [bool] $reconnect = $false)
     if (-not $Global:GuestLog) { $Global:GuestLog="/tmp/$([Guid]::NewGuid().ToString("N"))"}
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     $tmpCmdLocalFullName="$mapto/tmp/$rnd"
@@ -151,7 +151,17 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password)
     # Write-Host "Content of temp bash script"
     # & cat $tmpCmdLocalFullName
     & chmod +x $tmpCmdLocalFullName
+    if ($reconnect) {
+        Write-Host "Temparary un-mount guest's root fs"
+        & umount -f $mapto        
+    }
     $localCmd="sshpass -p `'$($password)`' ssh -o 'StrictHostKeyChecking no' $($user)@$($ip) -p $($port) /tmp/$rnd"
+    if ($reconnect) {
+        $mountCmd = "echo pass | sshfs -o password_stdin 'root@localhost:/' -p $( $startParams.Port ) '$mapto'"
+        Write-Host "RE-Mount command: [$mountCmd]"
+        & bash -c "$mountCmd"
+        & ls -la $mapto
+    }
     Write-Host "#: $cmd"
     & bash -c "$localCmd"
     & rm -f $tmpCmdLocalFullName
@@ -296,7 +306,7 @@ function Build
     & cp -a $ProjectPath/lab/* $mapto/tmp/build
 
     Say "Configure LC_ALL, UTC and optionally swap"
-    Remote-Command-Raw "bash /tmp/build/config-system.sh $( $definition.SwapMb ) $key" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "bash /tmp/build/config-system.sh $( $definition.SwapMb ) $key" "localhost" $startParams.Port "root" "pass" $true # re-connect
 
     Produce-Report $definition $startParams "onstart"
 
