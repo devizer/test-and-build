@@ -8,7 +8,7 @@ $imagesToBuild=$images
 $ProjectPath=$PSScriptRoot
 $PublicReport=$(Join-Path $ProjectPath "Public-Report")
 $build_folder="/transient-builds/test-and-build"
-$FinalSize="42G"
+$FinalSize="13G"
 
 . "$($PSScriptRoot)\include\Main.ps1"
 . "$($PSScriptRoot)\include\Utilities.ps1"
