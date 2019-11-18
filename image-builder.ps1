@@ -162,6 +162,9 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
         if ($at.ElapsedMilliseconds -ge ($Global_SSH_Timeout*1000)) {
             Say "Error. SSH Connection Timeouted. Building aborted. Guest pid #$($Global:qemuProcess) should be killed. $($at.Elapled)"
             & sudo kill "-SIGTERM" "$($Global:qemuProcess)"
+            $Global:BuildResult.TotalCommandCount++; 
+            $Global:BuildResult.FailedCommands += "SSH connection timed out: $($at.Elapled)";
+            $Global:BuildResult.IsSccessful=$false;
             return $false;
         }
         Start-Sleep 1;
