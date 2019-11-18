@@ -27,7 +27,7 @@ errors=0
 for packet in $packets; do
     echo Enqueue loading the $packet package
     cmd="nuget install $packet 2>&1 >.${packet}.log"
-    eval $cmd || eval $cmd || eval $cmd || eval $cmd || eval $cmd || errors=$((errors+1)) &
+    eval $cmd || eval $cmd || eval $cmd || eval $cmd || errors=$((errors+1)) &
     pids[${i}]=$!
     i=$((i+1))
     sleep 0.7
