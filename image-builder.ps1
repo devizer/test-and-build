@@ -18,6 +18,7 @@ $Global_SSH_Timeout=5*60
 $Global_ExpandDisk_Priority="-20"
 $Global_Max_VM_Cores = $MaxVmCores
 
+$Global_7z_Compress_Args = if ($Env:TRAVIS) { "-mx=1 -mfb=16 -md=16k" } else { "-mx=3 -mfb=32 -md=4m" }
 
 $imagesToBuild=$Images
 
@@ -523,7 +524,7 @@ function Build
     $finalArchivePath = "$(pwd)"
     popd
     pushd $finalQcowPath
-    & nice "$Global_7z_Compress_Priority" 7z a "-mmt$Global_7z_Threads" -t7z -mx=3 -mfb=32 -md=4m -v42m "$finalArchive" "."
+    & nice "$Global_7z_Compress_Priority" 7z a "-mmt$Global_7z_Threads" -t7z $Global_7z_Compress_Args -v42m "$finalArchive" "."
     popd
     pushd $finalArchivePath
     & ls -la
