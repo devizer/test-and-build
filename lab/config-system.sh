@@ -5,9 +5,25 @@ ARCH=$1
 # 2nd parameter - swap size in megabytes
 swapSizeMb=$2
 
-
+# COMMAND LINE TOOLS
 sudo cp /tmp/build/Say.sh /usr/local/bin/Say
 chmod +x /usr/local/bin/Say
+
+sudo cp /tmp/build/try-and-retry.sh /etc/profile.d/try-end-retry.sh
+chmod +x /usr/local/bin/Say
+
+# SMART lazy-apt-update - only for built-in Debian repos
+echo '#!/usr/bin/env bash
+ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || {
+    Say "Updating apt metadata (/var/lib/apt/lists/)"
+    sudo apt update --allow-unauthenticated -qq
+}
+' > /usr/local/bin/lazy-apt-update
+chmod +x /usr/local/bin/lazy-apt-update
+
+. try-and-retry.sh
+
+
 echo "Say command: $(command -v Say)"
 
 # sudo cp /tmp/build/Add-Shared-Env.sh /usr/local/bin/Add-Shared-Env
@@ -27,15 +43,6 @@ AcceptEnv Build_*
 sudo kill -SIGHUP $sshId
 Say "Restarted ssh server. The /etc/ssh/sshd_config is below"
 cat /etc/ssh/sshd_config
-
-# SMART lazy-apt-update - only for built-in debian repos
-echo '#!/usr/bin/env bash
-ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || {
-    Say "Updating apt metadata (/var/lib/apt/lists/)"
-    sudo apt update --allow-unauthenticated -qq
-}
-' > /usr/local/bin/lazy-apt-update
-chmod +x /usr/local/bin/lazy-apt-update
 
 
 Say "Set UTC time-zone"
@@ -105,8 +112,6 @@ if [[ -d "$HOME/bin" ]]; then
 fi
 ' > /etc/profile.d/Path-To-Bin-At-Home.sh
 
-
-# chown user:user /home/user/.profile
 echo '
 export SORRY_BASH_completion_is_ALIVE_and_Kicking=true
 ' >> /etc/profile.d/bash_completion.sh

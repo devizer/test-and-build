@@ -383,7 +383,7 @@ function Build
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
     Remote-Command-Raw $cmd "localhost" $startParams.Port "user" "pass"
 
-    $mustHavePackages = "lazy-apt-update; apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common -y && apt-get clean"
+    $mustHavePackages = "apt_smart_install apt-transport-https ca-certificates curl gnupg2 software-properties-common; apt-get clean"
     Say "Installing must have packages on [$key]"
     Remote-Command-Raw "$mustHavePackages" "localhost" $startParams.Port "root" "pass"
 
@@ -484,7 +484,7 @@ function Build
     popd
 
     Say "Zeroing free space of [$key]"
-    Remote-Command-Raw "cd /; bash /tmp/build/TearDown.sh; before-compact" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "cd /; bash /tmp/build/TearDown.sh; apt clean; before-compact" "localhost" $startParams.Port "root" "pass"
 
     # Say "Dismounting guest's share of [$key]"
     # & umount -f $mapto # NOOOO shutdown?????
