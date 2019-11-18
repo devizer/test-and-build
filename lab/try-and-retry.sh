@@ -24,7 +24,9 @@ try_and_retry() {
 
 function apt_smart_install() {
     try_and_retry lazy-apt-update
+    Say "Downloading deb-packages: $@"
     try_and_retry sudo apt-get -d --allow-unauthenticated install "$@" 
+    Say "Installing deb-packages: $@"
     sudo apt-get --allow-unauthenticated install "$@" -y -q
     sudo apt clean
 }

@@ -14,6 +14,7 @@ chmod +x /usr/local/bin/Say
 
 # SMART lazy-apt-update - only for built-in Debian repos
 echo '#!/usr/bin/env bash
+# try-and-retry is NOT here
 ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || {
     Say "Updating apt metadata (/var/lib/apt/lists/)"
     sudo apt update --allow-unauthenticated -qq

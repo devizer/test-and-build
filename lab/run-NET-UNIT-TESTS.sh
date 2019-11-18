@@ -2,7 +2,7 @@
 
 pushd TestRunners
 Say "Run Nuget Restore for [$(pwd)]"
-nuget restore -Verbosity quiet
+try_and_retry nuget restore -Verbosity quiet
 Say "Run msbuild for [$(pwd)]"
 msbuild /t:Rebuild /p:Configuration=Debug /v:q
 
