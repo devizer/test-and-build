@@ -6,26 +6,12 @@ ARCH=$1
 swapSizeMb=$2
 
 # COMMAND LINE TOOLS
-for f in "Say" "try-and-retry" "smart-apt-install"; do
-    sudo cp ${f}.sh /usr/local/bin/${f}
+for f in "Say" "try-and-retry" "smart-apt-install" "lazy-apt-update"; do
+    sudo cp permanent-scripts/${f}.sh /usr/local/bin/${f}
     chmod +x /usr/local/bin/${f}
 done
 
-
-# SMART lazy-apt-update - only for built-in Debian repos
-echo '#!/usr/bin/env bash
-# try-and-retry is NOT here
-ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || {
-    Say "Updating apt metadata (/var/lib/apt/lists/)"
-    sudo apt update --allow-unauthenticated -qq
-}
-' > /usr/local/bin/lazy-apt-update
-chmod +x /usr/local/bin/lazy-apt-update
-
 echo "Say command: $(command -v Say)"
-
-# sudo cp /tmp/build/Add-Shared-Env.sh /usr/local/bin/Add-Shared-Env
-# chmod +x /usr/local/bin/Add-Shared-Env
 
 sshId=$(pgrep -f "sshd -D")
 Say "Configure ssh environment and restarting ssh server (id is $sshId)"
