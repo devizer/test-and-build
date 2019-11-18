@@ -437,7 +437,7 @@ function Build
     if ($Is_Requested_Local_Mariadb)
     {
         Say "Install Local MariaDB [$key]"
-        Remote-Command-Raw "cd /tmp/build; bash Install-MARIADB.sh;" "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw "cd /tmp/build; bash install-MARIADB.sh;" "localhost" $startParams.Port "root" "pass"
     }
 
     if ($Is_Requested_Local_Redis)
