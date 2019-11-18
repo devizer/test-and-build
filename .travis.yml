@@ -45,3 +45,4 @@ script:
 - 'pushd Private-Report; find .; popd'
 - cat Private-Report/*/$ARCH-said-by-user.log
 - cat Private-Report/*/$ARCH-said-by-root.log
+- cat  cat Private-Report/**/summary*
