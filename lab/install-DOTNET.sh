@@ -5,7 +5,7 @@
 # echo "[~/.bashrc]"
 # cat ~/.bashrc
 
-echo "I'm [$(whoami)]. Net Core Should be installed as USER. Arch is $ARCH"
+echo "I'm [$(whoami)]. Net Core Should be installed as ROOT. Arch is $ARCH"
 
 if [[ "$ARCH" == "i386" ]]; then
     Say "Skipping Net Core on $ARCH"  
