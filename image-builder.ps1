@@ -3,7 +3,8 @@ param(
     [ValidateSet("i386", "arm", "arm64")]    
     [string[]] $Images,
     [string] $Only,
-    [string] $Skip
+    [string] $Skip,
+    [srting] $FinalSize = "13G"
 )
 $Global_Ignore_Features=$Skip
 $Global_Only_Features=$Only
@@ -11,7 +12,7 @@ $Global_Only_Features=$Only
 $Global_7z_Compress_Priority="-20"
 $Global_7z_DeCompress_Priority="-10"
 $Global_7z_Threads=2
-$Global_FinalSize="13G"
+$Global_FinalSize=$FinalSize
 $Global_SSH_Timeout=5*60
 $Global_ExpandDisk_Priority="-20"
 
@@ -556,27 +557,8 @@ $imagesToBuild | % {
         $globalStartParams.Port = $definition.DefaultPort;
         $globalStartParams.Mem="$($definition.RamForBuildingMb)M"
         Write-Host "Next image:`n$(Pretty-Format $definition)" -ForegroundColor Yellow;
-        $Global:BuildConsoleTitle = "|>$($definition.Key) $($globalStartParams.Mem) $($globalStartParams.Cores)*Cores {$featuresToInstall} ===--"
+        $Global:BuildConsoleTitle = "|>$($definition.Key) $($globalStartParams.Mem) $($globalStartParams.Cores)*Cores {$featuresToInstall} --> $($Global_FinalSize) ===--"
 
-<#
-        $Global:BuildResult = new-object PSObject -Property @{ 
-            IsSccessful=$true; 
-            FailedCommands=@(); 
-            TotalCommandCount=0;
-        }; 
-        # ${X=42} | Add-Member -NotePropertyMembers 
-        $Global:BuildResult.IsSccessful
-        $Global:BuildResult.TotalCommandCount++;
-        $Global:BuildResult.TotalCommandCount
-        return;
-
-        $gr=$Global:BuildResult;
-        $gr.TotalCommandCount = 5;
-        $gr.TotalCommandCount
-        return;
-#>
-        
-        
         Build $definition $globalStartParams;
         $allTheFine = $allTheFine -and $Global:BuildResult.IsSccessful;
         $summaryFileName = "$PrivateReport/$($definition.Key)/summary.log"
