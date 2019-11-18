@@ -55,3 +55,14 @@ function Output-To-Markdown{
     }
     "|$($outputAsMarkdown)|"
 }
+
+function Get-File-Size-Info {
+    param($fileName)
+    try
+    {
+        "$(((New-Object System.IO.FileInfo($fileName)).Length / 1024 / 1024)) Mb"
+    }
+    catch{
+        "[$($_.Exception.GetType().Name)]"
+    }
+}

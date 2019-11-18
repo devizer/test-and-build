@@ -8,6 +8,12 @@ param(
 $Global_Ignore_Features=$Skip
 $Global_Only_Features=$Only
 
+$Global_7z_Compress_Priority="-20"
+$Global_7z_DeCompress_Priority="-10"
+$Global_7z_Threads=2
+$Global_FinalSize="13G"
+$Global_SSH_Timeout=5*60
+$Global_ExpandDisk_Priority="-20"
 
 
 $imagesToBuild=$Images
@@ -16,12 +22,11 @@ $ProjectPath=$PSScriptRoot
 $PrivateReport=$(Join-Path $ProjectPath "Private-Report")
 & mkdir "-p" "$PrivateReport"
 $build_folder="/transient-builds/test-and-build"
-$FinalSize="13G"
 
 . "$($PSScriptRoot)\include\Main.ps1"
 . "$($PSScriptRoot)\include\Utilities.ps1"
 
-$FeatureFilters=@("mono", "dotnet", "powershell", "docker", "nodejs", "local-postgres", "local-mariadb", "local-redis")
+$FeatureFilters=@("mono", "dotnet", "powershell", "docker", "local-postgres", "local-mariadb", "local-redis", "nodejs")
 function Is-Requested-Specific-Feature{
     param([string] $idFeature)
     
@@ -68,7 +73,7 @@ function Prepare-VM { param($definition, $rootDiskFullName, $guestNamePrefix="",
     Write-Host "Copy kernel to '$($path)'"
     Copy-Item "$ProjectPath/kernels/$($definition.Key)/*" "$($path)/"
     pushd $path
-    & qemu-img create -f qcow2 ephemeral.qcow2 200G
+    & qemu-img create -f qcow2 -o preallocation=metadata ephemeral.qcow2 200G
     popd
 
     if ($key -eq "arm") {
@@ -137,7 +142,6 @@ $($sudoPrefix)qemu-system-i386 -name $guestName -smp $($startParams.Cores) -m $(
 
 function Wait-For-Ssh {param($ip, $port, $user, $password)
     $at = [System.Diagnostics.Stopwatch]::StartNew();
-    $waitForSshTimeout=5*60;
     $pingCounter = 1;
     do
     {
@@ -149,7 +153,7 @@ function Wait-For-Ssh {param($ip, $port, $user, $password)
             Write-Host "SSH on $($ip):$($port) is online" -ForegroundColor Green
             return $true;
         }
-        if ($at.ElapsedMilliseconds -ge ($waitForSshTimeout*1000)) {
+        if ($at.ElapsedMilliseconds -ge ($Global_SSH_Timeout*1000)) {
             Say "Error. SSH Connection Timeouted. Building aborted. Guest pid #$($Global:qemuProcess) should be killed. $($at.Elapled)"
             & sudo kill "-SIGTERM" "$($Global:qemuProcess)"
             return $false;
@@ -233,8 +237,8 @@ function Final-Compact
     param($definition, $rootDiskFullName, $newSize="32G", $newPath)
     qemu-img create -f qcow2 -o preallocation=metadata disk.intermediate.compacting.qcow2 $newSize
     # qemu-img check newdisk.qcow2
-    virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.compacting.qcow2
-    qemu-img convert -O qcow2 -c -p disk.intermediate.compacting.qcow2 "$newPath"
+    & nice "$Global_ExpandDisk_Priority" virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.compacting.qcow2
+    & nice "$Global_7z_Compress_Priority" qemu-img convert -O qcow2 -c -p disk.intermediate.compacting.qcow2 "$newPath"
     Prepare-VM $definition "$newPath" "final" ($startParams.Port + 100)
     & rm -f disk.intermediate.compacting.qcow2
 }
@@ -245,19 +249,19 @@ function Inplace-Enlarge
     $dir=[System.IO.Path]::GetDirectoryName($rootDiskFullName)
     pushd "$dir"
     qemu-img create -f qcow2 -o preallocation=metadata disk.intermediate.enlarge.qcow2 $newSize
-    virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.enlarge.qcow2
+    & nice "$Global_ExpandDisk_Priority" virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.enlarge.qcow2
     if (!$needCompacting)
     {
         & mv -f disk.intermediate.enlarge.qcow2 "$($rootDiskFullName)"
     }
     else
     {
-        qemu-img convert -O qcow2 -c -p disk.intermediate.enlarge.qcow2 disk.intermediate.enlarge.qcow2.step2
+        & nice "$Global_7z_Compress_Priority" qemu-img convert -O qcow2 -c -p disk.intermediate.enlarge.qcow2 disk.intermediate.enlarge.qcow2.step2
         & mv -f disk.intermediate.enlarge.qcow2.step2 $rootDiskFullName
         & rm -f disk.intermediate.enlarge.qcow2
     }
     Say "New Size of the $rootDiskFullName should be $newSize [$( $definition.Key )]"
-    & virt-filesystems --all --long --uuid -h -a "$rootDiskFullName"
+    & nice "$Global_ExpandDisk_Priority" virt-filesystems --all --long --uuid -h -a "$rootDiskFullName"
     popd
 }
 
@@ -333,8 +337,8 @@ function Build
     $qcowFile = join-Path -Path "." -ChildPath "*$( $definition.RootQcow )*" -Resolve
     popd
 
-    Say "Basic Image for $key exctracted: $qcowFile";
-    & virt-filesystems --all --long --uuid -h -a "$qcowFile"
+    Say "Basic Image for $key exctracted: $qcowFile ($(Get-File-Size-Info $qcowFile))";
+    & nice "$Global_ExpandDisk_Priority" virt-filesystems --all --long --uuid -h -a "$qcowFile"
 
     if ($definition.SizeForBuildingMb)
     {
@@ -391,8 +395,8 @@ function Build
     {
         Say "Installing Latest Mono [$key]"
         Remote-Command-Raw "cd /tmp/build; bash -e install-MONO.sh" "localhost" $startParams.Port "root" "pass"
-        Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >.tmp; cat .tmp | head -4' "localhost" $startParams.Port "root" "pass"
-        Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >.tmp; cat .tmp | head -4' "localhost" $startParams.Port "user" "pass"
+        Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4' "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4' "localhost" $startParams.Port "user" "pass"
 
         Say "Building NET-TEST-RUNNERS on the host and installing to the guest"
         pushd "$ProjectPath/lab"; & bash NET-TEST-RUNNERS-build.sh; popd
@@ -481,7 +485,7 @@ function Build
     
     pushd "$mapto"
     & rm -f $PrivateReport/$key/$key-user-profile.7z
-    & 7z a  $PrivateReport/$key/$key-user-profile.7z etc/profile.d home/user usr/local/bin
+    & 7z -mmt1 a  $PrivateReport/$key/$key-user-profile.7z etc/profile.d home/user usr/local/bin
     popd
 
     Say "Zeroing free space of [$key]"
@@ -502,11 +506,11 @@ function Build
     $finalQcowPath = "$(pwd)"
 
     
-    Final-Compact $definition "$qcowFile" "$finalSize" $finalQcow 
+    Final-Compact $definition "$qcowFile" "$Global_FinalSize" $finalQcow 
     popd
 
     Say "Final Image for [$key]: $finalQcow";
-    & virt-filesystems --all --long --uuid -h -a "$finalQcow"
+    & nice "$Global_ExpandDisk_Priority" virt-filesystems --all --long --uuid -h -a "$finalQcow"
 
     Say "Splitting final image for publication [$key]: $qcowFile";
     & mkdir -p "final-$key-splitted"
@@ -516,7 +520,7 @@ function Build
     $finalArchivePath = "$(pwd)"
     popd
     pushd $finalQcowPath
-    & 7z a -t7z -mx=1 -mfb=32 -md=4m -v42m "$finalArchive" "."
+    & nice "$Global_7z_Compress_Priority" 7z a -t7z -mx=2 -mfb=32 -md=4m -v42m "$finalArchive" "."
     popd
     pushd $finalArchivePath
     & ls -la

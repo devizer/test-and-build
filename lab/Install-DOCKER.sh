@@ -2,6 +2,7 @@
 
 if [[ ! "$ARCH" == i386 ]]; then
   Say "Installing the latest docker from the official docker repo"
+  # Recommended: aufs-tools cgroupfs-mount | cgroup-lite pigz libltdl7
   source /etc/os-release
   lazy-apt-update
   smart-apt-install apt-transport-https ca-certificates curl gnupg2 software-properties-common 
