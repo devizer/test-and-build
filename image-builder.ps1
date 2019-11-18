@@ -383,7 +383,7 @@ function Build
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
     Remote-Command-Raw $cmd "localhost" $startParams.Port "user" "pass"
 
-    $mustHavePackages = "apt_smart_install apt-transport-https ca-certificates curl gnupg2 software-properties-common; apt-get clean"
+    $mustHavePackages = "apt_smart_install apt-transport-https ca-certificates curl gnupg2 software-properties-common; apt_smart_install gnupg2; apt-get clean"
     Say "Installing must have packages on [$key]"
     Remote-Command-Raw "$mustHavePackages" "localhost" $startParams.Port "root" "pass"
 
