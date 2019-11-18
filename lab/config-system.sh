@@ -6,8 +6,10 @@ ARCH=$1
 swapSizeMb=$2
 
 # COMMAND LINE TOOLS
-sudo cp /tmp/build/Say.sh /usr/local/bin/Say
-chmod +x /usr/local/bin/Say
+for f in "Say" "try-and-retry" "smart-apt-install"; do
+    sudo cp /tmp/build/${f}.sh /usr/local/bin/${f}
+    chmod +x /usr/local/bin/${f}
+done
 
 sudo cp /tmp/build/try-and-retry.sh /etc/profile.d/try-end-retry.sh
 chmod +x /usr/local/bin/Say

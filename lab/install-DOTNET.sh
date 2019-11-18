@@ -19,12 +19,12 @@ fi
       sudo mkdir -p /opt/dotnet;
       export PATH="/opt/dotnet:$HOME/.dotnet/tools:$PATH"
       # for arm it starts from 2.1
-      try_and_retry curl -o /tmp/dotnet-install.sh -ksSL $DOTNET_Url
-      time try_and_retry sudo bash /tmp/dotnet-install.sh -c 2.1 -i /opt/dotnet
-      time try_and_retry sudo bash /tmp/dotnet-install.sh -c 2.2 -i /opt/dotnet
-      time try_and_retry sudo bash /tmp/dotnet-install.sh -c 3.0 -i /opt/dotnet
+      try-and-retry curl -o /tmp/dotnet-install.sh -ksSL $DOTNET_Url
+      time try-and-retry sudo bash /tmp/dotnet-install.sh -c 2.1 -i /opt/dotnet
+      time try-and-retry sudo bash /tmp/dotnet-install.sh -c 2.2 -i /opt/dotnet
+      time try-and-retry sudo bash /tmp/dotnet-install.sh -c 3.0 -i /opt/dotnet
       export DOTNET_ROOT="/opt/dotnet"
-      try_and_retry dotnet tool install -g BenchmarkDotNet.Tool || true
+      try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
       # time dotnet --info || true
 
 Say "Configuring shared environment for .NET Core"
