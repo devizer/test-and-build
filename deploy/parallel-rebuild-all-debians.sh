@@ -5,11 +5,11 @@ git pull
 
 logs="$HOME/logs"
 mkdir -p $logs
-(pwsh -command ./image-builder.ps1 -Images i386  -FinalSize 42G 2>&1 | tee $logs/i386.log  ) &
+(pwsh -c ./image-builder.ps1 -Images i386  -MaxVmCores 3 -FinalSize 42G 2>&1 | tee $logs/i386.log  ) &
 job1=$!
-(pwsh -command ./image-builder.ps1 -Images arm   -FinalSize 42G 2>&1 | tee $logs/arm.log   ) &
+(pwsh -c ./image-builder.ps1 -Images arm   -MaxVmCores 2 -FinalSize 42G 2>&1 | tee $logs/arm.log   ) &
 job2=$1
-(pwsh -command ./image-builder.ps1 -Images arm64 -FinalSize 42G 2>&1 | tee $logs/arm64.log ) &
+(pwsh -c ./image-builder.ps1 -Images arm64 -MaxVmCores 2 -FinalSize 42G 2>&1 | tee $logs/arm64.log ) &
 $job3
 
 echo WAITING 3 JOBS: $(date)

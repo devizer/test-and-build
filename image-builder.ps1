@@ -4,7 +4,8 @@ param(
     [string[]] $Images,
     [string] $Only,
     [string] $Skip,
-    [string] $FinalSize = "13G"
+    [string] $FinalSize = "13G",
+    [int] $MaxVmCores = 4
 )
 $Global_Ignore_Features=$Skip
 $Global_Only_Features=$Only
@@ -15,6 +16,7 @@ $Global_7z_Threads=2
 $Global_FinalSize=$FinalSize
 $Global_SSH_Timeout=5*60
 $Global_ExpandDisk_Priority="-20"
+$Global_Max_VM_Cores = $MaxVmCores
 
 
 $imagesToBuild=$Images
@@ -539,7 +541,7 @@ function Build
 
 $cores = [Environment]::ProcessorCount;
 if ($cores -ge 8) { $cores-- }
-if ($cores -ge 4) { $cores=4 }
+if ($cores -ge $Global_Max_VM_Cores) { $cores = $Global_Max_VM_Cores }
 $globalStartParams = @{Mem="2000M"; Cores=$cores; Port=2345};
 
 $definitions | % {Say "Defenition of the $($_.Key)"; Write-Host (Pretty-Format $_)}
