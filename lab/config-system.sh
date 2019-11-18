@@ -11,8 +11,6 @@ for f in "Say" "try-and-retry" "smart-apt-install"; do
     chmod +x /usr/local/bin/${f}
 done
 
-sudo cp /tmp/build/try-and-retry.sh /etc/profile.d/try-end-retry.sh
-chmod +x /usr/local/bin/Say
 
 # SMART lazy-apt-update - only for built-in Debian repos
 echo '#!/usr/bin/env bash
@@ -23,9 +21,6 @@ ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || {
 }
 ' > /usr/local/bin/lazy-apt-update
 chmod +x /usr/local/bin/lazy-apt-update
-
-. try-and-retry.sh
-
 
 echo "Say command: $(command -v Say)"
 
@@ -108,7 +103,7 @@ usermod -aG sudo user
 # echo 'export PATH="$PATH:/usr"' >> /home/user/.ssh/environment
 
 sudo -u user mkdir -p /home/user/bin /home/user/.ssh
-echo "A_VAR_via_SSH_Environment='here is it'" | sudo-u user tee -a /home/user/.ssh/environment
+echo "A_VAR_via_SSH_Environment='here is it'" | sudo -u user tee -a /home/user/.ssh/environment
 echo '#!/usr/bin/env bash
 if [[ -d "$HOME/bin" ]]; then
     export PATH="$PATH:$HOME/bin"

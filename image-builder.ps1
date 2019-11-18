@@ -478,9 +478,10 @@ function Build
     & cp -f Said-by-user.log $PrivateReport/$key/$key-said-by-user.log
     popd
     
+    
     pushd "$mapto"
     & rm -f $PrivateReport/$key/$key-user-profile.7z
-    & 7z a  $PrivateReport/$key/$key-user-profile.7z etc/profile.d home/user
+    & 7z a  $PrivateReport/$key/$key-user-profile.7z etc/profile.d home/user usr/local/bin
     popd
 
     Say "Zeroing free space of [$key]"
