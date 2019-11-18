@@ -28,6 +28,11 @@ sudo kill -SIGHUP $sshId
 Say "Restarted ssh server. The /etc/ssh/sshd_config is below"
 cat /etc/ssh/sshd_config
 
+if [[ false ]]; then 
+    # TODO: extract it as a destructive separated command
+    sshId="$(pgrep -f "sshd -D")"; Say "Restarting SSH Server (id is $sshId)"; sudo kill -SIGHUP "$(pgrep -f "sshd -D")"; Say "Restarted SSH Server";
+fi
+
 
 Say "Set UTC time-zone"
 timedatectl set-timezone UTC
