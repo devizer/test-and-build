@@ -332,7 +332,7 @@ function Build
     & mkdir -p basic-image-$key;
     pushd basic-image-$key
     & rm -rf *
-    & 7z -y x $arch1
+    & nice "$Global_7z_DeCompress_Priority" 7z -y x $arch1
     # & bash -c 'rm -f *.7z.*'
     $qcowFile = join-Path -Path "." -ChildPath "*$( $definition.RootQcow )*" -Resolve
     popd
@@ -520,7 +520,7 @@ function Build
     $finalArchivePath = "$(pwd)"
     popd
     pushd $finalQcowPath
-    & nice "$Global_7z_Compress_Priority" 7z a -t7z -mx=2 -mfb=32 -md=4m -v42m "$finalArchive" "."
+    & nice "$Global_7z_Compress_Priority" 7z a "-mmt$Global_7z_Threads" -t7z -mx=3 -mfb=32 -md=4m -v42m "$finalArchive" "."
     popd
     pushd $finalArchivePath
     & ls -la
