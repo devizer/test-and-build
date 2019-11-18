@@ -4,7 +4,8 @@
 export NVM_DIR="/opt/nvm"
 Say "Installing nvm to $NVM_DIR" 
 mkdir -p "$NVM_DIR"
-script=https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
+script=https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh; 
+(wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 chown user:user -R "$NVM_DIR" 
 [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 # [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

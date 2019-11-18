@@ -458,7 +458,7 @@ function Build
     if ($Is_Requested_NodeJS)
     {
         Say "Installing Node [$key]"
-        Remote-Command-Raw "cd /tmp/build; bash install-NODE.sh" "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw "cd /tmp/build; export TRAVIS="$TRAVIS"; bash install-NODE.sh" "localhost" $startParams.Port "root" "pass"
         Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "user" "pass"
         Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "root" "pass"
     }
