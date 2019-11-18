@@ -7,7 +7,7 @@ swapSizeMb=$2
 
 # COMMAND LINE TOOLS
 for f in "Say" "try-and-retry" "smart-apt-install"; do
-    sudo cp /tmp/build/${f}.sh /usr/local/bin/${f}
+    sudo cp ${f}.sh /usr/local/bin/${f}
     chmod +x /usr/local/bin/${f}
 done
 
