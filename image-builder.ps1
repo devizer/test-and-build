@@ -5,7 +5,8 @@ param(
     [string] $Only,
     [string] $Skip,
     [string] $FinalSize = "13G",
-    [int] $MaxVmCores = 4
+    [int]    $MaxVmCores = 4,
+    [string] $OutputFolder = "/transient-builds/test-and-build"
 )
 $Global_Ignore_Features=$Skip
 $Global_Only_Features=$Only
@@ -25,7 +26,7 @@ $imagesToBuild=$Images
 $ProjectPath=$PSScriptRoot
 $PrivateReport=$(Join-Path $ProjectPath "Private-Report")
 & mkdir "-p" "$PrivateReport"
-$build_folder="/transient-builds/test-and-build"
+$build_folder=$OutputFolder
 
 . "$($PSScriptRoot)\include\Main.ps1"
 . "$($PSScriptRoot)\include\Utilities.ps1"

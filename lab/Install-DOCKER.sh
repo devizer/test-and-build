@@ -16,7 +16,7 @@ if [[ ! "$ARCH" == i386 ]]; then
      stable"
   sudo apt-get update
   apt-cache policy docker-ce
-  sudo apt-get install -y docker-ce
+  sudo apt-get install -y docker-ce pigz
   sudo docker version
   
   Say "Installing docker-compose 1.24.1"
@@ -27,9 +27,15 @@ if [[ ! "$ARCH" == i386 ]]; then
 else
     Say "Installing the Docker 18.09.1, docker compose 1.21.0 (format 2.4) from debian repo "
     lazy-apt-update
-    smart-apt-install  docker.io docker-compose
+    smart-apt-install  docker.io docker-compose pigz
 fi
 sudo systemctl status docker | head -n 88
 docker version
 docker-compose version
+
+dockerVer="$(docker version --format '{{.Server.Version}}' 2>&1)"
+Say "Installed Docker: $dockerVer"
+
+dockerComposeVer="$(docker-compose version 2>&1)"
+Say "Installed Docker Compose: $dockerComposeVer"
 
