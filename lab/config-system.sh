@@ -77,6 +77,7 @@ Say "Current Swap Size: $currentSwap MB"
 Say "Adding user to nopasswd sudoers"
 echo 'user    ALL=(ALL:ALL) NOPASSWD: ALL' | sudo EDITOR='tee -a' visudo
 
+# https://www.kernel.org/doc/Documentation/security/apparmor.txt
 Say "Disable apparmor"
 systemctl stop apparmor
 systemctl disable apparmor

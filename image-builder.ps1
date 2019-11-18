@@ -77,8 +77,9 @@ function Prepare-VM { param($definition, $rootDiskFullName, $guestNamePrefix="",
     Write-Host "Copy kernel to '$($path)'"
     Copy-Item "$ProjectPath/kernels/$($definition.Key)/*" "$($path)/"
     pushd $path
-    & qemu-img create -f qcow2 -o preallocation=metadata ephemeral.qcow2 200G
-    popd
+    & qemu-img create -f qcow2 ephemeral.qcow2 200G
+    & virt-format --partition=mbr --filesystem=ext4 -a ephemeral.qcow2
+popd
 
     if ($key -eq "arm") {
         $guestName="buster-arm-v7"
@@ -239,7 +240,8 @@ function Wait-For-Process
 function Final-Compact
 {
     param($definition, $rootDiskFullName, $newSize="32G", $newPath)
-    qemu-img create -f qcow2 -o preallocation=metadata disk.intermediate.compacting.qcow2 $newSize
+    # qemu-img create -f qcow2 -o preallocation=metadata disk.intermediate.compacting.qcow2 $newSize
+    qemu-img create -f qcow2                             disk.intermediate.compacting.qcow2 $newSize
     # qemu-img check newdisk.qcow2
     & nice "$Global_ExpandDisk_Priority" virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.compacting.qcow2
     & nice "$Global_7z_Compress_Priority" qemu-img convert -O qcow2 -c -p disk.intermediate.compacting.qcow2 "$newPath"
@@ -399,8 +401,8 @@ function Build
     {
         Say "Installing Latest Mono [$key]"
         Remote-Command-Raw "cd /tmp/build; bash -e install-MONO.sh" "localhost" $startParams.Port "root" "pass"
-        Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4' "localhost" $startParams.Port "root" "pass"
-        Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4' "localhost" $startParams.Port "user" "pass"
+        Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp' "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp' "localhost" $startParams.Port "user" "pass"
 
         Say "Building NET-TEST-RUNNERS on the host and installing to the guest"
         pushd "$ProjectPath/lab"; & bash NET-TEST-RUNNERS-build.sh; popd
