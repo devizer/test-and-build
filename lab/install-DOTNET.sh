@@ -20,9 +20,9 @@ fi
       export PATH="/opt/dotnet:$HOME/.dotnet/tools:$PATH"
       # for arm it starts from 2.1
       try-and-retry curl -o /tmp/dotnet-install.sh -ksSL $DOTNET_Url
-      time try-and-retry sudo bash /tmp/dotnet-install.sh -c 2.1 -i /opt/dotnet
-      time try-and-retry sudo bash /tmp/dotnet-install.sh -c 2.2 -i /opt/dotnet
-      time try-and-retry sudo bash /tmp/dotnet-install.sh -c 3.0 -i /opt/dotnet
+      time try-and-retry timeout 666 sudo bash /tmp/dotnet-install.sh -c 2.1 -i /opt/dotnet
+      time try-and-retry timeout 666 sudo bash /tmp/dotnet-install.sh -c 2.2 -i /opt/dotnet
+      time try-and-retry timeout 666 sudo bash /tmp/dotnet-install.sh -c 3.0 -i /opt/dotnet
       export DOTNET_ROOT="/opt/dotnet"
       try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
       # time dotnet --info || true
