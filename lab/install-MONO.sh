@@ -8,7 +8,7 @@ if [[ "$(command -v mono)" == "" ]]; then
   if [[ "$ID" == "raspbian" ]]; then def="deb https://download.mono-project.com/repo/debian stable-raspbian$(lsb_release -cs) main"; fi
   echo "$def" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
   time try-and-retry sudo apt-get --allow-unauthenticated update -qq 
-  time apt-smart-install mono-complete nuget msbuild 
+  time smart-apt-install mono-complete nuget msbuild 
   sudo apt clean; 
   # sudo rm -f /etc/apt/sources.list.d/mono-official-stable.list; 
   # sudo apt update
