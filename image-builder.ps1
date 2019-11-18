@@ -388,8 +388,14 @@ function Build
     & mkdir -p $mapto/tmp/build
     & cp -a $ProjectPath/lab/* $mapto/tmp/build
 
-    Say "Configure LC_ALL, UTC and optionally swap"
-    Remote-Command-Raw "cd /tmp/build; bash config-system.sh $key $( $definition.SwapMb )" "localhost" $startParams.Port "root" "pass" $true # re-connect
+    Say "Configure SSH for [$key]"
+    Remote-Command-Raw "cd /tmp/build; bash config-ssh.sh $key" "localhost" $startParams.Port "root" "pass" $true # re-connect
+
+    Say "RESTART SSH for [$key]"
+    Remote-Command-Raw 'sshId="$(pgrep -f "sshd -D")"; Say "Restarting SSH Server (pid is $sshId)"; sudo kill -SIGHUP "$(pgrep -f "sshd -D")"; Say "Restarted SSH Server";' "localhost" $startParams.Port "root" "pass" $false $true # destructive
+
+    Say "Configure LC_ALL, UTC and optionally swap for [$key]"
+    Remote-Command-Raw "cd /tmp/build; bash config-system.sh $( $definition.SwapMb )" "localhost" $startParams.Port "root" "pass" $true # re-connect
     
     Produce-Report $definition $startParams "onstart"
     
