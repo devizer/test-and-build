@@ -4,7 +4,7 @@ param(
     [string[]] $Images,
     [string] $Only,
     [string] $Skip,
-    [srting] $FinalSize = "13G"
+    [string] $FinalSize = "13G"
 )
 $Global_Ignore_Features=$Skip
 $Global_Only_Features=$Only
