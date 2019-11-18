@@ -133,7 +133,8 @@ qemu-system-${qemySystem} -name $guestName \
 $($sudoPrefix)qemu-system-i386 -name $guestName -smp $($startParams.Cores) -m $($startParams.Mem) -M q35  $($kvmParameters) $paramCpu \
     -initrd initrd.img \
     -kernel vmlinuz -append "root=/dev/sda1 console=ttyS0" \
-    -drive file=$($fileName) \
+    -drive file=$($fileName),id=rootimg \
+    -drive file=ephemeral.qcow2,id=ephemeral -device scsi-hd,drive=ephemeral \
     -netdev user,hostfwd=tcp::$($portNumber)-:22,id=unet -device e1000-82545em,netdev=unet \
     -net user \
     -nographic
