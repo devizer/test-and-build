@@ -21,14 +21,25 @@ if [[ ! "$ARCH" == i386 ]]; then
   
   Say "Installing docker-compose 1.24.1"
   # sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  sudo chmod +x /usr/local/bin/docker-compose
+  dockerComposeFullPath=/usr/local/bin/docker-compose
+  sudo curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o $dockerComposeFullPath
+  fileDockerComposeSize=$(stat -c"%s" "$dockerComposeFullPath" 2>/dev/null || stat --printf="%s" "$dockerComposeFullPath")
+  echo "Downloaded size of \"$dockerComposeFullPath\" is $fileDockerComposeSize bytes"
+  if [[ "$fileDockerComposeSize" -lt 1000000 ]]; then 
+    rm -f $dockerComposeFullPath
+  else
+    sudo chmod +x /usr/local/bin/docker-compose  
+  fi
   
 else
     Say "Installing the Docker 18.09.1, docker compose 1.21.0 (format 2.4) from debian repo "
     lazy-apt-update
     smart-apt-install  docker.io docker-compose pigz
 fi
+
+# 1.21
+docker-compose version || (smart-apt-install docker-compose)
+
 sudo systemctl status docker | head -n 88
 docker version
 docker-compose version
@@ -39,3 +50,22 @@ Say "Installed Docker: $dockerVer"
 dockerComposeVer="$(docker-compose version 2>&1)"
 Say "Installed Docker Compose: $dockerComposeVer"
 
+if [[ "$Alternative" ]]; then
+    # 1st
+    lazy-apt-update
+    smart-apt-install python3-pip
+    pip3 --version
+    sudo pip3 install docker-compose
+    
+    # 2nd: main contrib non-free
+    
+    # 3rd (1.7 ... 1.9)
+    echo "deb https://packagecloud.io/Hypriot/Schatzkiste/debian/ jessie main" | sudo tee /etc/apt/sources.list.d/hypriot.list
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 37BBEE3F7AD95B3F
+    apt update
+    apt-cache policy docker-compose
+    
+    # 4th
+    sudo curl -L --fail https://github.com/docker/compose/releases/download/1.24.1/run.sh -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose    
+fi

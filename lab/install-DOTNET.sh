@@ -39,7 +39,7 @@ if [[ -s "/opt/dotnet/dotnet" ]]; then
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
     DOTNET_CLI_TELEMETRY_OPTOUT=1
 fi
-' > /etc/profile.d/NVM.sh
+' > /etc/profile.d/dotnet-core.sh
 sudo -u user mkdir -p /home/user/.dotnet/tools
 mkdir -p ~/.dotnet/tools
 Say "Configured shared environment for .NET Core"
