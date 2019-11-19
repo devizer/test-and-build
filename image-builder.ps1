@@ -551,7 +551,7 @@ function Build
     Say "Final Image for [$key]: $finalQcow";
     & nice "$Global_ExpandDisk_Priority" virt-filesystems --all --long --uuid -h -a "$finalQcow"
 
-    Say "Splitting final image for publication [$finalArchive]: $qcowFile ($(Get-File-Size-Info $finalArchive))";
+    Say "Splitting final image for publication [$key]: $qcowFile ($(Get-File-Size-Info $qcowFile))";
     & mkdir -p "final-$key-splitted"
     & pushd "final-$key-splitted"
     & rm -rf *
