@@ -27,10 +27,30 @@ $BasicImagePath=(new-object System.IO.DirectoryInfo($p)).FullName + [IO.Path]::D
 
 $definitions=@(
 @{
-    key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
-    RamForBuildingMb=2500; 
-    SizeForBuildingMb=7000; # from 3G
-    DefaultPort=2344;
+    key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw";
+    RamForBuildingMb=1200;
+    SizeForBuildingMb=6000; # from 2G
+    DefaultPort=2201;
+    SwapMb=64;
+    # BaseUrl="file:///github.com/"
+    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
+    BaseUrl="file://$BasicImagePath"
+},
+@{
+    key="arm"; BasicParts=5;
+    RootQcow="disk.expanded.qcow2.raw" # it is 5Gb
+    RamForBuildingMb=800;
+    # BaseUrl="file:///github.com/"
+    DefaultPort=2202;
+    SwapMb=32;
+    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/";
+    BaseUrl="file://$BasicImagePath"
+},
+@{
+    key="AMD64"; BasicParts=5; RootQcow="debian-AMD64.basic.qcow2"
+    RamForBuildingMb=1200;
+    # SizeForBuildingMb=7000; # from 3G
+    DefaultPort=2203;
     EnableKvm=$true;
     SwapMb="none";
     # BaseUrl="file:///github.com/"
@@ -38,26 +58,16 @@ $definitions=@(
     BaseUrl="file://$BasicImagePath"
 },
 @{
-    key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw";
-    RamForBuildingMb=1200;
-    SizeForBuildingMb=6000; # from 2G
-    DefaultPort=2346;
-    SwapMb=64;
+    key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
+    RamForBuildingMb=2000;
+    SizeForBuildingMb=7000; # from 3G
+    DefaultPort=2204;
+    EnableKvm=$true;
+    SwapMb="none";
     # BaseUrl="file:///github.com/"
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
     BaseUrl="file://$BasicImagePath"
-},
-@{
-    key="arm"; BasicParts=5; 
-    RootQcow="disk.expanded.qcow2.raw" # it is 5Gb
-    RamForBuildingMb=800;
-    # BaseUrl="file:///github.com/"
-    DefaultPort=2347;
-    SwapMb=32;
-    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/";
-    BaseUrl="file://$BasicImagePath"
-}
-);
+});
 
 
 
