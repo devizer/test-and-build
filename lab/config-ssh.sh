@@ -45,6 +45,7 @@ echo '
 export SORRY_BASH_completion_is_ALIVE_and_Kicking=true
 ' >> /etc/profile.d/bash_completion.sh
 
+mkdir -p ~/bin
 sudo -u user mkdir -p /home/user/bin /home/user/.ssh
 echo "A_VAR_for_USER_via_SSH_Environment='here is it'" | sudo -u user tee -a /home/user/.ssh/environment
 
