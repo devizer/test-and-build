@@ -8,21 +8,7 @@ swapSizeMb=$1
 Say "Set UTC time-zone"
 timedatectl set-timezone UTC
 
-# echo "Content of /etc/default/locale:"; cat /etc/default/locale
-# echo "-----------------"
-
-Say "Configure locales"
-export DEBIAN_FRONTEND=noninteractive
-echo "LC_ALL=en_US.UTF-8" >> /etc/environment
-echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
-echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
-echo "LANG=en_US.UTF-8" > /etc/locale.conf
-echo '
-LC_ALL="en_US.UTF-8"
-LANG="en_US.UTF-8"
-' | sudo tee /etc/default/locale > /dev/null
-# locale-gen "en_US.UTF-8" "en_GB.UTF-8" "es_ES.UTF-8 UTF-8"
-dpkg-reconfigure locales 
+ 
 
 Say "Purge man-db"
 lazy-apt-update; apt purge man-db
@@ -65,14 +51,9 @@ usermod -aG sudo user
 # echo 'PATH="$PATH:/tmp"' >> /home/user/.ssh/environment
 # echo 'export PATH="$PATH:/usr"' >> /home/user/.ssh/environment
 
-sudo -u user mkdir -p /home/user/bin /home/user/.ssh
-echo "A_VAR_via_SSH_Environment='here is it'" | sudo -u user tee -a /home/user/.ssh/environment
 echo '#!/usr/bin/env bash
 if [[ -d "$HOME/bin" ]]; then
     export PATH="$PATH:$HOME/bin"
 fi
 ' > /etc/profile.d/Path-To-Bin-At-Home.sh
 
-echo '
-export SORRY_BASH_completion_is_ALIVE_and_Kicking=true
-' >> /etc/profile.d/bash_completion.sh

@@ -21,12 +21,42 @@ echo '
 SetEnv ARCH='$ARCH'
 AcceptEnv Build_*
 ' >> /etc/ssh/sshd_config
+
+echo '
+export SORRY_BASH_completion_is_ALIVE_and_Kicking=true
+' >> /etc/profile.d/bash_completion.sh
+
+sudo -u user mkdir -p /home/user/bin /home/user/.ssh
+echo "A_VAR_for_USER_via_SSH_Environment='here is it'" | sudo -u user tee -a /home/user/.ssh/environment
+
+
 # systemctl restart ssh
-sudo kill -SIGHUP $sshId
-Say "Restarted ssh server. The /etc/ssh/sshd_config is below"
+# sudo kill -SIGHUP $sshId
+Say "SSH server will be restarted. The /etc/ssh/sshd_config is below"
 cat /etc/ssh/sshd_config
 
 if [[ false ]]; then 
     # TODO: extract it as a destructive separated command
     sshId="$(pgrep -f "sshd -D")"; Say "Restarting SSH Server (id is $sshId)"; sudo kill -SIGHUP "$(pgrep -f "sshd -D")"; Say "Restarted SSH Server";
 fi
+
+function config_loc() {
+# echo "Content of /etc/default/locale:"; cat /etc/default/locale
+# echo "-----------------"
+
+Say "Configure locales"
+    export DEBIAN_FRONTEND=noninteractive
+    echo "LC_ALL=en_US.UTF-8" >> /etc/environment
+    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+    echo "es_ES.UTF-8 UTF-8" >> /etc/locale.gen
+    echo "LANG=en_US.UTF-8" > /etc/locale.conf
+    echo '
+LC_ALL="en_US.UTF-8"
+LANG="en_US.UTF-8"
+'   | sudo tee /etc/default/locale > /dev/null
+    # locale-gen "en_US.UTF-8" "en_GB.UTF-8" "es_ES.UTF-8 UTF-8"
+    dpkg-reconfigure locales
+
+}
+
+config_loc
