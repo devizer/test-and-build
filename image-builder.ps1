@@ -219,7 +219,9 @@ export DEBIAN_FRONTEND=noninteractive
     Write-Host "#: $cmd"
     if ($errorInfo -eq $null) {
         & bash -c "$localCmd"
-        if (-not $? -and (-not $destructive)) { $errorInfo = "Failed to execute remote command: [$cmd]" }
+        $isExitOk = $?;
+        Write-Host "$(if ($isExitOk) {"SUC"} else {"ERR"}) $(if ($destructive) {"!DESTRUCTIVE"} else {""}): [$cmd]" 
+        if (-not $isExitOk -and (-not $destructive)) { $errorInfo = "Failed to execute remote command: [$cmd]" }
         else {
             & rm -f $tmpCmdLocalFullName
             if (-not $? -and (-not $destructive)) { $errorInfo = "Failed to clean up remote command: [$cmd]" }
