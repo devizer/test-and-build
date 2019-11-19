@@ -558,7 +558,7 @@ function Build
     $finalArchivePath = "$(pwd)"
     popd
     pushd $finalQcowPath
-    & nice "$Global_7z_Compress_Priority" 7z a -t7z "-mmt$Global_7z_Threads" "$Global_7z_Compress_Args" -v42m "$finalArchive" "."
+    & nice "$Global_7z_Compress_Priority" 7z a -t7z "-mmt$Global_7z_Threads" $Global_7z_Compress_Args.Split([char]32) -v42m "$finalArchive" "."
     popd
     pushd $finalArchivePath
     & ls -la
