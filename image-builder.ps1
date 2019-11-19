@@ -450,7 +450,7 @@ function Build
 
     if ($Is_Requested_Dotnet)
     {
-        Say "Installing DotNet Core on [$key]"
+        Say "Installing DotNet Core for [$key]"
         Remote-Command-Raw "cd /tmp/build; bash install-DOTNET.sh; command -v dotnet && dotnet --info || true" "localhost" $startParams.Port "root" "pass"
         Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; dotnet --info' "localhost" $startParams.Port "root" "pass"
         Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; dotnet --info' "localhost" $startParams.Port "user" "pass"
@@ -465,25 +465,25 @@ function Build
 
     if ($Is_Requested_Docker)
     {
-        Say "Install Docker [$key]"
+        Say "Install Docker for [$key]"
         Remote-Command-Raw "cd /tmp/build; bash Install-DOCKER.sh;" "localhost" $startParams.Port "root" "pass"
     }
 
     if ($Is_Requested_local_postgres)
     {
-        Say "Install Local Postgres SQL [$key]"
+        Say "Install Local Postgres SQL for [$key]"
         Remote-Command-Raw "cd /tmp/build; bash install-POSTGRES.sh;" "localhost" $startParams.Port "root" "pass"
     }
 
     if ($Is_Requested_Local_Mariadb)
     {
-        Say "Install Local MariaDB [$key]"
+        Say "Install Local MariaDB for [$key]"
         Remote-Command-Raw "cd /tmp/build; bash install-MARIADB.sh;" "localhost" $startParams.Port "root" "pass"
     }
 
     if ($Is_Requested_Local_Redis)
     {
-        Say "Install Local Redis Server [$key]"
+        Say "Install Local Redis Server for [$key]"
         Remote-Command-Raw "cd /tmp/build; bash install-REDIS.sh;" "localhost" $startParams.Port "root" "pass"
     }
 
@@ -491,7 +491,7 @@ function Build
     # if ($Env:INSTALL_NODE_FOR_i386 -eq "True" -or $key -ne "i386")
     if ($Is_Requested_NodeJS)
     {
-        Say "Installing Node [$key]"
+        Say "Installing Node for [$key]"
         Remote-Command-Raw 'cd /tmp/build; export TRAVIS="$TRAVIS"; bash install-NODE.sh' "localhost" $startParams.Port "root" "pass"
         Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "user" "pass"
         Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "root" "pass"
@@ -505,9 +505,12 @@ function Build
 
     if ($true)
     {
-        Say "Installing a Crap [$key]"
+        Say "Installing a Crap for [$key]"
         Remote-Command-Raw "cd /tmp/build; bash install-a-crap.sh" "localhost" $startParams.Port "root" "pass"
     }
+
+    Say "Log Packages for [$key]"
+    Remote-Command-Raw 'Say "PACKAGES:\n$(list-packages)"' "localhost" $startParams.Port "root" "pass"
 
     Produce-Report $definition $startParams "onfinish"
 
