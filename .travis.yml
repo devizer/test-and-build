@@ -41,7 +41,7 @@ script:
     Install_All=sure
   else
     # on arm/arm64 we install nothing only 
-    export PreInstall_Only_Features="dotnet"
+    export PreInstall_Only_Features="nothing"
   fi
 - sudo pwsh -command ./image-builder.ps1 -Images $ARCH -Only \"$PreInstall_Only_Features\" -Skip \"$Ignore_Features\"
 - cat Private-Report/*/*onfinish*

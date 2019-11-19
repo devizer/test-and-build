@@ -232,7 +232,7 @@ export DEBIAN_FRONTEND=noninteractive
         $isExitOkInfo=if ($isExitOk) {"OK"} else {"ERR"}
         $destructiveInfo=if ($destructive) {" DESTRUCTIVE!"} else {""}
         Write-Host "$($isExitOkInfo):$($destructiveInfo) [$cmd]" 
-        if (-not $isExitOk -and (-not $destructive)) { $errorInfo = "Failed to execute remote command: [$cmd]" }
+        if ((-not $isExitOk) -and (-not $destructive)) { $errorInfo = "Failed to execute remote command: [$cmd]" }
         else {
             & rm -f $tmpCmdLocalFullName
             if (-not $? -and (-not $destructive)) { $errorInfo = "Failed to clean up remote command: [$cmd]" }
