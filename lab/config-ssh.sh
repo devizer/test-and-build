@@ -4,10 +4,11 @@
 ARCH=$1
 
 # COMMAND LINE TOOLS
-for f in "Say" "try-and-retry" "smart-apt-install" "lazy-apt-update"; do
+for f in "Say" "try-and-retry" "smart-apt-install" "lazy-apt-update" "list-packages"; do
     sudo cp permanent-scripts/${f}.sh /usr/local/bin/${f}
     chmod +x /usr/local/bin/${f}
 done
+
 function config_loc() {
     # echo "Content of /etc/default/locale:"; cat /etc/default/locale
     # echo "-----------------"
