@@ -10,6 +10,8 @@ if [[ "$(command -v mono)" == "" ]]; then
   time try-and-retry sudo apt-get --allow-unauthenticated update -qq 
   time smart-apt-install mono-complete nuget msbuild 
   sudo apt clean; 
+  Say "Deleting monodoc*"
+  apt purge "monodoc*" -y -qq 
   # sudo rm -f /etc/apt/sources.list.d/mono-official-stable.list; 
   # sudo apt update
   systemctl stop mono-xsp4
