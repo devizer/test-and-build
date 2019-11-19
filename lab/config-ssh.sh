@@ -49,7 +49,6 @@ mkdir -p ~/bin
 sudo -u user mkdir -p /home/user/bin /home/user/.ssh
 echo "A_VAR_for_USER_via_SSH_Environment='here is it'" | sudo -u user tee -a /home/user/.ssh/environment
 
-
 # systemctl restart ssh
 # sudo kill -SIGHUP $sshId
 Say "SSH server will be restarted. The /etc/ssh/sshd_config is below"
