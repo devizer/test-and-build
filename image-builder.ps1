@@ -255,13 +255,21 @@ function Wait-For-Process
 function Final-Compact
 {
     param($definition, $rootDiskFullName, $newSize="32G", $newPath)
-    # qemu-img create -f qcow2 -o preallocation=metadata disk.intermediate.compacting.qcow2 $newSize
-    qemu-img create -f qcow2                             disk.intermediate.compacting.qcow2 $newSize
-    # qemu-img check newdisk.qcow2
-    & nice "$Global_ExpandDisk_Priority" virt-resize --expand /dev/sda1 "$($rootDiskFullName)" disk.intermediate.compacting.qcow2
-    & nice "$Global_7z_Compress_Priority" qemu-img convert -O qcow2 -c -p disk.intermediate.compacting.qcow2 "$newPath"
-    Prepare-VM $definition "$newPath" "final" ($startParams.Port + 100)
-    & rm -f disk.intermediate.compacting.qcow2
+    if ($newSize -and ($newSize -ne "0"))
+    {
+        # qemu-img create -f qcow2 -o preallocation=metadata disk.intermediate.compacting.qcow2 $newSize
+        qemu-img create -f qcow2                             disk.intermediate.compacting.qcow2 $newSize
+        # qemu-img check newdisk.qcow2
+        & nice "$Global_ExpandDisk_Priority" virt-resize --expand /dev/sda1 "$( $rootDiskFullName )" disk.intermediate.compacting.qcow2
+        & nice "$Global_7z_Compress_Priority" qemu-img convert -O qcow2 -c -p disk.intermediate.compacting.qcow2 "$newPath"
+        Prepare-VM $definition "$newPath" "final" ($startParams.Port + 100)
+        & rm -f disk.intermediate.compacting.qcow2
+    }
+    else {
+        Say "Skip expanding. Just converting $rootDiskFullName --> $newPath with compression"
+        & nice "$Global_7z_Compress_Priority" qemu-img convert -O qcow2 -c -p "$rootDiskFullName" "$newPath" 
+    }
+        
 }
 
 function Inplace-Enlarge
@@ -482,7 +490,7 @@ function Build
     if ($Is_Requested_NodeJS)
     {
         Say "Installing Node [$key]"
-        Remote-Command-Raw "cd /tmp/build; export TRAVIS="$TRAVIS"; bash install-NODE.sh" "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw 'cd /tmp/build; export TRAVIS="$TRAVIS"; bash install-NODE.sh' "localhost" $startParams.Port "root" "pass"
         Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "user" "pass"
         Remote-Command-Raw 'Say "As [$(whoami)] NODE: [$(node --version)]; YARN: [$(yarn --version)]; NPM: [$(npm --version)]"; echo PATH is [$PATH];' "localhost" $startParams.Port "root" "pass"
     }
