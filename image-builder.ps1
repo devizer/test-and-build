@@ -139,7 +139,7 @@ qemu-system-${qemySystem} -name $guestName \
         $qemuCmd = "#!/usr/bin/env bash" + @"
 
 #-device rtl8139 and e1000 are not stable
-$($sudoPrefix)qemu-system-i386 -name $guestName -smp $($startParams.Cores) -m $($startParams.Mem) -M q35  $($kvmParameters) $paramCpu \
+$($sudoPrefix)qemu-system-${qemySystem} -name $guestName -smp $($startParams.Cores) -m $($startParams.Mem) -M q35  $($kvmParameters) $paramCpu \
     -initrd initrd.img \
     -kernel vmlinuz -append "root=/dev/sda1 console=ttyS0" \
     -drive file=$($fileName),id=rootimg \
