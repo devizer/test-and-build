@@ -36,12 +36,10 @@ function Output-To-Markdown{
     param([string] $output, $probe)
     
     $trimmedOutput=$output.Trim([char]13, [char]10)
-    if ($trimmedOutput -like "/tmp/cmd-*") {
+    if (($trimmedOutput -like "/tmp/cmd-*") -or ($trimmedOutput -like "sudo: unknown user*") -or ($trimmedOutput -like "* not found")) 
+    {
         return "|ERR: _" + $trimmedOutput.Substring(51) + "_|"; 
     }    
-    elseif ($trimmedOutput -like "sudo: unknown user*") {
-        return "|ERR: _" + $trimmedOutput.Replace("`n", ". ") + "_|";
-    }
     # Write-Host "trimmedOutput: $trimmedOutput"
     $outputAsArray=$trimmedOutput.Split([char]10)
     $outputAsMarkdown="";
