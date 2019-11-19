@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
 param(
-    [ValidateSet("i386", "arm", "arm64")]    
+    [ValidateSet("arm64", "arm", "AMD64", "i386")]    
     [string[]] $Images,
     [string] $Only,
     [string] $Skip,
