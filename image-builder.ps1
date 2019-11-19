@@ -82,6 +82,7 @@ function Prepare-VM { param($definition, $rootDiskFullName, $guestNamePrefix="",
     & virt-format --partition=mbr --filesystem=ext4 -a ephemeral.qcow2
 popd
 
+    $hasKvm = (& sh -c "ls /dev/kvm 2>/dev/null") | Out-String
     if ($key -eq "arm") {
         $guestName="buster-arm-v7"
         $qemySystem="arm"
@@ -93,12 +94,19 @@ popd
         $paramCpu=" -cpu cortex-a57 "
     }
     elseif ($key -eq "i386") {
-        $hasKvm = (& sh -c "ls /dev/kvm 2>/dev/null") | Out-String
         $guestName=if ($hasKvm) { "buster-i386-KVM" } else { "buster-i386-EMU" }
         $qemySystem="i386"
         # qemu-system-i386 --machine q35 -cpu ?
         # CPU: kvm32|SandyBridge
-        $paramCpu=if ($hasKvm) { " -cpu IvyBridge " } else { " -cpu qemu32 " } 
+        $paramCpu=if ($hasKvm) { " -cpu IvyBridge " } else { " -cpu qemu32 " }
+        $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm "} else {" "}
+    }
+    elseif ($key -eq "AMD64") {
+        $guestName=if ($hasKvm) { "buster-AMD64-KVM" } else { "buster-AMD64-EMU" }
+        $qemySystem="x86_64"
+        # qemu-system-i386 --machine q35 -cpu ?
+        # CPU: kvm32|SandyBridge
+        $paramCpu=if ($hasKvm) { " -cpu IvyBridge " } else { " -cpu qemu32 " }
         $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm "} else {" "}
     }
     else {
@@ -127,7 +135,7 @@ qemu-system-${qemySystem} -name $guestName \
     -nographic
 "@;  
 
-    if ($definition.Key -eq "i386") {
+    if ($definition.Key -eq "i386" -or $definition.Key -eq "AMD64") {
         $qemuCmd = "#!/usr/bin/env bash" + @"
 
 #-device rtl8139 and e1000 are not stable
