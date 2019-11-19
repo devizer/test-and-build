@@ -69,7 +69,6 @@ function Is-Requested-Specific-Feature{
 $featuresToInstall = $FeatureFilters | % { if (Is-Requested-Specific-Feature $_) { $_ } };
 $featuresToSkip = $FeatureFilters | % { if (-not (Is-Requested-Specific-Feature $_)) { $_ } };
 
-
 # port, mem and #cores are indirectly passed via $startParams
 function Prepare-VM { param($definition, $rootDiskFullName, $guestNamePrefix="", $portNumber = 0)
     if (-not $portNumber) { $portNumber=$startParams.Port }
@@ -425,7 +424,7 @@ function Build
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
     Remote-Command-Raw $cmd "localhost" $startParams.Port "user" "pass"
 
-    $mustHavePackages = "smart-apt-install apt-transport-https ca-certificates curl gnupg2 software-properties-common htop mc lsof unzip; apt-get clean"
+    $mustHavePackages = "smart-apt-install apt-transport-https ca-certificates curl gnupg2 software-properties-common htop mc lsof unzip net-tools; apt-get clean"
     Say "Installing must have packages on [$key]"
     Remote-Command-Raw "$mustHavePackages" "localhost" $startParams.Port "root" "pass"
 

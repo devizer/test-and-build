@@ -6,8 +6,12 @@ rm -rf $output/*
 cd $src 
 git pull
 
+
 logs="$HOME/logs"
 mkdir -p $logs
+
+pwsh -c ./image-builder.ps1 -Images AMD64  -MaxVmCores 2 -FinalSize 42G -OutputFolder $output 2>&1 | tee $logs/AMD64.log
+
 (pwsh -c ./image-builder.ps1 -Images i386  -MaxVmCores 3 -FinalSize 42G -OutputFolder $output 2>&1 | tee $logs/i386.log  ) &
 job1=$!
 (pwsh -c ./image-builder.ps1 -Images arm   -MaxVmCores 2 -FinalSize 42G -OutputFolder $output 2>&1 | tee $logs/arm.log   ) &
