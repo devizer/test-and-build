@@ -49,10 +49,10 @@ $definitions=@(
 @{
     key="AMD64"; BasicParts=5; RootQcow="debian-AMD64.basic.qcow2"
     NeedSSE4=$false;
+    EnableKvm=$true;
     RamForBuildingMb=1200;
     # SizeForBuildingMb=7000; # from 3G
     DefaultPort=2203;
-    EnableKvm=$true;
     SwapMb="none";
     # BaseUrl="file:///github.com/"
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
@@ -61,10 +61,10 @@ $definitions=@(
 @{
     key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
     NeedSSE4=$false;
+    EnableKvm=$true;
     RamForBuildingMb=2000; # for NodeJS Compilation
     SizeForBuildingMb=7000; # from 3G
     DefaultPort=2204;
-    EnableKvm=$true;
     SwapMb="none";
     # BaseUrl="file:///github.com/"
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"

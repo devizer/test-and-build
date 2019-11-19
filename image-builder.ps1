@@ -98,15 +98,17 @@ popd
         $qemySystem="i386"
         # qemu-system-i386 --machine q35 -cpu ?
         # CPU: kvm32|SandyBridge
-        $paramCpu=if ($hasKvm) { " -cpu IvyBridge " } else { " -cpu qemu32 " }
+        $kvmCpu=if ($definition.NeedSSE4) {"SandyBridge"} else {"kvm32"}
+        $paramCpu=if ($hasKvm) { " -cpu $kvmCpu " } else { " -cpu qemu32 " }
         $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm "} else {" "}
     }
     elseif ($key -eq "AMD64") {
         $guestName=if ($hasKvm) { "buster-AMD64-KVM" } else { "buster-AMD64-EMU" }
         $qemySystem="x86_64"
         # qemu-system-i386 --machine q35 -cpu ?
-        # CPU: kvm32|SandyBridge
-        $paramCpu=if ($hasKvm) { " -cpu IvyBridge " } else { " -cpu qemu64 " }
+        # CPU: kvm64|SandyBridge
+        $kvmCpu=if ($definition.NeedSSE4) {"SandyBridge"} else {"kvm64"}
+        $paramCpu=if ($hasKvm) { " -cpu $kvmCpu " } else { " -cpu qemu64 " }
         $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm "} else {" "}
     }
     else {
@@ -114,7 +116,7 @@ popd
     }
 
     if ($guestNamePrefix) { $guestName="$guestNamePrefix-$guestName" }
-    $sudoPrefix=if ($hasKvm) {"sudo "} else {""};
+    $sudoPrefix=if ($hasKvm -and ($definition.EnableKvm)) {"sudo "} else {""};
     
     # $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
     # $p2 = if ($k -eq "arm64") { " -cpu cortex-a57 "; } else {""};
