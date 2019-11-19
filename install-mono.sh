@@ -32,7 +32,7 @@ fi
 set -e
 mono --version
 
-  if [[ "$(uname -m)" == "aarch64" ]]; then
+  if [[ "$(uname -m)" == "aarch64" ]]; then # never for travis?
       url=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-dependencies.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash
       DOTNET_Url=https://dot.net/v1/dotnet-install.sh; 
       mkdir -p ~/.dotnet/tools; export PATH="$HOME/.dotnet:$HOME/.dotnet/tools:$PATH"

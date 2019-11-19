@@ -6,6 +6,7 @@ git:
 
 matrix:
   include:
+    - env: [ARCH=AMD64]
     - env: [ARCH=i386]
     - env: [ARCH=arm]
     - env: [ARCH=arm64]
@@ -36,9 +37,11 @@ script:
   if [[ "$ARCH" == "i386" ]]; then
     # on i386 we skip nodejs only
     export Ignore_Features="nodejs" 
+  elif [[ "$ARCH" == "AMD64" ]]; then
+    Install_All=sure
   else
     # on arm/arm64 we install nothing only 
-    export PreInstall_Only_Features="nothing"
+    export PreInstall_Only_Features="dotnet"
   fi
 - sudo pwsh -command ./image-builder.ps1 -Images $ARCH -Only \"$PreInstall_Only_Features\" -Skip \"$Ignore_Features\"
 - cat Private-Report/*/*onfinish*

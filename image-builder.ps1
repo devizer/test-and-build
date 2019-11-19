@@ -106,7 +106,7 @@ popd
         $qemySystem="x86_64"
         # qemu-system-i386 --machine q35 -cpu ?
         # CPU: kvm32|SandyBridge
-        $paramCpu=if ($hasKvm) { " -cpu IvyBridge " } else { " -cpu qemu32 " }
+        $paramCpu=if ($hasKvm) { " -cpu IvyBridge " } else { " -cpu qemu64 " }
         $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm "} else {" "}
     }
     else {
