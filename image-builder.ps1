@@ -230,7 +230,9 @@ export DEBIAN_FRONTEND=noninteractive
     if ($errorInfo -eq $null) {
         & bash -c "$localCmd"
         $isExitOk = $?;
-        # Write-Host "$(if ($isExitOk) {"SUC"} else {"ERR"})" + " " + "$(if ($destructive) {"!DESTRUCTIVE"} else {""})" + ": [$cmd]" 
+        $isExitOkInfo=if ($isExitOk) {"SUC"} else {"ERR"}
+        $destructiveInfo=if ($destructive) {" DESTRUCTIVE!"} else {""}
+        Write-Host "$($isExitOk) :$($destructiveInfo) [$cmd]" 
         if (-not $isExitOk -and (-not $destructive)) { $errorInfo = "Failed to execute remote command: [$cmd]" }
         else {
             & rm -f $tmpCmdLocalFullName
@@ -526,7 +528,7 @@ function Build
     popd
 
     Say "Zeroing free space of [$key]"
-    Remote-Command-Raw "cd /; bash /tmp/build/TearDown.sh; apt clean; before-compact" "localhost" $startParams.Port "root" "pass"
+    Remote-Command-Raw "cd /; bash /tmp/build/TearDown.sh; apt clean; before-compact" "localhost" $startParams.Port "root" "pass" $false $true
 
     # Say "Dismounting guest's share of [$key]"
     # & umount -f $mapto # NOOOO shutdown?????
