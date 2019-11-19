@@ -43,7 +43,7 @@ script:
     # on arm/arm64 we install nothing only 
     export PreInstall_Only_Features="nothing"
   fi
-- sudo pwsh -command ./image-builder.ps1 -Images $ARCH -Only \"$PreInstall_Only_Features\" -Skip \"$Ignore_Features\"
+- sudo pwsh -command ./image-builder.ps1 -Images $ARCH -Only \"$PreInstall_Only_Features\" -Skip \"$Ignore_Features\" -FinalSize 8G
 - cat Private-Report/*/*onfinish*
 - 'pushd Private-Report; find .; popd'
 - cat Private-Report/*/$ARCH-said-by-user.log
