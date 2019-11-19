@@ -22,7 +22,9 @@ if [[ ! "$ARCH" == i386 ]]; then
   Say "Installing docker-compose 1.24.1"
   # sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   dockerComposeFullPath=/usr/local/bin/docker-compose
-  sudo curl -L "https://github.com/docker/compose/releases/download/1.25.0/docker-compose-$(uname -s)-$(uname -m)" -o $dockerComposeFullPath
+  dock_comp_ver=1.25.0
+  dock_comp_ver=1.24.1
+  sudo curl -L "https://github.com/docker/compose/releases/download/$dock_comp_ver/docker-compose-$(uname -s)-$(uname -m)" -o $dockerComposeFullPath
   fileDockerComposeSize=$(stat -c"%s" "$dockerComposeFullPath" 2>/dev/null || stat --printf="%s" "$dockerComposeFullPath")
   echo "Downloaded size of \"$dockerComposeFullPath\" is $fileDockerComposeSize bytes"
   if [[ "$fileDockerComposeSize" -lt 1000000 ]]; then 

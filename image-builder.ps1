@@ -79,7 +79,7 @@ function Prepare-VM { param($definition, $rootDiskFullName, $guestNamePrefix="",
     pushd $path
     & qemu-img create -f qcow2 ephemeral.qcow2 200G
     & virt-format --partition=mbr --filesystem=ext4 -a ephemeral.qcow2
-popd
+    popd
 
     $hasKvm = (& sh -c "ls /dev/kvm 2>/dev/null") | Out-String
     if ($key -eq "arm") {
