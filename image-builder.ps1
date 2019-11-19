@@ -266,12 +266,13 @@ function Final-Compact
         # qemu-img check newdisk.qcow2
         & nice "$Global_ExpandDisk_Priority" virt-resize --expand /dev/sda1 "$( $rootDiskFullName )" disk.intermediate.compacting.qcow2
         & nice "$Global_7z_Compress_Priority" qemu-img convert -O qcow2 -c -p disk.intermediate.compacting.qcow2 "$newPath"
-        Prepare-VM $definition "$newPath" "final" ($startParams.Port + 100)
         & rm -f disk.intermediate.compacting.qcow2
+        Prepare-VM $definition "$newPath" "final" ($startParams.Port + 100)
     }
     else {
         Say "Skip expanding. Just converting $rootDiskFullName --> $newPath with compression"
-        & nice "$Global_7z_Compress_Priority" qemu-img convert -O qcow2 -c -p "$rootDiskFullName" "$newPath" 
+        & nice "$Global_7z_Compress_Priority" qemu-img convert -O qcow2 -c -p "$rootDiskFullName" "$newPath"
+        Prepare-VM $definition "$newPath" "final" ($startParams.Port + 100)
     }
         
 }
