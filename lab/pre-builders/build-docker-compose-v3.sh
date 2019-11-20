@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 
+DOCKER_COMPOSE_VER=1.24.1
 cmd='
 apt update;
-apt install python-pip git  -y;
+apt install python-pip git docker.io -y;
 work=/compose;
 mkdir -p $work;
 cd $work;
 git clone https://github.com/docker/compose;
 cd compose;
 git checkout '$DOCKER_COMPOSE_VER';
-./script/build/linux;
+time ./script/build/linux;
 "./dist/docker-compose--$(uname -s)-$(uname -m)" version;
 '
 

@@ -60,3 +60,4 @@ if [[ false ]]; then
     x=42;
 fi
 
+true
