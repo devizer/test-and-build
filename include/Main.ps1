@@ -17,7 +17,7 @@ $probes=@(
 @{Cmd="cd /tmp; sudo -u postgres psql -t -c 'SELECT version();'"},
 @{Cmd="echo info | redis-cli | grep version"; Head=1; Name="Redis Server" },
 @{Cmd="uname -a"},
-@{Cmd='. /etc/os-release && echo $PRETTY_NAME' },
+@{Cmd='. /etc/os-release && echo "$PRETTY_NAME v$(cat /etc/debian_version)"' },
 @{Cmd="lscpu"}
 )
 

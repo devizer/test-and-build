@@ -512,6 +512,9 @@ function Build
     Say "Log Packages for [$key]"
     Remote-Command-Raw 'Say "PACKAGES:\n$(list-packages)"' "localhost" $startParams.Port "root" "pass"
 
+    Say "Upgrading to the latest Debian for [$key]"
+    Remote-Command-Raw 'cd /tmp/build; bash dist-upgrade.sh' "localhost" $startParams.Port "root" "pass"
+
     Produce-Report $definition $startParams "onfinish"
 
     Say "Store Guest Logs"
@@ -570,8 +573,6 @@ function Build
     popd
     Stop-Transcript
     $Global:IsBuildSuccess=$true;
-
-
 }
 
 # $definitions | % {$globalStartParams.Port = $_.DefaultPort; Build $_ $globalStartParams;};
