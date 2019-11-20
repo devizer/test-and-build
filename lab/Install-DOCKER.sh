@@ -24,13 +24,17 @@ if [[ ! "$ARCH" == i386 ]]; then
   dockerComposeFullPath=/usr/local/bin/docker-compose
   dock_comp_ver=1.25.0
   dock_comp_ver=1.24.1
-  sudo curl -L "https://github.com/docker/compose/releases/download/$dock_comp_ver/docker-compose-$(uname -s)-$(uname -m)" -o $dockerComposeFullPath
+  sudo curl --fail -ksSL "https://github.com/docker/compose/releases/download/$dock_comp_ver/docker-compose-$(uname -s)-$(uname -m)" -o $dockerComposeFullPath || true
   fileDockerComposeSize=$(stat -c"%s" "$dockerComposeFullPath" 2>/dev/null || stat --printf="%s" "$dockerComposeFullPath")
   echo "Downloaded size of \"$dockerComposeFullPath\" is $fileDockerComposeSize bytes"
   if [[ "$fileDockerComposeSize" -lt 1000000 ]]; then 
     rm -f $dockerComposeFullPath
   else
     sudo chmod +x /usr/local/bin/docker-compose  
+  fi
+  
+  if [[ ! -f /usr/local/bin/docker-compose ]]; then
+    sudo curl -L "https://raw.githubusercontent.com/devizer/test-and-build/master/docker-compose/$dock_comp_ver/docker-compose-$(uname -s)-$(uname -m)" -o $dockerComposeFullPath    
   fi
   
 else
