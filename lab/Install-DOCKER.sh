@@ -21,20 +21,16 @@ if [[ ! "$ARCH" == i386 ]]; then
   
   Say "Installing docker-compose 1.24.1"
   # sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  dockerComposeFullPath=/usr/local/bin/docker-compose
-  dock_comp_ver=1.25.0
-  dock_comp_ver=1.24.1
-  sudo curl --fail -ksSL "https://github.com/docker/compose/releases/download/$dock_comp_ver/docker-compose-$(uname -s)-$(uname -m)" -o $dockerComposeFullPath || true
-  fileDockerComposeSize=$(stat -c"%s" "$dockerComposeFullPath" 2>/dev/null || stat --printf="%s" "$dockerComposeFullPath")
-  echo "Downloaded size of \"$dockerComposeFullPath\" is $fileDockerComposeSize bytes"
-  if [[ "$fileDockerComposeSize" -lt 1000000 ]]; then 
-    rm -f $dockerComposeFullPath
-  else
-    sudo chmod +x /usr/local/bin/docker-compose  
-  fi
-  
+  dock_comp_ver=1.25.0 # is not yet compiled for arm64
+  dock_comp_ver=1.24.1 # compiled for both armv7 and v7
+  sudo curl --fail -ksSL -o /usr/local/bin/docker-compose "https://github.com/docker/compose/releases/download/$dock_comp_ver/docker-compose-$(uname -s)-$(uname -m)" || true
   if [[ ! -f /usr/local/bin/docker-compose ]]; then
-    sudo curl -L "https://raw.githubusercontent.com/devizer/test-and-build/master/docker-compose/$dock_comp_ver/docker-compose-$(uname -s)-$(uname -m)" -o $dockerComposeFullPath    
+    sudo curl --fail -ksSL -o /usr/local/bin/docker-compose "https://raw.githubusercontent.com/devizer/test-and-build/master/docker-compose/$dock_comp_ver/docker-compose-$(uname -s)-$(uname -m)" || true    
+  fi
+  if [[ -f /usr/local/bin/docker-compose ]]; then
+    sudo chmod +x /usr/local/bin/docker-compose
+  else
+    Say "docker-compose $dock_comp_ver can not be installed for $(uname -s) $(uname -m)" 
   fi
   
 else
