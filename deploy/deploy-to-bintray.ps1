@@ -25,5 +25,6 @@ Write-Host "To Publish: $version"
 & mkdir -p "$Source_Folder/public-bintray"
 & ln -f -s "$FROM/final-$ARCH-splitted" "$Source_Folder/public-bintray/$version" 
 
-$binTray
 Get-Variable
+Write-Host "Global:BinTray_Object vvv"
+$Global:BinTray_Object

@@ -42,3 +42,5 @@ $binTray.version.name = "$version"
 $binTray.version.desc = "Build $version"
 SaveAsJson $binTray "../bintray.json"
 
+$Global:BinTray_Object=$binTray
+
