@@ -20,3 +20,6 @@ Write-Host "To Publish: $version"
 
 # Build Source Folder
 & cp ../bintray.json $Source_Folder
+
+& mkdir -p "$Source_Folder/public-bintray"
+& ln -f -s "$FROM/final-$ARCH-splitted" "$Source_Folder/public-bintray/$version" 
