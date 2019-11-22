@@ -19,6 +19,9 @@ $version=(& cat ../bintray.json | jq -r ".version.name") | Out-String
 $version=$version.Trim(@([char]10,[char]13))
 Write-Host "To Publish: $version"
 
+$DOWNLOAD_PARTS_COUNT=(gci -Path $FROM -Include "*.qcow2.7z.*").Count
+Write-Host "DOWNLOAD_PARTS_COUNT: $DOWNLOAD_PARTS_COUNT"
+
 # Build Source Folder
 & cp ../bintray.json $Source_Folder
 
@@ -53,3 +56,14 @@ $Env:BINTRAY_REPO="$package"
 $Env:PCK_NAME="$package"
 $Env:BINTRAY_USER="devizer"
 & bash delete-bintray-versions-except-stable.sh
+
+Write-Host "Update Metadata"
+pusdh metadata
+& mkdir -p public-bintray
+& rm -rf ./public-bintray/*
+@"
+
+STABLE_VERSION=$version
+DOWNLOAD_PARTS_COUNT=$DOWNLOAD_PARTS_COUNT
+"@ > "metadata/VERSION-$ARCH.sh"
+dpl --provider=bintray --file=bintray.json --user=devizer --key=$BINTRAY_API_KEY --skip-cleanup
