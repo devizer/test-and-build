@@ -28,7 +28,8 @@ Write-Host "Clearing folder [$Source_Folder/public-bintray]"
 pushd "$Source_Folder/public-bintray"
     & rm -rf *
 popd
-& ln -f -s "$FROM/final-$ARCH-splitted" "$Source_Folder/public-bintray/$version"
+# & ln -f -s "$FROM/final-$ARCH-splitted" "$Source_Folder/public-bintray/$version"
+& mkdir -p "$Source_Folder/public-bintray/$version"; & cp -f "$FROM/final-$ARCH-splitted/*" "$Source_Folder/public-bintray/$version/*"
 
 
 Write-Host "final bintray.json"
