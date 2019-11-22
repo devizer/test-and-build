@@ -12,7 +12,7 @@ $Source_Folder="/tmp/debian-to-bintray-$ARCH"
 
 # Prepare version
 pushd ../build
-& pwsh ./inject-git-info.ps1
+./inject-git-info.ps1
 popd
 
 $version=(& cat ../bintray.json | jq -r ".version.name") | Out-String
@@ -24,3 +24,5 @@ Write-Host "To Publish: $version"
 
 & mkdir -p "$Source_Folder/public-bintray"
 & ln -f -s "$FROM/final-$ARCH-splitted" "$Source_Folder/public-bintray/$version" 
+
+$binTray

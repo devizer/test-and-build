@@ -1,9 +1,9 @@
 {
   "package": {
-    "name": "debian-multiarch",
-    "repo": "debian-multiarch",
+    "name": "debian-arm-for-building-and-testing",
+    "repo": "debian-arm-for-building-and-testing",
     "subject": "devizer",
-    "desc": "The debian images for arm32 and arm64 architectures. For build servers and interactive use on Windows and Linux",
+    "desc": "The debian images for arm32 and arm64 architectures. For build servers and interactive use on Windows, Mac OS and Linux",
     "website_url": "https://github.com/devizer/test-and-build",
     "issue_tracker_url": "https://github.com/devizer/test-and-build/issues",
     "vcs_url": "https://github.com/devizer/test-and-build",
