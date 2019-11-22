@@ -66,5 +66,5 @@ pushd metadata
 STABLE_VERSION=$version
 DOWNLOAD_PARTS_COUNT=$DOWNLOAD_PARTS_COUNT
 "@ > "metadata/VERSION-$ARCH.sh"
-dpl --provider=bintray --file=bintray.json --user=devizer --key=$BINTRAY_API_KEY --skip-cleanup
+dpl --provider=bintray --file=bintray.json --user=devizer "--key=$($Env:BINTRAY_API_KEY)" --skip-cleanup
 popd
