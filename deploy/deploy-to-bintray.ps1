@@ -40,5 +40,5 @@ Write-Host "final bintray.json`n$binTray"
 SaveAsJson $binTray "$Source_Folder/bintray.json"
 
 pushd $Source_Folder
-& dpl --provider=bintray --file=bintray.json --user=devizer "--key=$BINTRAY_API_KEY" --dry-run
+& dpl --provider=bintray --file=bintray.json --user=devizer "--key=$($Env:BINTRAY_API_KEY)" --dry-run
 popd
