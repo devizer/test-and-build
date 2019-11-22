@@ -25,6 +25,12 @@ Write-Host "To Publish: $version"
 & mkdir -p "$Source_Folder/public-bintray"
 & ln -f -s "$FROM/final-$ARCH-splitted" "$Source_Folder/public-bintray/$version" 
 
-Get-Variable
-Write-Host "Global:BinTray_Object vvv"
-$Global:BinTray_Object
+Write-Host "final bintray.json"
+$binTray=$Global:BinTray_Object
+$package="debian-$ARCH-for-building-and-testing"
+$binTray.package.name=$package
+$binTray.package.repo=$package
+Write-Host "final bintray.json`n$binTray"
+SaveAsJson $binTray "$Source_Folder/bintray.json"
+
+
