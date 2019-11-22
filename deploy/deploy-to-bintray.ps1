@@ -15,7 +15,8 @@ pushd ../build
 & pwsh ./inject-git-info.ps1
 popd
 
-$version=(& cat ../bintray.json | jq -r ".version.name") | Out-String 
+$version=(& cat ../bintray.json | jq -r ".version.name") | Out-String
+$version=$version.Trim(@([char]10,[char]13))
 Write-Host "To Publish: $version"
 
 # Build Source Folder
