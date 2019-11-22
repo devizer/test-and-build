@@ -26,3 +26,4 @@ Write-Host "To Publish: $version"
 & ln -f -s "$FROM/final-$ARCH-splitted" "$Source_Folder/public-bintray/$version" 
 
 $binTray
+Get-Variable
