@@ -29,7 +29,10 @@ pushd "$Source_Folder/public-bintray"
     & rm -rf *
 popd
 # & ln -f -s "$FROM/final-$ARCH-splitted" "$Source_Folder/public-bintray/$version"
-& mkdir -p "$Source_Folder/public-bintray/$version"; & cp -f "$FROM/final-$ARCH-splitted/*" "$Source_Folder/public-bintray/$version"
+& mkdir -p "$Source_Folder/public-bintray/$version"; 
+$cp_Cmd=cp -f "$FROM/final-$ARCH-splitted/*" "$Source_Folder/public-bintray/$version"
+Write-Host "|# $cp_Cmd"
+& bash -c "$cp_Cmd"
 
 
 Write-Host "final bintray.json"
