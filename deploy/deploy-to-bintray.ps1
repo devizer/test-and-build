@@ -12,7 +12,7 @@ $Source_Folder="/tmp/debian-to-bintray-$ARCH"
 
 # Prepare version
 pushd ../build
-./inject-git-info.ps1
+. ./inject-git-info.ps1
 popd
 
 $version=(& cat ../bintray.json | jq -r ".version.name") | Out-String
