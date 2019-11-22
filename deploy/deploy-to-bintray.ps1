@@ -13,7 +13,7 @@ $Source_Folder="$(pwd)/tmp/debian-to-bintray-$ARCH"
 
 # Prepare version
 pushd ../build
-. ./inject-git-info.ps1
+    . ./inject-git-info.ps1
 popd
 
 $version=(& cat ../bintray.json | jq -r ".version.name") | Out-String
@@ -47,3 +47,10 @@ pushd $Source_Folder
 Write-Host "Running dpl --dry-run for $(pwd)"
 & dpl --provider=bintray --file=bintray.json --user=devizer "--key=$($Env:BINTRAY_API_KEY)" --skip-cleanup # --dry-run
 popd
+
+Write-Host "Delete bintray versions except the stable [$version] version (in $(pwd))"
+$Env:VERSION_STABLE="$version"
+$Env:BINTRAY_REPO="$package"
+$Env:PCK_NAME="$package"
+$Env:BINTRAY_USER="devizer"
+& bash delete-bintray-versions-except-stable.sh
