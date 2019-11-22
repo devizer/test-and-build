@@ -58,7 +58,7 @@ $Env:BINTRAY_USER="devizer"
 & bash delete-bintray-versions-except-stable.sh
 
 Write-Host "Update Metadata"
-pusdh metadata
+pushd metadata
 & mkdir -p public-bintray
 & rm -rf ./public-bintray/*
 @"
@@ -67,3 +67,4 @@ STABLE_VERSION=$version
 DOWNLOAD_PARTS_COUNT=$DOWNLOAD_PARTS_COUNT
 "@ > "metadata/VERSION-$ARCH.sh"
 dpl --provider=bintray --file=bintray.json --user=devizer --key=$BINTRAY_API_KEY --skip-cleanup
+popd
