@@ -23,6 +23,7 @@ Write-Host "To Publish: $version"
 & cp ../bintray.json $Source_Folder
 
 & mkdir -p "$Source_Folder/public-bintray"
+Write-Host "Clearing folder [$Source_Folder/public-bintray]"
 & rm -rf "$Source_Folder/public-bintray/*"
 & ln -f -s "$FROM/final-$ARCH-splitted" "$Source_Folder/public-bintray/$version" 
 
