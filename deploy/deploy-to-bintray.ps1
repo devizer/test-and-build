@@ -7,7 +7,8 @@ param(
     [string] $ARCH
 )
 
-$Source_Folder="/tmp/debian-to-bintray-$ARCH"
+
+$Source_Folder="$(pwd)/tmp/debian-to-bintray-$ARCH"
 & mkdir -p $Source_Folder
 
 # Prepare version

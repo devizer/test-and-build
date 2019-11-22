@@ -18,7 +18,9 @@
       "arm64",
       "arm32",
       "armv7",
-      "armv8"
+      "armv8",
+      "building",
+      "testing"
     ],
     "public_download_numbers": true,
     "public_stats": true
