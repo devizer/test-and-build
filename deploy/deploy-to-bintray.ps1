@@ -1,13 +1,16 @@
 #!/usr/bin/env pwsh
+# git pull; pwsh deploy-to-bintray.ps1 -From /transient-builds/FINAL-SUPER -Arch arm64
 param(
-    [string] $from
+    [Parameter(Position=0,mandatory=$true)]
+    [string] $FROM,
+    [Parameter(Position=1,mandatory=$true)]
+    [string] $ARCH
 )
 
-$Working_Folder="/tmp/debian-to-bintray"
-& mkdir -p $Working_Folder
+$Source_Folder="/tmp/debian-to-bintray-$ARCH"
+& mkdir -p $Source_Folder
 
-
-
+# Prepare version
 pushd ../build
 & pwsh ./inject-git-info.ps1
 popd
@@ -15,4 +18,5 @@ popd
 $version=(& cat ../bintray.json | jq -r ".version.name") | Out-String 
 Write-Host "To Publish: $version"
 
-& cp ../bintray.json $Working_Folder
+# Build Source Folder
+& cp ../bintray.json $Source_Folder
