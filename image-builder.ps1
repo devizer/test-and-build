@@ -421,8 +421,11 @@ function Build
 
     Say "Configure LC_ALL, UTC and optionally swap for [$key]"
     Remote-Command-Raw "cd /tmp/build; bash config-system.sh $( $definition.SwapMb )" "localhost" $startParams.Port "root" "pass" $true # re-connect
-    
-    Produce-Report $definition $startParams "onstart"
+
+    Say "Upgrading to the latest Debian for [$key]"
+    Remote-Command-Raw 'cd /tmp/build; bash dist-upgrade.sh' "localhost" $startParams.Port "root" "pass"
+
+    # Produce-Report $definition $startParams "onstart"
     
     Say "Greetings from Guest [$key]"
     $cmd = 'Say "Hello from $(whoami). I am the $(hostname) host"; sudo lscpu; echo [PATH] is: $PATH; echo "Content of /etc/default/locale:"; cat /etc/default/locale; echo "[env]"; printenv | sort'
@@ -517,9 +520,6 @@ function Build
     Say "Log Packages for [$key]"
     Remote-Command-Raw 'Say "PACKAGES:\n$(list-packages)"' "localhost" $startParams.Port "root" "pass"
 
-    Say "Upgrading to the latest Debian for [$key]"
-    Remote-Command-Raw 'cd /tmp/build; bash dist-upgrade.sh' "localhost" $startParams.Port "root" "pass"
-    
     Say "Store list-packages"
     $installedPackagesFileName="installed-packages-$key.txt"
     $cmd='list-packages | cut -c 12- | sort > /tmp/' + $installedPackagesFileName
