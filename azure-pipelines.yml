@@ -87,6 +87,24 @@ steps:
 
     displayName: 'pre-install qemu'
 
+  - script: |
+        ARCH=$arch
+        sudo pwsh -command ./image-builder.ps1 -Images $ARCH -FinalSize 8G
+        sudo df -T -h
+        echo "::--> on finish"
+        cat Private-Report/*/*onfinish*
+        pushd Private-Report; find .; popd
+        echo "::--> said by user"
+        cat Private-Report/*/$ARCH-said-by-user.log
+        echo "::--> said by root"
+        cat Private-Report/*/$ARCH-said-by-root.log
+        echo "::--> summary"
+        cat Private-Report/**/summary*
+        echo "::--> Installed Packages"
+        cat Private-Report/**/installed-packages*
+      
+    displayName: 'Build $(arch) Image'
+
   - script: sudo du / -d 2 -h || true
     displayName: 'show disk usage'
 
