@@ -1,0 +1,147 @@
+##[section]Starting: show environment
+==============================================================================
+Task         : Command line
+Description  : Run a command line script using Bash on Linux and macOS and cmd.exe on Windows
+Version      : 2.151.2
+Author       : Microsoft Corporation
+Help         : https://docs.microsoft.com/azure/devops/pipelines/tasks/utility/command-line
+==============================================================================
+Generating script.
+Script contents:
+printenv | sort
+========================== Starting Command Output ===========================
+[command]/bin/bash --noprofile --norc /home/vsts/work/_temp/f58af30a-e698-4c20-bade-4e26351a4da2.sh
+AGENT_ACCEPTTEEEULA=True
+AGENT_BUILDDIRECTORY=/home/vsts/work/1
+AGENT_DISABLELOGPLUGIN_TESTFILEPUBLISHERPLUGIN=true
+AGENT_DISABLELOGPLUGIN_TESTRESULTLOGPLUGIN=false
+AGENT_HOMEDIRECTORY=/home/vsts/agents/2.160.1
+AGENT_ID=81
+AGENT_JOBNAME=Job ARM32_V7
+AGENT_JOBSTATUS=Succeeded
+AGENT_MACHINENAME=fv-az767
+AGENT_NAME=Azure Pipelines 2
+AGENT_OS=Linux
+AGENT_OSARCHITECTURE=X64
+AGENT_RETAINDEFAULTENCODING=false
+AGENT_ROOTDIRECTORY=/home/vsts/work
+AGENT_TEMPDIRECTORY=/home/vsts/work/_temp
+AGENT_TOOLSDIRECTORY=/opt/hostedtoolcache
+AGENT_VERSION=2.160.1
+AGENT_WORKFOLDER=/home/vsts/work
+ANDROID_HOME=/usr/local/lib/android/sdk
+ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+ANT_HOME=/usr/share/ant
+ARCH=arm
+AZURE_HTTP_USER_AGENT=VSTS_84619558-13fd-4883-a922-b6f1797657f9_build_3_0
+BOOST_ROOT=/usr/local/share/boost/1.69.0
+BOOST_ROOT_1_69_0=/usr/local/share/boost/1.69.0
+BUILD_ARTIFACTSTAGINGDIRECTORY=/home/vsts/work/1/a
+BUILD_BINARIESDIRECTORY=/home/vsts/work/1/b
+BUILD_BUILDID=76
+BUILD_BUILDNUMBER=20191123.27
+BUILD_BUILDURI=vstfs:///Build/Build/76
+BUILD_CONTAINERID=3649310
+BUILD_DEFINITIONNAME=devizer.test-and-build
+BUILD_DEFINITIONVERSION=1
+BUILD_QUEUEDBY=GitHub
+BUILD_QUEUEDBYID=6d9b16fd-72ec-4a1e-9e5c-579de749136f
+BUILD_REASON=IndividualCI
+BUILD_REPOSITORY_CLEAN=False
+BUILD_REPOSITORY_GIT_SUBMODULECHECKOUT=False
+BUILD_REPOSITORY_ID=devizer/test-and-build
+BUILD_REPOSITORY_LOCALPATH=/home/vsts/work/1/s
+BUILD_REPOSITORY_NAME=devizer/test-and-build
+BUILD_REPOSITORY_PROVIDER=GitHub
+BUILD_REPOSITORY_URI=https://github.com/devizer/test-and-build
+BUILD_REQUESTEDFOR=GitHub
+BUILD_REQUESTEDFOREMAIL=
+BUILD_REQUESTEDFORID=6d9b16fd-72ec-4a1e-9e5c-579de749136f
+BUILD_SOURCEBRANCH=refs/heads/master
+BUILD_SOURCEBRANCHNAME=master
+BUILD_SOURCESDIRECTORY=/home/vsts/work/1/s
+BUILD_SOURCEVERSION=7b164a5656c4c00c1fca3a8fd1ebac8e125adf09
+BUILD_SOURCEVERSIONAUTHOR=devizer
+BUILD_SOURCEVERSIONMESSAGE=fuul build 8G
+BUILD_STAGINGDIRECTORY=/home/vsts/work/1/a
+CHROME_BIN=/usr/bin/google-chrome
+COMMON_TESTRESULTSDIRECTORY=/home/vsts/work/1/TestResults
+CONDA=/usr/share/miniconda
+DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+ENDPOINT_URL_SYSTEMVSSCONNECTION=https://devizer.visualstudio.com/
+GIT_TERMINAL_PROMPT=0
+GOROOT=/usr/local/go1.12
+GOROOT_1_11_X64=/usr/local/go1.11
+GOROOT_1_12_X64=/usr/local/go1.12
+GOROOT_1_13_X64=/usr/local/go1.13
+GRADLE_HOME=/usr/share/gradle
+HOME=/home/vsts
+INVOCATION_ID=b299fe6cc44c46fc90a68b3e4cce7a8e
+ImageVersion=20191025.1
+JAVA_HOME=/usr/lib/jvm/zulu-8-azure-amd64
+JAVA_HOME_11_X64=/usr/lib/jvm/zulu-11-azure-amd64
+JAVA_HOME_12_X64=/usr/lib/jvm/zulu-12-azure-amd64
+JAVA_HOME_7_X64=/usr/lib/jvm/zulu-7-azure-amd64
+JAVA_HOME_8_X64=/usr/lib/jvm/zulu-8-azure-amd64
+JOURNAL_STREAM=9:28429
+LANG=C.UTF-8
+LEIN_HOME=/usr/local/lib/lein
+LEIN_JAR=/usr/local/lib/lein/self-installs/leiningen-2.9.1-standalone.jar
+M2_HOME=/usr/share/apache-maven-3.6.1
+MSDEPLOY_HTTP_USER_AGENT=VSTS_84619558-13fd-4883-a922-b6f1797657f9_build_3_0
+PATH=/usr/share/rust/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin
+PIPELINE_WORKSPACE=/home/vsts/work/1
+PWD=/home/vsts/work/1/s
+RUNNER_TOOLSDIRECTORY=/opt/hostedtoolcache
+SHLVL=1
+SYSTEM=build
+SYSTEM_ARTIFACTSDIRECTORY=/home/vsts/work/1/a
+SYSTEM_COLLECTIONID=84619558-13fd-4883-a922-b6f1797657f9
+SYSTEM_COLLECTIONURI=https://devizer.visualstudio.com/
+SYSTEM_CULTURE=en-US
+SYSTEM_DEFAULTWORKINGDIRECTORY=/home/vsts/work/1/s
+SYSTEM_DEFINITIONID=3
+SYSTEM_DEFINITIONNAME=devizer.test-and-build
+SYSTEM_ENABLEACCESSTOKEN=SecretVariable
+SYSTEM_HOSTTYPE=build
+SYSTEM_ISSCHEDULED=False
+SYSTEM_JOBATTEMPT=1
+SYSTEM_JOBDISPLAYNAME=Job ARM32_V7
+SYSTEM_JOBID=935a63ec-40e3-5128-30a0-30fea8ea4afb
+SYSTEM_JOBIDENTIFIER=Job.ARM32_V7
+SYSTEM_JOBNAME=ARM32_V7
+SYSTEM_JOBPARALLELISMTAG=Public
+SYSTEM_JOBPOSITIONINPHASE=1
+SYSTEM_PARALLELEXECUTIONTYPE=MultiConfiguration
+SYSTEM_PHASEATTEMPT=1
+SYSTEM_PHASEDISPLAYNAME=Job
+SYSTEM_PHASEID=3a3a2a60-14c7-570b-14a4-fa42ad92f52a
+SYSTEM_PHASENAME=Job
+SYSTEM_PIPELINESTARTTIME=2019-11-23 04:58:07+00:00
+SYSTEM_PLANID=c3967462-2f7e-4c81-a8fa-406344416972
+SYSTEM_PULLREQUEST_ISFORK=False
+SYSTEM_SERVERTYPE=Hosted
+SYSTEM_STAGEATTEMPT=1
+SYSTEM_STAGEDISPLAYNAME=__default
+SYSTEM_STAGEID=96ac2280-8cb4-5df5-99de-dd2da759617d
+SYSTEM_STAGENAME=__default
+SYSTEM_TASKDEFINITIONSURI=https://devizer.visualstudio.com/
+SYSTEM_TASKDISPLAYNAME=show environment
+SYSTEM_TASKINSTANCEID=06368c7c-861f-522a-af78-6087d4c23be5
+SYSTEM_TASKINSTANCENAME=CmdLine2
+SYSTEM_TEAMFOUNDATIONCOLLECTIONURI=https://devizer.visualstudio.com/
+SYSTEM_TEAMFOUNDATIONSERVERURI=https://devizer.visualstudio.com/
+SYSTEM_TEAMPROJECT=debian-multiarch
+SYSTEM_TEAMPROJECTID=53f77b2c-f1fd-450c-997a-0c6ee666ed87
+SYSTEM_TIMELINEID=c3967462-2f7e-4c81-a8fa-406344416972
+SYSTEM_TOTALJOBSINPHASE=2
+SYSTEM_WORKFOLDER=/home/vsts/work
+TASK_DISPLAYNAME=show environment
+TF_BUILD=True
+USER=vsts
+VCPKG_INSTALLATION_ROOT=/usr/local/share/vcpkg
+VSTS_AGENT_PERFLOG=/home/vsts/perflog
+VSTS_PROCESS_LOOKUP_ID=vsts_78bd83c8-0f96-457c-8af4-f217e614f182
+_=/usr/bin/printenv
+agent.jobstatus=Succeeded
+##[section]Finishing: show environment

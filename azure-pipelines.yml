@@ -5,9 +5,9 @@
 strategy:
   matrix:
     ARM32_V7:
-      arch: 'arm'
+      ARCH: 'arm'
     ARM64_V8:
-      arch: 'arm64'
+      ARCH: 'arm64'
 
 trigger:
 - master
@@ -88,7 +88,6 @@ steps:
     displayName: 'pre-install qemu'
 
   - script: |
-        ARCH=$arch
         sudo pwsh -command ./image-builder.ps1 -Images $ARCH -FinalSize 42G
         sudo df -T -h
         echo "::--> on finish"
@@ -103,7 +102,7 @@ steps:
         echo "::--> Installed Packages"
         cat Private-Report/**/installed-packages*
       
-    displayName: 'Build $(arch) Image'
+    displayName: 'Build $(ARCH) Image'
 
   - script: sudo du / -d 2 -h || true
     displayName: 'show disk usage'
