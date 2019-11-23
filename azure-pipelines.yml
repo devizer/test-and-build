@@ -17,19 +17,26 @@ steps:
     displayName: 'show disk free space'
 
   - script: |
-      sudo fdisk -l 
-      path="/transient-builds"
-      file="/mnt/BTRFS.disk"
+      sudo fdisk -l
+      # 14334.9 Mb
       time sudo apt-get install btrfs-tools -y -qq
-      sudo dd if=/dev/zero of="/$file" bs=1 seek=12800M count=1
-      sudo mkfs.btrfs -L a-disk "$file" -O ^extref,^skinny-metadata
+      path="/transient-builds"
       sudo mkdir -p "$path"
+      
+      if [ true ]; then
+          sudo umount /mnt
+          file=/dev/sdb1
+      else
+          file="/mnt/BTRFS.disk"
+          sudo dd if=/dev/zero of="/$file" bs=1 seek=12800M count=1
+      fi
+      
+      sudo mkfs.btrfs -L a-disk "$file" -O ^extref,^skinny-metadata
       echo "MOUNTING $file as $path"
       sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force
       sudo chown $(whoami) $path
       touch $path/hi
       df -h
-
 
     displayName: 'prepare /transient-builds'
 
