@@ -7,9 +7,21 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-18.04'
 
 steps:
+  - script: |
+        sudo apt update;
+        sudo apt install -y libguestfs-tools sshpass sshfs qemu-system-arm qemu-block-extra qemu-utils p7zip-full \
+        libguestfs-tools qemu-system-arm qemu-system-i386 \
+        qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker
+      
+        apt clean
+      
+        sudo modprobe kvm
+        kvm-ok
+    displayName: 'pre-install qemu'
+
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
 
