@@ -16,6 +16,9 @@ steps:
   - script: df -h
     displayName: 'show disk space usage'
 
+  - script: sudo lscpu
+    displayName: 'show cpu'
+
   - script: free -m
     displayName: 'show memory usage'
 
