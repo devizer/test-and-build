@@ -16,7 +16,7 @@ steps:
   - script: df -h
     displayName: 'show disk free space'
 
-  - script: du / -d 2 -h
+  - script: sudo du / -d 2 -h
     displayName: 'show disk usage'
 
   - script: sudo lscpu
