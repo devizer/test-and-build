@@ -17,6 +17,7 @@ steps:
     displayName: 'show disk free space'
 
   - script: |
+      sudo fdisk -l 
       path="/transient-builds"
       file="/mnt/BTRFS.disk"
       time sudo apt-get install btrfs-tools -y -qq
