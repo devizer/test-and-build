@@ -33,11 +33,13 @@ steps:
       path="/transient-builds"
       file="/mnt/BTRFS.disk"
       time sudo apt-get install btrfs-tools -y -qq
-      sudo dd if=/dev/zero of="/$file" bs=1 seek=10900M count=1
-      sudo mkfs.btrfs -L a-disk "$file"
+      sudo dd if=/dev/zero of="/$file" bs=1 seek=12800M count=1
+      sudo mkfs.btrfs -L a-disk "$file" -O ^extref,^skinny-metadata
       sudo mkdir -p "$path"
       echo "MOUNTING $file as $path"
       sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force=zlib,norecovery
+      sudo chown $(whoami) $path
+      touch $path/hi
       df -h
 
       
