@@ -22,7 +22,8 @@ steps:
         kvm-ok
     displayName: 'pre-install qemu'
 
-- script: command -v gem || (sudo apt-get update -yq; sudo apt-get install -y ruby-dev; gem install dpl)
+- script: |
+    command -v gem || (sudo apt-get update -yq; sudo apt-get install -y ruby-dev; gem install dpl)
   displayName: 'install dpl using sudo'
 
 - script: |
