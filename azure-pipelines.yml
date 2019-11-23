@@ -10,8 +10,11 @@ pool:
   vmImage: 'ubuntu-18.04'
 
 steps:
-  - script: uname -a 
+  - script: uname -a
     displayName: 'show kernel version'
+
+  - script: 'printenv | sort'
+    displayName: 'show environment'
 
   - script: df -h
     displayName: 'show disk free space'
