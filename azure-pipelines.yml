@@ -24,7 +24,7 @@ steps:
       sudo mkfs.btrfs -L a-disk "$file" -O ^extref,^skinny-metadata
       sudo mkdir -p "$path"
       echo "MOUNTING $file as $path"
-      sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force=zlib,norecovery
+      sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force
       sudo chown $(whoami) $path
       touch $path/hi
       df -h
