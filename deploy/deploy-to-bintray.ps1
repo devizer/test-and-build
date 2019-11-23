@@ -51,13 +51,7 @@ Write-Host "!> Running dpl --dry-run for $(pwd)"
 & dpl --provider=bintray --file=bintray.json --user=devizer "--key=$($Env:BINTRAY_API_KEY)" --skip-cleanup # --dry-run
 popd
 
-Write-Host "!> Delete bintray versions except the stable [$version] version (in $(pwd))"
-$Env:VERSION_STABLE="$version"
-$Env:BINTRAY_REPO="$package"
-$Env:PCK_NAME="$package"
-$Env:BINTRAY_USER="devizer"
-& bash delete-bintray-versions-except-stable.sh
-
+# N1
 Write-Host "!> Update Metadata"
 pushd metadata
 & mkdir -p public-bintray
@@ -69,3 +63,12 @@ DOWNLOAD_PARTS_COUNT=$DOWNLOAD_PARTS_COUNT
 "@ > "public-bintray/VERSION-$ARCH.sh"
 dpl --provider=bintray --file=bintray.json --user=devizer "--key=$($Env:BINTRAY_API_KEY)" --skip-cleanup
 popd
+
+# N2
+Write-Host "!> Delete bintray versions except the stable [$version] version (in $(pwd))"
+$Env:VERSION_STABLE="$version"
+$Env:BINTRAY_REPO="$package"
+$Env:PCK_NAME="$package"
+$Env:BINTRAY_USER="devizer"
+& bash delete-bintray-versions-except-stable.sh
+
