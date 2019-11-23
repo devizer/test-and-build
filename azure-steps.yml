@@ -10,10 +10,14 @@ steps:
       echo "FINAL_SIZE is ....... [$FINAL_SIZE]"
       echo "OUTPUT_FOLDER is .... [$OUTPUT_FOLDER]"
       echo "build number is ..... [$commits_count]"
+      echo "working folder ...... [$(pwd)]"
       
       echo "##vso[task.setvariable variable=FINAL_SIZE]$FINAL_SIZE"
       echo "##vso[task.setvariable variable=OUTPUT_FOLDER]$OUTPUT_FOLDER"
     displayName: 'INIT [$(ARCH)] (define FINAL_SIZE and OUTPUT_FOLDER)'
+
+  - script: 'echo "pwd is [$(pwd)]"; tree --du -h' 
+    displayName: 'show folder structure'
 
   - script: uname -a
     displayName: 'show kernel version'
@@ -108,9 +112,15 @@ steps:
       
     displayName: 'BUILD [$(ARCH)] IMAGE'
 
-  - script: sudo du / -d 2 -h || true
-    displayName: 'show disk usage'
+  - script: tree $OUTPUT_FOLDER --du -h || true
+    displayName: '$(OUTPUT_FOLDER) DISK USAGE'
+
+  - script: tree --du -h || true
+    displayName: 'Working Folder DISK USAGE'
 
   - script: 'pushd $OUTPUT_FOLDER; find .; popd || true'
-    displayName: 'LIST BUILD OUTPUT'
+    displayName: '[Temp, KillIt] LIST BUILD OUTPUT'
+
+  - script: 'pwd; pushd deploy; pwsh deploy-to-bintray.ps1 -From "$OUTPUT_FOLDER" -Arch $ARCH; popd'
+    displayName: 'PUBLISH to BINTRAY'
 

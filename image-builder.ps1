@@ -24,6 +24,7 @@ $Global_ExpandDisk_Priority="-20"
 $Global_Max_VM_Cores = $MaxVmCores
 
 $Global_7z_Compress_Args = if ($Env:TRAVIS) { "-mx=1 -mfb=16 -md=16k" } else { "-mx=3 -mfb=32 -md=4m" }
+if ($Env:AZURE_HTTP_USER_AGENT) { $Global_7z_Compress_Args="-mx=9 -mfb=64 -md=64m"}
 
 $imagesToBuild=$Images
 
