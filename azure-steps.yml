@@ -96,7 +96,8 @@ steps:
   - script: |
         echo "FINAL_SIZE is [$FINAL_SIZE]"
         echo "OUTPUT_FOLDER is [$OUTPUT_FOLDER]"
-        sudo pwsh -command ./image-builder.ps1 -Only local-postgres -Images $ARCH -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER
+        # -Only local-postgres?
+        sudo pwsh -command ./image-builder.ps1 -Images $ARCH -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER
         sudo df -T -h
         echo "::--> on finish"
         cat Private-Report/*/*onfinish*
