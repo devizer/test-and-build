@@ -379,6 +379,8 @@ function Build
 
     Say "Basic Image for $key exctracted: $qcowFile ($(Get-File-Size-Info $qcowFile))";
     & nice "$Global_ExpandDisk_Priority" virt-filesystems --all --long --uuid -h -a "$qcowFile"
+    & dh -T -h
+    Say "Done: Basic Image for $key exctracted: $qcowFile ($(Get-File-Size-Info $qcowFile))";
 
     if ($definition.SizeForBuildingMb)
     {
