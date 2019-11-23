@@ -35,6 +35,7 @@ steps:
 
         sudo modprobe kvm
         sudo kvm-ok
+        ls -la /dev/kvm
         true
 
     displayName: 'pre-install qemu'
