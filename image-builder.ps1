@@ -586,6 +586,8 @@ function Build
     popd
     pushd $finalQcowPath
     & nice "$Global_7z_Compress_Priority" 7z a -t7z "-mmt$Global_7z_Threads" $Global_7z_Compress_Args.Split([char]32) -v42m "$finalArchive" "."
+    Say "The Final archive content with compresion ratio [$finalArchive]"
+    & 7z l "$($finalArchive).001"
     popd
     pushd $finalArchivePath
     & ls -la
