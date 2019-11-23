@@ -22,7 +22,7 @@ steps:
   - script: uname -a
     displayName: 'show kernel version'
 
-  - script: 'printenv | sort'
+   - script: 'printenv | sort | grep -v "BINTRAY_API_KEY="'
     displayName: 'show environment'
 
   - script: df -T -h
@@ -96,8 +96,8 @@ steps:
   - script: |
         echo "FINAL_SIZE is [$FINAL_SIZE]"
         echo "OUTPUT_FOLDER is [$OUTPUT_FOLDER]"
-        # -Only local-postgres?
-        sudo pwsh -command ./image-builder.ps1 -Images $ARCH -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER
+        # -Only local-postgres? or < -Only Nothing >? 
+        sudo pwsh -command ./image-builder.ps1 -Only Nothing -Images $ARCH -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER
         sudo df -T -h
         echo "::--> on finish"
         cat Private-Report/*/*onfinish*

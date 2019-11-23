@@ -24,7 +24,10 @@ $Global_ExpandDisk_Priority="-20"
 $Global_Max_VM_Cores = $MaxVmCores
 
 $Global_7z_Compress_Args = if ($Env:TRAVIS) { "-mx=1 -mfb=16 -md=16k" } else { "-mx=3 -mfb=32 -md=4m" }
-if ($Env:AZURE_HTTP_USER_AGENT) { $Global_7z_Compress_Args="-mx=9 -mfb=64 -md=64m"}
+if ($Env:AZURE_HTTP_USER_AGENT) { 
+    $Global_7z_Compress_Args="-mx=9 -mfb=256 -md=96m"
+    Say "7z compression for Azure Pipelines: [$Global_7z_Compress_Args]" 
+}
 
 $imagesToBuild=$Images
 
@@ -560,14 +563,13 @@ function Build
     $finalQcow = "$(pwd)/debian-$key-final.qcow2"
     $finalQcowPath = "$(pwd)"
 
-    
     Final-Compact $definition "$qcowFile" "$Global_FinalSize" $finalQcow 
     popd
 
     Say "Final Image for [$key]: $finalQcow";
     & nice "$Global_ExpandDisk_Priority" virt-filesystems --all --long --uuid -h -a "$finalQcow"
 
-    Say "Splitting final image for publication [$key]: $qcowFile ($(Get-File-Size-Info $qcowFile))";
+    Say "Splitting final image for publication [$key]: $finalQcow ($(Get-File-Size-Info $finalQcow))";
     & mkdir -p "final-$key-splitted"
     & pushd "final-$key-splitted"
     & rm -rf *
