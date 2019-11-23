@@ -15,29 +15,29 @@ steps:
 
     displayName: 'install dpl using sudo'
 
-  - script: |
-        sudo apt update;
-        sudo apt install -y libguestfs-tools sshpass sshfs qemu-system-arm qemu-block-extra qemu-utils p7zip-full \
-        libguestfs-tools qemu-system-arm qemu-system-i386 \
-        qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker
-      
-        apt clean
-      
-        sudo modprobe kvm
-        kvm-ok
-
-    displayName: 'pre-install qemu'
-
-
-- script: |
-        echo "IAM $(whoami)"
-        echo Add other tasks to build, test, and deploy your project.
-        echo See https://aka.ms/yaml
-        uname -a
-        cat /etc/os-release
-        cat /etc/*release
-        docker version || true
-        dotnet --info || true
-        mono --version || true
-    
-  displayName: 'Run a multi-line script'
+#  - script: |
+#        sudo apt update;
+#        sudo apt install -y libguestfs-tools sshpass sshfs qemu-system-arm qemu-block-extra qemu-utils p7zip-full \
+#        libguestfs-tools qemu-system-arm qemu-system-i386 \
+#        qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker
+#      
+#        apt clean
+#      
+#        sudo modprobe kvm
+#        kvm-ok
+#
+#    displayName: 'pre-install qemu'
+#
+#
+#- script: |
+#        echo "IAM $(whoami)"
+#        echo Add other tasks to build, test, and deploy your project.
+#        echo See https://aka.ms/yaml
+#        uname -a
+#        cat /etc/os-release
+#        cat /etc/*release
+#        docker version || true
+#        dotnet --info || true
+#        mono --version || true
+#    
+#  displayName: 'Run a multi-line script'
