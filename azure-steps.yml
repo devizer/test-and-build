@@ -18,11 +18,9 @@ steps:
     
   - script: |
       bash install-mono.sh
-      mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp
     displayName: 'INSTALL MONO on the host'
 
   - script: |
-      bash install-mono.sh
       mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp
     displayName: 'SHOW MONO VERSIONS on the host'
 
@@ -101,4 +99,7 @@ steps:
 
   - script: sudo du / -d 2 -h || true
     displayName: 'show disk usage'
+
+  - script: 'pushd $OUTPUT_FOLDER; find .; popd || true'
+    displayName: 'LIST BUILD OUTPUT'
 
