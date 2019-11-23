@@ -16,7 +16,7 @@ steps:
       echo "##vso[task.setvariable variable=OUTPUT_FOLDER]$OUTPUT_FOLDER"
     displayName: 'INIT [$(ARCH)] (define FINAL_SIZE and OUTPUT_FOLDER)'
 
-  - script: 'echo "pwd is [$(pwd)]"; tree --du -h' 
+  - script: 'echo "pwd is [$(pwd)]"; sudo apt-get install tree -y >/dev/null; tree --du -h' 
     displayName: 'show folder structure'
 
   - script: uname -a
