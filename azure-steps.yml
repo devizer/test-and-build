@@ -103,7 +103,7 @@ steps:
         echo "FINAL_SIZE is [$FINAL_SIZE]"
         echo "OUTPUT_FOLDER is [$OUTPUT_FOLDER]"
         # -Only Nothing ? 
-        pwsh -command ./image-builder.ps1 -Only Nothing -Images $ARCH -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER
+        sudo pwsh -command ./image-builder.ps1 -Only Nothing -Images $ARCH -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER
         sudo df -T -h
         echo "::--> on finish"
         cat Private-Report/*/*onfinish*
