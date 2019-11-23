@@ -1,0 +1,32 @@
+ $ systemctl list-unit-files --state=enabled
+UNIT FILE                              STATE
+autovt@.service                        enabled
+console-setup.service                  enabled
+cron.service                           enabled
+dbus-org.freedesktop.timesync1.service enabled
+getty@.service                         enabled
+keyboard-setup.service                 enabled
+networking.service                     enabled
+rsyslog.service                        enabled
+ssh.service                            enabled
+sshd.service                           enabled
+syslog.service                         enabled
+systemd-timesyncd.service              enabled
+remote-fs.target                       enabled
+apt-daily-upgrade.timer                enabled
+apt-daily.timer                        enabled
+logrotate.timer                        enabled
+
+
+
+for s in 'postgresql' 'redis-server' 'mariadb' 'docker' 'cron' 'unattended-upgrades' 'apt-daily-upgrade.timer' 'apt-daily.timer' 'logrotate.timer'; do
+    Say "Stop and disable [$s]"
+    systemctl stop $s
+    systemctl disable $s
+done
+
+for s in 'postgresql' 'redis-server' 'mariadb' 'docker' 'cron' 'unattended-upgrades' 'apt-daily-upgrade.timer' 'apt-daily.timer' 'logrotate.timer'; do
+    Say "Enable and start [$s]"
+    systemctl enable $s
+    systemctl start $s
+done
