@@ -1,6 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 strategy:
   matrix:
@@ -28,12 +25,12 @@ steps:
   - script: |
       bash install-mono.sh
       mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp
-    displayNane: 'INSTALL mono on the host'
+    displayName: 'INSTALL mono on the host'
 
   - script: |
       bash install-mono.sh
       mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp
-    displayNane: 'SHOW mono versions on the host'
+    displayName: 'SHOW mono versions on the host'
 
   - script: |
       sudo fdisk -l
