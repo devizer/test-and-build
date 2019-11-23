@@ -11,6 +11,11 @@ pool:
 
 steps:
   - script: |
+      command -v gem || (sudo apt-get update -yq; sudo apt-get install -y ruby-dev; gem install dpl)
+
+    displayName: 'install dpl using sudo'
+
+  - script: |
         sudo apt update;
         sudo apt install -y libguestfs-tools sshpass sshfs qemu-system-arm qemu-block-extra qemu-utils p7zip-full \
         libguestfs-tools qemu-system-arm qemu-system-i386 \
@@ -20,11 +25,9 @@ steps:
       
         sudo modprobe kvm
         kvm-ok
+
     displayName: 'pre-install qemu'
 
-- script: |
-    command -v gem || (sudo apt-get update -yq; sudo apt-get install -y ruby-dev; gem install dpl)
-  displayName: 'install dpl using sudo'
 
 - script: |
     echo "IAM $(whoami)"
