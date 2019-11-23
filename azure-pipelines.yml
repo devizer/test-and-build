@@ -16,7 +16,7 @@ steps:
   - script: 'printenv | sort'
     displayName: 'show environment'
 
-  - script: df -h
+  - script: df -T -h
     displayName: 'show disk free space'
 
   - script: |
@@ -39,7 +39,7 @@ steps:
       sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force
       sudo chown $(whoami) $path
       touch $path/hi
-      df -h
+      df -T -h
 
     displayName: 'prepare /transient-builds'
 
