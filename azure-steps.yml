@@ -2,9 +2,7 @@
 
 steps:
   - script: | 
-      export FINAL_SIZE=42G;
-      export OUTPUT_FOLDER=/transient-builds/test-and-build-FULL
-      echo "ARCH is [$ARCH], FINAL_SIZE is [$FINAL_SIZE], OUTPUT_FOLDER is [$OUTPUT_FOLDER]"
+      echo "ARCH is [$ARCH]"
     displayName: 'INIT'
 
   - script: uname -a
@@ -81,7 +79,7 @@ steps:
     displayName: 'INSTALL QEMU'
 
   - script: |
-        sudo pwsh -command ./image-builder.ps1 -Images $ARCH -FinalSize 42G -OutputFolder $OUTPUT_FOLDER
+        sudo pwsh -command ./image-builder.ps1 -Images $ARCH -FinalSize 42G -OutputFolder /transient-builds/Debian-Multiarch
         sudo df -T -h
         echo "::--> on finish"
         cat Private-Report/*/*onfinish*
