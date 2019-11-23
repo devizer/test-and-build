@@ -22,7 +22,8 @@ steps:
   - script: uname -a
     displayName: 'show kernel version'
 
-   - script: 'printenv | sort | grep -v "BINTRAY_API_KEY="'
+   - script: 
+      printenv | sort | grep -v "BINTRAY_API_KEY="
     displayName: 'show environment'
 
   - script: df -T -h
