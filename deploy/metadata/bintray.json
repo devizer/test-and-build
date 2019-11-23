@@ -33,7 +33,7 @@
   },
   "files": [
     {
-      "includePattern": "(VERSION-.*sh)$",
+      "includePattern": "public-bintray/(.*)$",
       "uploadPattern": "$1",
       "matrixParams": {
         "override": 1,
