@@ -34,8 +34,9 @@ popd
 & mkdir -p "$Source_Folder/public-bintray/$version"; 
 $cp_Cmd="cp -f $FROM/final-$ARCH-splitted/* $Source_Folder/public-bintray/$version"
 Write-Host "|# $cp_Cmd"
+df -T -h
 & bash -c "$cp_Cmd"
-
+df -T -h
 
 Write-Host "!> Final bintray.json"
 $binTray=$Global:BinTray_Object

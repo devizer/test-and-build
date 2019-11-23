@@ -570,7 +570,7 @@ function Build
     $finalQcow = "$(pwd)/debian-$key-final.qcow2"
     $finalQcowPath = "$(pwd)"
 
-    $Env:LIBGUESTFS_DEBUG="1"; $Env:LIBGUESTFS_TRACE="1" # WTH?
+    # $Env:LIBGUESTFS_DEBUG="1"; $Env:LIBGUESTFS_TRACE="1" # WTH?
     Final-Compact $definition "$qcowFile" "$Global_FinalSize" $finalQcow 
     popd
 
