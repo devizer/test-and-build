@@ -351,6 +351,7 @@ function Build
     $Is_Requested_local_postgres = Is-Requested-Specific-Feature("local-postgres");
     $Is_Requested_Local_Mariadb = Is-Requested-Specific-Feature("local-mariadb");
     $Is_Requested_Local_Redis = Is-Requested-Specific-Feature("local-redis");
+    $Is_IgnoreAll=($Global_Ignore_Features -eq "All");
 
     Say "Building $( $definition.key )";
     New-Item -Type Directory $build_folder -ea SilentlyContinue;
@@ -425,8 +426,11 @@ function Build
     Say "Configure LC_ALL, UTC and optionally swap for [$key]"
     Remote-Command-Raw "cd /tmp/build; bash config-system.sh $( $definition.SwapMb )" "localhost" $startParams.Port "root" "pass" $true # re-connect
 
-    Say "Upgrading to the latest Debian for [$key]"
-    Remote-Command-Raw 'cd /tmp/build; bash dist-upgrade.sh' "localhost" $startParams.Port "root" "pass"
+    if (!$Is_IgnoreAll)
+    {
+        Say "Upgrading to the latest Debian for [$key]"
+        Remote-Command-Raw 'cd /tmp/build; bash dist-upgrade.sh' "localhost" $startParams.Port "root" "pass"
+    }
 
     # Produce-Report $definition $startParams "onstart"
     
@@ -435,9 +439,12 @@ function Build
     Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
     Remote-Command-Raw $cmd "localhost" $startParams.Port "user" "pass"
 
-    $mustHavePackages = "smart-apt-install apt-transport-https ca-certificates curl gnupg2 software-properties-common htop mc lsof unzip net-tools bsdutils; apt-get clean"
-    Say "Installing must have packages on [$key]"
-    Remote-Command-Raw "$mustHavePackages" "localhost" $startParams.Port "root" "pass"
+    if (!$Is_IgnoreAll)
+    {
+        $mustHavePackages = "smart-apt-install apt-transport-https ca-certificates curl gnupg2 software-properties-common htop mc lsof unzip net-tools bsdutils; apt-get clean"
+        Say "Installing must have packages on [$key]"
+        Remote-Command-Raw "$mustHavePackages" "localhost" $startParams.Port "root" "pass"
+    }
 
     if ($Is_Requested_Mono)
     {
@@ -514,7 +521,7 @@ function Build
 #>
 
 
-    if ($true)
+    if (!$Is_IgnoreAll)
     {
         Say "Installing a Crap for [$key]"
         Remote-Command-Raw "cd /tmp/build; bash install-a-crap.sh" "localhost" $startParams.Port "root" "pass"
