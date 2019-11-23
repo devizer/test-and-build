@@ -13,6 +13,12 @@ steps:
   - script: 7z b
     displayName: '7z benchmark'
 
+  - script: df -h
+    displayName: 'show disk space usage'
+
+  - script: free -m
+    displayName: 'show memory usage'
+
   - script: |
       sudo apt-get update -yqq
       command -v gem || (sudo apt-get install -y ruby-dev; sudo gem install dpl)
