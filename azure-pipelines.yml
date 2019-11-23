@@ -10,11 +10,12 @@ pool:
   vmImage: 'ubuntu-18.04'
 
 steps:
+  - script: 7z b
+    displayName: '7z benchmark'
+
   - script: |
-        sudo apt-get update -yqq
-        command -v gem || (sudo apt-get install -y ruby-dev; sudo gem install dpl)
-        sudo apt install p7zip-full
-        7z b
+      sudo apt-get update -yqq
+      command -v gem || (sudo apt-get install -y ruby-dev; sudo gem install dpl)
 
     displayName: 'install dpl using sudo'
 
@@ -24,10 +25,11 @@ steps:
         libguestfs-tools qemu-system-arm qemu-system-i386 \
         qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker
 
-        apt clean
+        sudo apt clean
 
         sudo modprobe kvm
-        kvm-ok
+        sudo kvm-ok
+        true
 
     displayName: 'pre-install qemu'
 
