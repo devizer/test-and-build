@@ -1,5 +1,5 @@
 # https://aka.ms/yaml
-
+# to deploy message should contain "the stable"
 steps:
   - script: |
       lsb_release -a
@@ -158,7 +158,16 @@ steps:
   - script: 'pushd $OUTPUT_FOLDER; find .; popd || true'
     displayName: '[Temp, KillIt] LIST BUILD OUTPUT'
 
-  - script: 'pwd; pushd deploy; sudo bash -c "BINTRAY_API_KEY=$(BINTRAY_API_KEY) pwsh deploy-to-bintray.ps1 -From $OUTPUT_FOLDER -Arch $ARCH"; popd'
+  - script: |
+      pwd; 
+      pushd deploy;
+      needDeploy=(cat $BUILD_SOURCEVERSIONMESSAGE | grep -i "the stable")
+      if [[ $needDeploy ]]; then
+        sudo bash -c "BINTRAY_API_KEY=$(BINTRAY_API_KEY) pwsh deploy-to-bintray.ps1 -From $OUTPUT_FOLDER -Arch $ARCH";
+      else
+        echo 'Missing "the stable" keyword in commit message. Skip Deploy'
+      fi
+      popd
     displayName: 'PUBLISH to BINTRAY'
 
   - script: 7z a $BUILD_ARTIFACTSTAGINGDIRECTORY/Output_Folder-$ARCH.7z -mx1 "-xr!*qcow2*" "-xr!.git" "$OUTPUT_FOLDER" || true
