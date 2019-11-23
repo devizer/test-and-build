@@ -24,6 +24,16 @@ steps:
 
   - script: df -T -h
     displayName: 'show disk free space'
+    
+  - script: |
+      bash install-mono.sh
+      mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp
+    displayNane: 'INSTALL mono on the host'
+
+  - script: |
+      bash install-mono.sh
+      mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp
+    displayNane: 'SHOW mono versions on the host'
 
   - script: |
       sudo fdisk -l
@@ -47,7 +57,7 @@ steps:
       touch $path/hi
       df -T -h
 
-    displayName: 'prepare /transient-builds'
+    displayName: 'PREPARE /transient-builds'
 
   - script: sudo lscpu
     displayName: 'show cpu'
@@ -64,7 +74,7 @@ steps:
       sudo apt-get update -yqq
       command -v gem || (sudo apt-get install -y ruby-dev; sudo gem install dpl)
 
-    displayName: 'install dpl using sudo'
+    displayName: 'INSTALL dpl using sudo'
 
   - script: |
         sudo apt update -qq >/dev/null;
@@ -79,10 +89,10 @@ steps:
         ls -la /dev/kvm
         true
 
-    displayName: 'pre-install qemu'
+    displayName: 'INSTALL qemu'
 
   - script: |
-        sudo pwsh -command ./image-builder.ps1 -Images $ARCH -FinalSize 8G
+        sudo pwsh -command ./image-builder.ps1 -Images $ARCH -FinalSize 42G
         sudo df -T -h
         echo "::--> on finish"
         cat Private-Report/*/*onfinish*
@@ -96,7 +106,7 @@ steps:
         echo "::--> Installed Packages"
         cat Private-Report/**/installed-packages*
       
-    displayName: 'Build $(ARCH) Image'
+    displayName: 'BUILD [$(ARCH)] IMAGE'
 
   - script: sudo du / -d 2 -h || true
     displayName: 'show disk usage'
