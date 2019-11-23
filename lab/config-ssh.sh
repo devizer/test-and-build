@@ -28,6 +28,12 @@ LANG="en_US.UTF-8"
 
 }
 
+for s in 'cron' 'unattended-upgrades' 'apt-daily-upgrade.timer' 'apt-daily.timer' 'logrotate.timer'; do
+    Say "Stop and disable [$s]"
+    systemctl stop $s
+    systemctl disable $s
+done
+
 config_loc
 echo "Say command: $(command -v Say)"
 
