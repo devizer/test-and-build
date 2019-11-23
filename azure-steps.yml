@@ -2,6 +2,32 @@
 
 steps:
   - script: |
+      lsb_release -a
+      apt-cache policy qemu-system-arm
+      apt-cache policy libguestfs-tools
+    displayName: 'Show visualization tools versions'
+
+  - script: |
+      echo "No"; if [ false ]; then
+        echo '
+        export DEBIAN_FRONTEND=noninteractive
+        apt update -qq; apt install sudo nano -yqq
+        sudo apt update && sudo apt dist-upgrade  -qqy
+        sudo apt install update-manager-core -qqy
+        sed -i 's/Prompt=lts/Prompt=normal/g' /etc/update-manager/release-upgrades
+        time do-release-upgrade -f noninteractive -m server
+        ' > /tmp/upgrade-to-19.10
+        echo y | bash /tmp/upgrade-to-19.10 | cat
+      fi
+    displayName: 'Unattended do-release-upgrade'
+    
+  - script: |
+      lsb_release -a
+      apt-cache policy qemu-system-arm
+      apt-cache policy libguestfs-tools
+    displayName: 'Show visualization tools versions **Again**'
+
+  - script: |
       FINAL_SIZE=42G 
       OUTPUT_FOLDER=/transient-builds/Debian-Multiarch
 
