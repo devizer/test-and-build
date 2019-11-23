@@ -2,7 +2,7 @@
 jobs:
   - job: ARM32_V7
     variables:
-      - ARCH: arm
+      ARCH: arm
     timeoutInMinutes: 2
     cancelTimeoutInMinutes: 1
     pool:
@@ -12,7 +12,7 @@ jobs:
 
   - job: ARM64_V8
     variables:
-      - ARCH: arm64
+      ARCH: arm64
     timeoutInMinutes: 2
     cancelTimeoutInMinutes: 1
     pool:
