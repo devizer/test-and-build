@@ -11,7 +11,7 @@ pool:
 
 steps:
   - script: |
-      command -v gem || (sudo apt-get update -yq; sudo apt-get install -y ruby-dev; gem install dpl)
+        command -v gem || (sudo apt-get update -yq; sudo apt-get install -y ruby-dev; gem install dpl)
 
     displayName: 'install dpl using sudo'
 
@@ -30,14 +30,14 @@ steps:
 
 
 - script: |
-    echo "IAM $(whoami)"
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-    uname -a
-    cat /etc/os-release
-    cat /etc/*release
-    docker version || true
-    dotnet --info || true
-    mono --version || true
+        echo "IAM $(whoami)"
+        echo Add other tasks to build, test, and deploy your project.
+        echo See https://aka.ms/yaml
+        uname -a
+        cat /etc/os-release
+        cat /etc/*release
+        docker version || true
+        dotnet --info || true
+        mono --version || true
     
   displayName: 'Run a multi-line script'
