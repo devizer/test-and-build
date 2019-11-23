@@ -7,17 +7,21 @@ steps:
       apt-cache policy libguestfs-tools
     displayName: 'Show visualization tools versions'
 
+  - script: 'export DEBIAN_FRONTEND=noninteractive; sudo apt update -qq; sudo apt upgrade -yqq'
+    displayName: 'apt upgrade'
+
   - script: |
-      echo "No"; if [ false ]; then
+      echo "No"; if [ true ]; then
         echo '
         export DEBIAN_FRONTEND=noninteractive
-        apt update -qq; apt install sudo nano -yqq
-        sudo apt update && sudo apt dist-upgrade  -qqy
+        apt update -qq; apt upgrade -yqq; apt install sudo nano -yqq
+        sudo apt dist-upgrade -qqy
         sudo apt install update-manager-core -qqy
-        sed -i 's/Prompt=lts/Prompt=normal/g' /etc/update-manager/release-upgrades
+        sed -i "s/Prompt=lts/Prompt=normal/g" /etc/update-manager/release-upgrades
+        echo "CONTENT OF /etc/update-manager/release-upgrades:"; cat /etc/update-manager/release-upgrades
         time do-release-upgrade -f noninteractive -m server
-        ' > /tmp/upgrade-to-19.10
-        echo y | bash /tmp/upgrade-to-19.10 | cat
+        ' > /tmp/upgrade-to-19.04
+        echo y | bash /tmp/upgrade-to-19.04 | cat
       fi
     displayName: 'Unattended do-release-upgrade'
     
