@@ -20,6 +20,7 @@ steps:
 
   - script: |
       mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp
+      mono --version >/dev/null && msbuild /version >/dev/null && nuget help >/dev/null && echo "All the fine"
     displayName: 'SHOW MONO VERSIONS on the host'
 
   - script: |
