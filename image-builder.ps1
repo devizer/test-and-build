@@ -514,6 +514,12 @@ function Build
 
     Say "Upgrading to the latest Debian for [$key]"
     Remote-Command-Raw 'cd /tmp/build; bash dist-upgrade.sh' "localhost" $startParams.Port "root" "pass"
+    
+    Say "Store list-packages"
+    $installedPackagesFileName="installed-packages-$key.txt"
+    $cmd='list-packages | cut -c 12- | sort > /tmp/' + $installedPackagesFileName
+    Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass"
+    
 
     Produce-Report $definition $startParams "onfinish"
 
@@ -523,6 +529,7 @@ function Build
     pushd "$mapto/tmp"
     & cp -f Said-by-root.log $PrivateReport/$key/$key-said-by-root.log
     & cp -f Said-by-user.log $PrivateReport/$key/$key-said-by-user.log
+    & cp -f "$installedPackagesFileName" "$PrivateReport/$key/$installedPackagesFileName"
     popd
     
     
@@ -559,6 +566,7 @@ function Build
     & mkdir -p "final-$key-splitted"
     & pushd "final-$key-splitted"
     & rm -rf *
+    & cp "$PrivateReport/$key/$installedPackagesFileName" "$installedPackagesFileName"
     $finalArchive = "$(pwd)/debian-$key-final.qcow2.7z"
     $finalArchivePath = "$(pwd)"
     popd
