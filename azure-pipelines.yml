@@ -36,6 +36,7 @@ steps:
       sudo dd if=/dev/zero of="/$file" bs=1 seek=10900M count=1
       sudo mkfs.btrfs -L a-disk "$file"
       sudo mkdir -p "$path"
+      echo "MOUNTING $file as $path"
       sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force=zlib,norecovery
       df -h
 
