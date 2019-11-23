@@ -16,19 +16,6 @@ steps:
   - script: df -h
     displayName: 'show disk free space'
 
-  - script: sudo du / -d 2 -h || true
-    displayName: 'show disk usage'
-
-  - script: sudo lscpu
-    displayName: 'show cpu'
-
-  - script: free -m; sudo swapon
-    displayName: 'show memory usage'
-
-
-  - script: 7z b
-    displayName: '7z benchmark'
-
   - script: |
       path="/transient-builds"
       file="/mnt/BTRFS.disk"
@@ -42,8 +29,19 @@ steps:
       touch $path/hi
       df -h
 
-      
+
     displayName: 'prepare /transient-builds'
+
+  - script: sudo lscpu
+    displayName: 'show cpu'
+
+  - script: free -m; sudo swapon
+    displayName: 'show memory usage'
+
+
+  - script: 7z b
+    displayName: '7z benchmark'
+
 
   - script: |
       sudo apt-get update -yqq
@@ -66,6 +64,8 @@ steps:
 
     displayName: 'pre-install qemu'
 
+  - script: sudo du / -d 2 -h || true
+    displayName: 'show disk usage'
 
 #- script: |
 #        echo "IAM $(whoami)"
