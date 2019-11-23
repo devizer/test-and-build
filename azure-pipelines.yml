@@ -31,7 +31,7 @@ steps:
           sudo dd if=/dev/zero of="/$file" bs=1 seek=12800M count=1
       fi
       
-      sudo mkfs.btrfs -L a-disk "$file" -O ^extref,^skinny-metadata
+      sudo mkfs.btrfs -f -L a-disk "$file" -O ^extref,^skinny-metadata
       echo "MOUNTING $file as $path"
       sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force
       sudo chown $(whoami) $path
