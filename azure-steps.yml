@@ -126,8 +126,8 @@ steps:
   - script: 'pwd; pushd deploy; pwsh deploy-to-bintray.ps1 -From "$OUTPUT_FOLDER" -Arch $ARCH; popd'
     displayName: 'PUBLISH to BINTRAY'
 
-  - script: 7z a $BUILD_ARTIFACTSTAGINGDIRECTORY/Output_Folder-$ARCH.7z -mx1 "-xr!*qcow2*" "$OUTPUT_FOLDER" || true
-  - script: 7z a $BUILD_ARTIFACTSTAGINGDIRECTORY/Source_Folder-$ARCH.7z -mx1 "-xr!*qcow2*" "$BUILD_REPOSITORY_LOCALPATH" || true
+  - script: 7z a $BUILD_ARTIFACTSTAGINGDIRECTORY/Output_Folder-$ARCH.7z -mx1 "-xr!*qcow2*" "-xr!.git" "$OUTPUT_FOLDER" || true
+  - script: 7z a $BUILD_ARTIFACTSTAGINGDIRECTORY/Source_Folder-$ARCH.7z -mx1 "-xr!*qcow2*" "-xr!.git" "$BUILD_REPOSITORY_LOCALPATH" || true
 
   - task: PublishBuildArtifacts@1
     inputs:
