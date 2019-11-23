@@ -14,7 +14,7 @@ echo 'APT::Get::AllowUnauthenticated "true";' | sudo tee /etc/apt/apt.conf.d/12a
 
 echo net.ipv6.conf.all.disable_ipv6=1 | sudo tee /etc/sysctl.d/disableipv6.conf || true
 
-if [[ "$(command -v mono)" == "" ]]; then 
+if [[ "$(command -v mono)" == "" || "$(command -v msbuild)" == "" || "$(command -v nuget)" == "" ]]; then 
   # export MONO_ENV_OPTIONS=-O=-aot
   export MONO_USE_LLVM=0
   

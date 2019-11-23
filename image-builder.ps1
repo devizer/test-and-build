@@ -8,6 +8,10 @@ param(
     [int]    $MaxVmCores = 4,
     [string] $OutputFolder = "/transient-builds/test-and-build"
 )
+
+. "$($PSScriptRoot)\include\Main.ps1"
+. "$($PSScriptRoot)\include\Utilities.ps1"
+
 $Global_Ignore_Features=$Skip
 $Global_Only_Features=$Only
 
@@ -27,9 +31,9 @@ $ProjectPath=$PSScriptRoot
 $PrivateReport=$(Join-Path $ProjectPath "Private-Report")
 & mkdir "-p" "$PrivateReport"
 $build_folder=$OutputFolder
+Say "BUILD FOLDER IS [$build_folder]"
 
-. "$($PSScriptRoot)\include\Main.ps1"
-. "$($PSScriptRoot)\include\Utilities.ps1"
+
 
 $FeatureFilters=@("mono", "dotnet", "powershell", "docker", "local-postgres", "local-mariadb", "local-redis", "nodejs")
 function Is-Requested-Specific-Feature{

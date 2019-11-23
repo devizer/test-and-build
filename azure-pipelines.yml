@@ -3,7 +3,7 @@ jobs:
   - job: ARM32_V7
     variables:
       ARCH: arm
-    timeoutInMinutes: 2
+    timeoutInMinutes: 599
     cancelTimeoutInMinutes: 1
     pool:
       vmImage: 'ubuntu-18.04'
@@ -13,7 +13,7 @@ jobs:
   - job: ARM64_V8
     variables:
       ARCH: arm64
-    timeoutInMinutes: 2
+    timeoutInMinutes: 599
     cancelTimeoutInMinutes: 1
     pool:
       vmImage: 'ubuntu-18.04'
