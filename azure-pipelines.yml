@@ -52,6 +52,12 @@ steps:
   - script: sudo lscpu
     displayName: 'show cpu'
 
+  - script: |
+      sudo apt install nginx -yqq
+      curl -I localhost
+      sudo apt purge nginx -yqq
+    displayName: 'show Local Services Connection'
+
   - script: free -m; sudo swapon
     displayName: 'show memory usage'
 
