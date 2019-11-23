@@ -3,8 +3,12 @@ strategy:
   matrix:
     ARM32_V7:
       ARCH: 'arm'
+      timeoutInMinutes: 2
+      cancelTimeoutInMinutes: 1
     ARM64_V8:
       ARCH: 'arm64'
+      timeoutInMinutes: 2
+      cancelTimeoutInMinutes: 1
 
 trigger:
 - master
