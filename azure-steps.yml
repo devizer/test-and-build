@@ -16,6 +16,10 @@ steps:
       echo "##vso[task.setvariable variable=OUTPUT_FOLDER]$OUTPUT_FOLDER"
     displayName: 'INIT [$(ARCH)] (define FINAL_SIZE and OUTPUT_FOLDER)'
 
+  - powershell: |
+      # Using an input-macro:
+      Write-Host "This works: $(BINTRAY_API_KEY)"  
+  
   - script: 'echo "pwd is [$(pwd)]"; sudo apt-get install tree -y >/dev/null 2>/dev/null || sudo apt-get install tree -y; tree --du -h' 
     displayName: 'show folder structure'
 
