@@ -1,5 +1,10 @@
 # https://aka.ms/yaml
 
+jobs:
+  - job: All
+    timeoutInMinutes: 2
+    cancelTimeoutInMinutes: 1
+
 strategy:
   matrix:
     ARM32_V7:
@@ -13,10 +18,6 @@ trigger:
 pool:
   vmImage: 'ubuntu-18.04'
 
-jobs:
-  - job: All
-    timeoutInMinutes: 2
-    cancelTimeoutInMinutes: 1
 
 steps:
   - script: uname -a
