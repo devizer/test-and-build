@@ -2,7 +2,7 @@
 
 steps:
   - script: |
-      FINAL_SIZE=8G 
+      FINAL_SIZE=42G 
       OUTPUT_FOLDER=/transient-builds/Debian-Multiarch
       
       echo "ARCH is [$ARCH]"
