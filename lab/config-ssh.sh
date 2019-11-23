@@ -60,4 +60,5 @@ if [[ false ]]; then
     x=42;
 fi
 
+e2label /dev/sda1 Debian_ROOT || true
 true
