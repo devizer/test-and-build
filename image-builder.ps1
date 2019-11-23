@@ -351,7 +351,7 @@ function Build
     $Is_Requested_local_postgres = Is-Requested-Specific-Feature("local-postgres");
     $Is_Requested_Local_Mariadb = Is-Requested-Specific-Feature("local-mariadb");
     $Is_Requested_Local_Redis = Is-Requested-Specific-Feature("local-redis");
-    $Is_IgnoreAll=($Global_Ignore_Features -eq "All");
+    $Is_IgnoreAll=($Global_Only_Features -eq "Nothing");
 
     Say "Building $( $definition.key )";
     New-Item -Type Directory $build_folder -ea SilentlyContinue;
