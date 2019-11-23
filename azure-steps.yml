@@ -103,7 +103,7 @@ steps:
         echo "FINAL_SIZE is [$FINAL_SIZE]"
         echo "OUTPUT_FOLDER is [$OUTPUT_FOLDER]"
         # -Only Nothing ? 
-        sudo pwsh -command ./image-builder.ps1 -Only Nothing -Images $ARCH -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER
+        pwsh -command ./image-builder.ps1 -Only Nothing -Images $ARCH -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER
         sudo df -T -h
         echo "::--> on finish"
         cat Private-Report/*/*onfinish*
@@ -128,7 +128,7 @@ steps:
   - script: 'pushd $OUTPUT_FOLDER; find .; popd || true'
     displayName: '[Temp, KillIt] LIST BUILD OUTPUT'
 
-  - script: 'pwd; pushd deploy; pwsh deploy-to-bintray.ps1 -From "$OUTPUT_FOLDER" -Arch $ARCH; popd'
+  - script: 'pwd; pushd deploy; BINTRAY_API_KEY=$(BINTRAY_API_KEY) pwsh deploy-to-bintray.ps1 -From "$OUTPUT_FOLDER" -Arch $ARCH; popd'
     displayName: 'PUBLISH to BINTRAY'
 
   - script: 7z a $BUILD_ARTIFACTSTAGINGDIRECTORY/Output_Folder-$ARCH.7z -mx1 "-xr!*qcow2*" "-xr!.git" "$OUTPUT_FOLDER" || true

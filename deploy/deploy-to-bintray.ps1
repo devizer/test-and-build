@@ -17,16 +17,16 @@ popd
 
 $version=(& cat ../bintray.json | jq -r ".version.name") | Out-String
 $version=$version.Trim(@([char]10,[char]13))
-Write-Host "To Publish: $version"
+Write-Host "!> To Publish: $version"
 
 $DOWNLOAD_PARTS_COUNT=(gci "$FROM/final-$ARCH-splitted/*.qcow2.7z.*").Count
-Write-Host "DOWNLOAD_PARTS_COUNT: $DOWNLOAD_PARTS_COUNT"
+Write-Host "!> DOWNLOAD_PARTS_COUNT: $DOWNLOAD_PARTS_COUNT"
 
 # Build Source Folder
 & cp ../bintray.json $Source_Folder
 
 & mkdir -p "$Source_Folder/public-bintray"
-Write-Host "Clearing folder [$Source_Folder/public-bintray]"
+Write-Host "!> Clearing folder [$Source_Folder/public-bintray]"
 pushd "$Source_Folder/public-bintray"
     & rm -rf *
 popd
@@ -37,27 +37,27 @@ Write-Host "|# $cp_Cmd"
 & bash -c "$cp_Cmd"
 
 
-Write-Host "final bintray.json"
+Write-Host "!> Final bintray.json"
 $binTray=$Global:BinTray_Object
 $package="debian-$ARCH-for-building-and-testing"
 $binTray.package.name=$package
 $binTray.package.repo=$package
-Write-Host "final bintray.json`n$binTray"
+Write-Host "!> Final bintray.json`n$binTray"
 SaveAsJson $binTray "$Source_Folder/bintray.json"
 
 pushd $Source_Folder
-Write-Host "Running dpl --dry-run for $(pwd)"
+Write-Host "!> Running dpl --dry-run for $(pwd)"
 & dpl --provider=bintray --file=bintray.json --user=devizer "--key=$($Env:BINTRAY_API_KEY)" --skip-cleanup # --dry-run
 popd
 
-Write-Host "Delete bintray versions except the stable [$version] version (in $(pwd))"
+Write-Host "!> Delete bintray versions except the stable [$version] version (in $(pwd))"
 $Env:VERSION_STABLE="$version"
 $Env:BINTRAY_REPO="$package"
 $Env:PCK_NAME="$package"
 $Env:BINTRAY_USER="devizer"
 & bash delete-bintray-versions-except-stable.sh
 
-Write-Host "Update Metadata"
+Write-Host "!> Update Metadata"
 pushd metadata
 & mkdir -p public-bintray
 & rm -rf ./public-bintray/*
