@@ -1,117 +1,27 @@
 # https://aka.ms/yaml
-
 jobs:
-  - job: All
+  - job: ARM32_V7
+    variables:
+      - ARCH: arm
     timeoutInMinutes: 2
     cancelTimeoutInMinutes: 1
+    pool:
+      vmImage: 'ubuntu-18.04'
+    steps:
+      - template: azure-steps.yml  # Template reference
 
-strategy:
-  matrix:
-    ARM32_V7:
-      ARCH: 'arm'
-    ARM64_V8:
-      ARCH: 'arm64'
+  - job: ARM64_V8
+    variables:
+      - ARCH: arm64
+    timeoutInMinutes: 2
+    cancelTimeoutInMinutes: 1
+    pool:
+      vmImage: 'ubuntu-18.04'
+    steps:
+      - template: azure-steps.yml  # Template reference
+
 
 trigger:
 - master
 
-pool:
-  vmImage: 'ubuntu-18.04'
-
-
-steps:
-  - script: uname -a
-    displayName: 'show kernel version'
-
-  - script: 'printenv | sort'
-    displayName: 'show environment'
-
-  - script: df -T -h
-    displayName: 'show disk free space'
-    
-  - script: |
-      bash install-mono.sh
-      mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp
-    displayName: 'INSTALL MONO on the host'
-
-  - script: |
-      bash install-mono.sh
-      mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp
-    displayName: 'SHOW MONO VERSIONS on the host'
-
-  - script: |
-      sudo fdisk -l
-      # 14334.9 Mb
-      time sudo apt-get install btrfs-tools -y -qq
-      path="/transient-builds"
-      sudo mkdir -p "$path"
-      
-      if [ true ]; then
-          sudo umount /mnt
-          file=/dev/sdb1
-      else
-          file="/mnt/BTRFS.disk"
-          sudo dd if=/dev/zero of="/$file" bs=1 seek=12800M count=1
-      fi
-      
-      sudo mkfs.btrfs -f -L a-disk "$file" -O ^extref,^skinny-metadata
-      echo "MOUNTING $file as $path"
-      sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force
-      sudo chown $(whoami) $path
-      touch $path/hi
-      df -T -h
-
-    displayName: 'PREPARE /transient-builds'
-
-  - script: sudo lscpu
-    displayName: 'show cpu'
-
-  - script: free -m; sudo swapon
-    displayName: 'show memory usage'
-
-
-  - script: 7z b
-    displayName: '7z benchmark'
-
-
-  - script: |
-      sudo apt-get update -yqq
-      command -v gem || (sudo apt-get install -y ruby-dev; sudo gem install dpl)
-
-    displayName: 'INSTALL DPL using sudo'
-
-  - script: |
-        sudo apt update -qq >/dev/null;
-        sudo apt install -y libguestfs-tools sshpass sshfs qemu-system-arm qemu-block-extra qemu-utils p7zip-full \
-          libguestfs-tools qemu-system-arm qemu-system-i386 \
-          qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker | grep 'Setting\|Processing\|Created'
-
-        sudo apt clean
-
-        sudo modprobe kvm
-        sudo kvm-ok
-        ls -la /dev/kvm
-        true
-
-    displayName: 'INSTALL QEMU'
-
-  - script: |
-        sudo pwsh -command ./image-builder.ps1 -Images $ARCH -FinalSize 42G
-        sudo df -T -h
-        echo "::--> on finish"
-        cat Private-Report/*/*onfinish*
-        pushd Private-Report; find .; popd
-        echo "::--> said by user"
-        cat Private-Report/*/$ARCH-said-by-user.log
-        echo "::--> said by root"
-        cat Private-Report/*/$ARCH-said-by-root.log
-        echo "::--> summary"
-        cat Private-Report/**/summary*
-        echo "::--> Installed Packages"
-        cat Private-Report/**/installed-packages*
-      
-    displayName: 'BUILD [$(ARCH)] IMAGE'
-
-  - script: sudo du / -d 2 -h || true
-    displayName: 'show disk usage'
 
