@@ -88,7 +88,7 @@ steps:
     displayName: 'pre-install qemu'
 
   - script: |
-        sudo pwsh -command ./image-builder.ps1 -Images $ARCH -FinalSize 42G
+        sudo pwsh -command ./image-builder.ps1 -Images $ARCH -FinalSize 8G
         sudo df -T -h
         echo "::--> on finish"
         cat Private-Report/*/*onfinish*
@@ -107,13 +107,3 @@ steps:
   - script: sudo du / -d 2 -h || true
     displayName: 'show disk usage'
 
-#- script: |
-#        echo "IAM $(whoami)"
-#        uname -a
-#        cat /etc/os-release
-#        cat /etc/*release
-#        docker version || true
-#        dotnet --info || true
-#        mono --version || true
-#    
-#  displayName: 'Run a multi-line script'
