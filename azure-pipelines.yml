@@ -10,8 +10,8 @@ pool:
   vmImage: 'ubuntu-18.04'
 
 steps:
-  - script: 7z b
-    displayName: '7z benchmark'
+  - script: uname -a 
+    displayName: 'show kernel version'
 
   - script: df -h
     displayName: 'show disk free space'
@@ -24,6 +24,23 @@ steps:
 
   - script: free -m; sudo swapon
     displayName: 'show memory usage'
+
+
+  - script: 7z b
+    displayName: '7z benchmark'
+
+  - script: |
+      path="/transient-builds"
+      file="/mnt/BTRFS.disk"
+      time sudo apt-get install btrfs-tools -y -qq
+      sudo dd if=/dev/zero of="/$file" bs=1 seek=10900M count=1
+      sudo mkfs.btrfs -L a-disk "$file"
+      sudo mkdir -p "$path"
+      sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force=zlib,norecovery
+      df -h
+
+      
+    displayName: 'prepare /transient-builds'
 
   - script: |
       sudo apt-get update -yqq
