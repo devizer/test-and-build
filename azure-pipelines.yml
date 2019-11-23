@@ -53,9 +53,9 @@ steps:
     displayName: 'show cpu'
 
   - script: |
-      sudo apt install nginx -yqq
+      sudo apt install nginx -yqq | grep Setting
       curl -I localhost
-      sudo apt purge nginx -yqq
+      sudo apt purge nginx -yqq >/dev/null 2>&1
     displayName: 'show Local Services Connection'
 
   - script: free -m; sudo swapon
