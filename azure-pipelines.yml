@@ -10,8 +10,10 @@ strategy:
       timeoutInMinutes: 2
       cancelTimeoutInMinutes: 1
 
-timeoutInMinutes: 2
-cancelTimeoutInMinutes: 1
+job: All
+  timeoutInMinutes: 2
+  cancelTimeoutInMinutes: 1
+  
 trigger:
 - master
 
