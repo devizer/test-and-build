@@ -3,7 +3,7 @@
 steps:
   - script: | 
       echo "ARCH is [$ARCH]"
-    displayName: 'INIT'
+    displayName: 'INIT [$(ARCH)]'
 
   - script: uname -a
     displayName: 'show kernel version'
