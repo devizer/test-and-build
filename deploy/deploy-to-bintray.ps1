@@ -52,9 +52,14 @@ Write-Host "!> Running dpl --dry-run for $(pwd)"
 $isPublishOk=$?;
 popd
 
-if (-not $isPublishOk) { 
-    Write-Host "!> ERROR in dpl. Version is not updated"
-    # TODO: Delete version
+if (-not $isPublishOk) {
+    Write-Host "!> ERROR in dpl. Version is not updated."
+    Write-Host "!> DELETING version [$version] for [$package]."
+    $bintray_User="devizer"; 
+    $bintray_API="https://api.bintray.com"
+    $cmd_BinTray_Base="curl -u$($bintray_User):$($ENV:BINTRAY_API_KEY) -H Content-Type:application/json -H Accept:application/json"
+    $cmd_BinTray_Delete="$cmd_BinTray_Base -X DELETE $($bintray_API)/packages/$($bintray_User)/$package/$package/versions/$version"
+    & bash -c "$cmd_BinTray_Delete"
     exit;
 }
 
