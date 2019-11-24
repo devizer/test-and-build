@@ -220,7 +220,7 @@ export DEBIAN_FRONTEND=noninteractive
 ($cmd) 2>&1 | tee -a "$($Global:GuestLog)-$($user)"
 "@
 
-    Write-Host "REMOTE-SCRIPT: `n[$remoteCmd]"
+    # Write-Host "REMOTE-SCRIPT: `n[$remoteCmd]"
     
     try { $remoteCmd > $tmpCmdLocalFullName; $errorInfo = $null; }
     catch { $errorInfo = "Fail store command as the $($tmpCmdLocalFullName) file: $($_.Exception)" }
