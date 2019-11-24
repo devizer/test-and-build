@@ -8,8 +8,6 @@ swapSizeMb=$1
 Say "Set UTC time-zone"
 timedatectl set-timezone UTC
 
- 
-
 Say "Purge man-db"
 lazy-apt-update; apt purge man-db | grep -vE 'Reading database.*(%|\.\.\. )$'
 
