@@ -85,8 +85,10 @@ function Prepare-VM { param($definition, $rootDiskFullName, $guestNamePrefix="",
     Write-Host "Copy kernel to '$($path)'"
     Copy-Item "$ProjectPath/kernels/$($definition.Key)/*" "$($path)/"
     pushd $path
-    & qemu-img create -f qcow2 ephemeral.qcow2 200G
-    & virt-format --partition=mbr --filesystem=ext4 -a ephemeral.qcow2
+    & qemu-img create -f qcow2 ephemeral.temp.qcow2 200G
+    & virt-format --partition=mbr --filesystem=ext4 -a ephemeral.temp.qcow2
+    & qemu-img convert -O qcow2 -c ephemeral.temp.qcow2 ephemeral.qcow2 
+    & rm -f ephemeral.temp.qcow2
     popd
 
     $hasKvm = (& sh -c "ls /dev/kvm 2>/dev/null") | Out-String
