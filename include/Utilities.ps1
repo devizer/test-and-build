@@ -21,6 +21,7 @@ function Say
 {
     param([string] $message)
     $Local:elapsed="$( Get-Elapsed ) "
+    Write-Host "$([Environment]::MachineName): " -NoNewline
     Write-Host $Local:elapsed -NoNewline -ForegroundColor Magenta
     Write-Host "$message" -ForegroundColor Yellow
     Set-Console-Title "$($Local:elapsed) $message"; 
