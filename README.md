@@ -1,6 +1,8 @@
 ## Debian 10.latest
-Debian ARM 32-bit (armv7l):  ![Bintray](https://img.shields.io/bintray/v/devizer/debian-arm-for-building-and-testing/debian-arm-for-building-and-testing)<br>
-Debian ARM 32-bit (aarch64): ![Bintray](https://img.shields.io/bintray/v/devizer/debian-arm64-for-building-and-testing/debian-arm64-for-building-and-testing)
+| Debian ARM 32-bit (armv7l) | Debian ARM 32-bit (aarch64) |
+|:--------------------------:|:---------------------------:|
+| [![Bintray](https://img.shields.io/bintray/v/devizer/debian-arm-for-building-and-testing/debian-arm-for-building-and-testing)](bintray.com/devizer/debian-arm-for-building-and-testing) |  ![Bintray](https://img.shields.io/bintray/v/devizer/debian-arm64-for-building-and-testing/debian-arm64-for-building-and-testing) |
+
 
 
 | OS    |  Debian 10.2 Buster **`arm64`** and **`arm32`** |
