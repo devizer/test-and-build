@@ -199,7 +199,7 @@ function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password, [bool] $
     if (-not $Global:GuestLog) { $Global:GuestLog="/tmp/$([Guid]::NewGuid().ToString("N"))"}
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     $tmpCmdLocalFullName="$mapto/tmp/$rnd"
-    # $cmd_Colorless=if ($ENV:BUILD_DEFINITIONNAME) {"export COLORLESS=true"} else {""};
+    $cmd_Colorless=if ($ENV:BUILD_DEFINITIONNAME) {"export SAY_COLORLESS=true"} else {""};
     # next line fails on disconnected guest: DirectoryNotFoundException 
 $remoteCmd = "#!/usr/bin/env bash`n$cmd_Colorless`n" + @"
 unset PS1
