@@ -1,7 +1,7 @@
 ## Debian 10.latest
-| Debian ARM 32-bit (armv7l) | Debian ARM 32-bit (aarch64) |
+| Debian ARM 32-bit (armv7l) | Debian ARM 64-bit (aarch64) |
 |:--------------------------:|:---------------------------:|
-| [![Bintray](https://img.shields.io/bintray/v/devizer/debian-arm-for-building-and-testing/debian-arm-for-building-and-testing)](bintray.com/devizer/debian-arm-for-building-and-testing) |  ![Bintray](https://img.shields.io/bintray/v/devizer/debian-arm64-for-building-and-testing/debian-arm64-for-building-and-testing) |
+| [![Bintray](https://img.shields.io/bintray/v/devizer/debian-arm-for-building-and-testing/debian-arm-for-building-and-testing)](https://bintray.com/devizer/debian-arm-for-building-and-testing) |  [![Bintray](https://img.shields.io/bintray/v/devizer/debian-arm64-for-building-and-testing/debian-arm64-for-building-and-testing)]((https://bintray.com/devizer/debian-arm64-for-building-and-testing)) |
 
 
 
