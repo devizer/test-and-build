@@ -20,9 +20,12 @@ function Set-Console-Title {
 function Say
 {
     param([string] $message)
+    $_black_circle="$([char] 9679)"
+    $_white_circle="$([char] 9675)"
+    $_black_square="$([char] 9632)"
     $Local:elapsed="$( Get-Elapsed ) "
-    Write-Host "$([Environment]::MachineName): " -NoNewline
-    Write-Host $Local:elapsed -NoNewline -ForegroundColor Magenta
+    # Write-Host "$($_black_square) $([Environment]::MachineName): " -NoNewline
+    Write-Host "$($_black_square) $($Local:elapsed)" -NoNewline -ForegroundColor Magenta
     Write-Host "$message" -ForegroundColor Yellow
     Set-Console-Title "$($Local:elapsed) $message"; 
 }
