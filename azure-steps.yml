@@ -106,10 +106,6 @@ steps:
     displayName: 'show memory usage'
 
 
-  - script: 7z b
-    displayName: '7z benchmark'
-
-
   - script: |
       sudo apt-get update -yqq
       command -v gem || (sudo apt-get install -y ruby-dev; sudo gem install dpl)

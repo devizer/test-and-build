@@ -1,0 +1,20 @@
+7-Zip [64] 16.02 : Copyright (c) 1999-2016 Igor Pavlov : 2016-05-21
+p7zip Version 16.02 (locale=C.UTF-8,Utf16=on,HugeFiles=on,64 bits,2 CPUs Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz (406F1),ASM,AES-NI)
+
+Intel(R) Xeon(R) CPU E5-2673 v4 @ 2.30GHz (406F1)
+CPU Freq:  2720  2594  2789  2673  2709  2625  2534  2570  2742
+
+RAM size:    6945 MB,  # CPU hardware threads:   2
+RAM usage:    441 MB,  # Benchmark threads:      2
+
+                       Compressing  |                  Decompressing
+Dict     Speed Usage    R/U Rating  |      Speed Usage    R/U Rating
+         KiB/s     %   MIPS   MIPS  |      KiB/s     %   MIPS   MIPS
+
+22:       6133   152   3932   5967  |      65569   196   2853   5598
+23:       6171   158   3992   6288  |      63244   198   2767   5474
+24:       6006   161   4004   6458  |      65695   198   2910   5767
+25:       6248   167   4278   7135  |      63901   197   2884   5688
+----------------------------------  | ------------------------------
+Avr:             159   4051   6462  |              197   2853   5632
+Tot:             178   3452   6047
