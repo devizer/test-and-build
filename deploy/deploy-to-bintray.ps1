@@ -49,7 +49,14 @@ SaveAsJson $binTray "$Source_Folder/bintray.json"
 pushd $Source_Folder
 Write-Host "!> Running dpl --dry-run for $(pwd)"
 & dpl --provider=bintray --file=bintray.json --user=devizer "--key=$($Env:BINTRAY_API_KEY)" --skip-cleanup # --dry-run
+$isPublishOk=$?;
 popd
+
+if (-not $isPublishOk) { 
+    Write-Host "!> ERROR in dpl. Version is not updated"
+    # TODO: Delete version
+    exit;
+}
 
 # N1
 Write-Host "!> Update Metadata"
