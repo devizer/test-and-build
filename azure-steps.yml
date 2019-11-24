@@ -53,8 +53,8 @@ steps:
       Write-Host "This works: $(BINTRAY_API_KEY)"
       Write-Host "Length: $(($Env:BINTRAY_API_KEY).Length)"  
   
-  - script: 'echo "Source Code is [$(pwd)]"; sudo apt update -qq; sudo apt-get install tree -y >/dev/null 2>/dev/null || sudo apt-get install tree -y; tree --du -h' 
-    displayName: 'show folder structure'
+  - script: 'echo "Source Code is [$(pwd)]"; sudo apt update -qq >/dev/null 2>/dev/null; sudo apt-get install tree -y >/dev/null 2>/dev/null || sudo apt-get install tree -y; tree --du -h; sudo apt purge man-db >/dev/null 2>/dev/null' 
+    displayName: 'SHOW source folder structure, ACCELERATE build'
 
   - script: uname -a
     displayName: 'show kernel version'
