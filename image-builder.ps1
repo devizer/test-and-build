@@ -84,6 +84,8 @@ function Prepare-VM { param($definition, $rootDiskFullName, $guestNamePrefix="",
     $fileName = [System.IO.Path]::GetFileName($rootDiskFullName)
     Write-Host "Copy kernel to '$($path)'"
     Copy-Item "$ProjectPath/kernels/$($definition.Key)/*" "$($path)/"
+
+    # on 18.04 virt-format without defrag produces 1Gb file, on 19.10 - 30Mb 
     pushd $path
     & qemu-img create -f qcow2 ephemeral.temp.qcow2 200G
     & virt-format --partition=mbr --filesystem=ext4 -a ephemeral.temp.qcow2
