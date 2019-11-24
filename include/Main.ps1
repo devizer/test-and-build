@@ -72,4 +72,5 @@ $definitions=@(
 });
 
 
+$FeatureFilters=@("mono", "dotnet", "powershell", "docker", "local-postgres", "local-mariadb", "local-redis", "nodejs")
 
