@@ -1,6 +1,11 @@
+# 11 minutes in qemu
+
 echo '
 cs_CZ.UTF8 UTF-8
 de_DE.UTF8 UTF-8
+en_CA.UTF-8 UTF-8
+en_GB.UTF-8 UTF-8
+en_US.UTF-8 UTF-8
 es_ES.UTF8 UTF-8
 fr_CA.UTF8 UTF-8
 fr_FR.UTF8 UTF-8
@@ -15,9 +20,6 @@ pt_PT.UTF-8 UTF-8
 ru_RU.UTF-8 UTF-8
 tr_TR.UTF-8 UTF-8
 zh_CN.UTF-8 UTF-8
-en_CA.UTF-8 UTF-8
-en_GB.UTF-8 UTF-8
-en_US.UTF-8 UTF-8
 
 zh_CN.UTF-8 UTF-8
 # zh_HK.UTF-8 UTF-8
