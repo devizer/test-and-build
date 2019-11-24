@@ -132,7 +132,7 @@ steps:
         echo "OUTPUT_FOLDER is [$OUTPUT_FOLDER]"
         # -Only Nothing ? 
         export TERM=xterm
-        sudo -E pwsh -command ./image-builder.ps1 -Only_____ Nothing -Images $ARCH -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER
+        sudo -E pwsh -command ./image-builder.ps1 -Only_____ Nothing -Images $ARCH -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER | tee $BUILD_ARTIFACTSTAGINGDIRECTORY/image-builder.log
         sudo df -T -h
         echo "::--> on finish"
         cat Private-Report/*/*onfinish*
@@ -162,7 +162,7 @@ steps:
       pushd deploy;
       needDeploy=$(echo "$BUILD_SOURCEVERSIONMESSAGE" | grep -i "the stable")
       if [[ $needDeploy ]]; then
-        sudo bash -c "BINTRAY_API_KEY=$(BINTRAY_API_KEY) pwsh deploy-to-bintray.ps1 -From $OUTPUT_FOLDER -Arch $ARCH";
+        sudo bash -c "BINTRAY_API_KEY=$(BINTRAY_API_KEY) pwsh deploy-to-bintray.ps1 -From $OUTPUT_FOLDER -Arch $ARCH" | tee $BUILD_ARTIFACTSTAGINGDIRECTORY/deploy-to-bintray.log
       else
         echo 'Missing "the stable" keyword in commit message. Skip Deploy'
       fi
