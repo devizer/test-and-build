@@ -135,6 +135,7 @@ steps:
         echo "FINAL_SIZE is [$FINAL_SIZE]"
         echo "OUTPUT_FOLDER is [$OUTPUT_FOLDER]"
         # -Only Nothing ? 
+        export TERM=xterm
         sudo pwsh -command ./image-builder.ps1 -Only_____ Nothing -Images $ARCH -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER
         sudo df -T -h
         echo "::--> on finish"
