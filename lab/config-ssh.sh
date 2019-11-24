@@ -44,6 +44,7 @@ sed -i 's/AcceptEnv LANG LC_\*//g' /etc/ssh/sshd_config
 sed -i 's/#Compression delayed/Compression no/g' /etc/ssh/sshd_config
 echo '
 SetEnv ARCH='$ARCH'
+# Next Line doesnt work
 AcceptEnv Build_* APPVEYOR* TRAVIS* BUILD_*
 ' >> /etc/ssh/sshd_config
 
