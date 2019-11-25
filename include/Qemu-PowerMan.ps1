@@ -24,7 +24,7 @@ function Qemu-PowerMan-DownloadBig{
         if (Test-Path $fullName) { Remove-Item $fullName -Force -EA SilentlyContinue }
     }
     $output = (& aria2c "-d$toDirectory" "-Z" $urls 2>&1) | Out-String
-    Write-Host 
+    Write-Host $output 
     $isOk = $?;
     if (!$isOk) {
         Write-Error "Error downloading $urls`n$output"
