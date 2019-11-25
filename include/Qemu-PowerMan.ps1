@@ -141,18 +141,12 @@ function Qemu-PowerMan-DownloadImage{
         }
     }
 
-
-    
-    $initrd_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/initrd.img"
-    $initrd_Info = Qemu-PowerMan-DownloadCached $initrd_Url "basic-kernels-$arch"
-    if (-not $initrd_Info.IsOK) { $errors++}
-
-    $vmlinuz_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/vmlinuz"
-    $vmlinuz_Info = Qemu-PowerMan-DownloadCached $vmlinuz_Url "basic-kernels-$arch"
-    if (-not $vmlinuz_Info.IsOK) { $errors++}
+    @("initrd.img", "vmlinuz") | % {
+        $kernel_url = "https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/$_"
+        $downloadStatus = Qemu-PowerMan-DownloadCached $kernel_url "basic-kernels-$arch"
+        if (-not $vmlinuz_Info.IsOK) { $errors++}
+    }
     
     Say "Total errors for '$arch' image: $errors"
     return $errors -eq 0;
-
-    # Qemu-PowerMan-DownloadBig $tmp_progress $names
 }
