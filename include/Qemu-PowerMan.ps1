@@ -30,19 +30,18 @@ function Qemu-PowerMan-DownloadBig{
 function Qemu-PowerMan-ParseMetadata
 {
     param([String] $metadata)
-    $ret=New-Object PSObject;
+    $ret7=New-Object PSObject;
     foreach ($row7 in $metadata.Replace([char]13,[char]10).Split([char]10))
     {
-        # Write-Host "row7: $row7" -ForegroundColor Red
         $arr7 = $row7.Split($([char]61))
         if (($arr7.Length -ge 2))
         {
             $key7 = $arr7[0].Trim()
             $value7 = $arr7[1].Trim()
-            $ret | Add-Member $key7 $value7
+            $ret7 | Add-Member $key7 $value7
         }
     }
-    return $ret;
+    return $ret7;
 }
 
 function Qemu-PowerMan-DownloadImage{
@@ -73,6 +72,7 @@ function Qemu-PowerMan-DownloadImage{
     Say "STABLE_VERSION: [$($Metadata.STABLE_VERSION)]"
     Say "DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
     $names=@()
+    $errors=0;
     for ($i = 1; $i -le $Metadata.DOWNLOAD_PARTS_COUNT; $i++) {
         $next_url="https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/10.2.604/debian-$arch-final.qcow2.7z.$($i.ToString("000"))";
         $next_fileonly=[System.IO.Path]::GetFileName($next_url);
@@ -92,17 +92,17 @@ function Qemu-PowerMan-DownloadImage{
                 Move-Item $next_tempcopy $next_fullpath -Force
                 "ok" > $next_donename 
             }
-            else{
+            else {
                 Say "ERROR downloading '$next_fileonly'"
                 Remove-Item $next_tempcopy -Force -EA SILENTLYCONTINUE *> $null
+                $errors++;
             }
         }
         
         $names += $next_url
     }
+    
+    Say "Total errors for '$arch' image: $errors"
 
     # Qemu-PowerMan-DownloadBig $tmp_progress $names
-    
-
-    # throw "Not Implemented";
 }
