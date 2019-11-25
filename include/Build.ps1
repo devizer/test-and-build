@@ -19,7 +19,7 @@ function Build
     $Is_Requested_Powershell = Is-Requested-Specific-Feature("powershell");
     $Is_Requested_Docker = Is-Requested-Specific-Feature("docker");
     $Is_Requested_NodeJS = Is-Requested-Specific-Feature("nodejs");
-    $Is_Requested_local_postgres = Is-Requested-Specific-Feature("local-postgres");
+    $Is_Requested_Local_Postgres = Is-Requested-Specific-Feature("local-postgres");
     $Is_Requested_Local_Mariadb = Is-Requested-Specific-Feature("local-mariadb");
     $Is_Requested_Local_Redis = Is-Requested-Specific-Feature("local-redis");
     $Is_IgnoreAll=($Global_Only_Features -eq "Nothing");

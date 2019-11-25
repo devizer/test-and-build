@@ -1,9 +1,24 @@
-$Global:Qemu_PowerMan_DownloadImageLocation=$Env:HOME
-if (-not $Global:Qemu_PowerMan_DownloadImageLocation) {$Global:Qemu_PowerMan_DownloadImageLocation=$Env:LocalAppData}
-if (-not $Global:Qemu_PowerMan_DownloadImageLocation) {$Global:Qemu_PowerMan_DownloadImageLocation=$Env:AppData}
-# $Global:Qemu_PowerMan_DownloadImageLocation += [System.IO.Path]::DirectorySeparatorChar + ".local" + [System.IO.Path]::DirectorySeparatorChar + "qemu-powerman"
-$Global:Qemu_PowerMan_DownloadImageLocation = [System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, ".local", "qemu-powerman");
-# $Global:Qemu_PowerMan_DownloadImageLocation
+function Combine-Path {
+    param([string[]] $parts)
+    return [System.IO.Path]::Combine($parts)
+}
+
+if ($Env:HOME) {
+    # linux
+    $Global:Qemu_PowerMan_DownloadImageLocation = Combine-Path $Env:HOME, ".local", "qemu-powerman"    
+}
+elseif ($Env:LocalAppData) {
+    # Windows Vista+
+    $Global:Qemu_PowerMan_DownloadImageLocation = Combine-Path $Env:LocalAppData, "qemu-powerman"
+}
+elseif ($Env:AppData) {
+    # Windows XP/2003
+    $Global:Qemu_PowerMan_DownloadImageLocation = Combine-Path $Env:AppData, "qemu-powerman"
+}
+else {
+    # ICS OS
+    $Global:Qemu_PowerMan_DownloadImageLocation = Combine-Path ([System.IO.Path]::DirectorySeparatorChar + "opt"), "qemu-powerman"
+}
 
 function Qemu-PowerMan-DownloadCached {
     param([string] $url, [string] $cacheSubfolder)
@@ -102,7 +117,7 @@ function Qemu-PowerMan-DownloadImage{
         throw "Can't access or create the '$($Global:Qemu_PowerMan_DownloadImageLocation)' directory"
     }
 
-    $errors=0;
+    $errors = 0;
     $file_Metadata = [System.IO.Path]::Combine($tmp_progress, "VERSION-$arch.sh")
     $url_Metadata="https://dl.bintray.com/devizer/debian-multiarch/VERSION-$arch.sh"
     Say "Qeury for the latest version of '$arch' image using '$url_Metadata'"
