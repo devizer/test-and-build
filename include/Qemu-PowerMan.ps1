@@ -65,12 +65,14 @@ function Qemu-PowerMan-DownloadImage{
         throw "Can't access or create the '$($Global:Qemu_PowerMan_DownloadImageLocation)' directory"
     }
 
+    $errors=0;
     $file_Metadata = [System.IO.Path]::Combine($tmp_progress, "VERSION-$arch.sh")
     $url_Metadata="https://dl.bintray.com/devizer/debian-multiarch/VERSION-$arch.sh"
     Say "Qeury for the latest version of '$arch' image using '$url_Metadata'"
     if (-not (Qemu-PowerMan-DownloadBig $tmp_progress @($url_Metadata)))
     {
         Write-Error "Unable download metadata for '$arch' from '$url_Metadata'. Abort"
+        $errors++
         return $false;
     }
     $content_Metadata=Get-Content $file_Metadata -Raw
@@ -80,7 +82,6 @@ function Qemu-PowerMan-DownloadImage{
     Say "STABLE_VERSION: [$($Metadata.STABLE_VERSION)]"
     Say "DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
     $names=@()
-    $errors=0;
     for ($i = 1; $i -le $Metadata.DOWNLOAD_PARTS_COUNT; $i++) {
         $next_url="https://dl.bintray.com/devizer-404/debian-$arch-for-building-and-testing/10.2.604/debian-$arch-final.qcow2.7z.$($i.ToString("000"))";
         $next_fileonly=[System.IO.Path]::GetFileName($next_url);
