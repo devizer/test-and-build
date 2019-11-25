@@ -157,64 +157,98 @@ function Qemu-PowerMan-DownloadImage{
     return $errors -eq 0;
 }
 
-function Qemu-Powerman-Bootstrap {
+function Qemu-Powerman-Bootstrap
+{
     $Global:Aria_Exe = "aria2c" # for windows it will be redefined below
-    try { $Global:Is64BitOperatingSystem = [Environment]::Is64BitOperatingSystem }
-    catch {
+    try
+    {
+        $Global:Is64BitOperatingSystem = [Environment]::Is64BitOperatingSystem
+    }
+    catch
+    {
         # legacy powershell on windows
         $Global:Is64BitOperatingSystem = $true -and ${Env:ProgramFiles(x86)};
         Write-Warning "Qemu-PowerMan may not work properly on legacy windows. It is not tested using powershell 2.0 or .NET 2.0/3.5"
     }
-    if (-not [Environment]::OSVersion.Platform -like "Win*") { return }
+    if (-not[Environment]::OSVersion.Platform -like "Win*")
+    {
+        return
+    }
 
-    $Global:WindowsDownloadSuffix = if ($Global:Is64BitOperatingSystem) {"x64"} else {"x86"}
-    $aria_Url = "https://raw.githubusercontent.com/devizer/test-and-build/master/qemu-powerman-tools/aria2-$($Global:WindowsDownloadSuffix).7z.exe"
-    
-    $tools_Path  = Combine-Path $Global:Qemu_PowerMan_DownloadImageLocation, "tools"
+    $Global:WindowsDownloadSuffix = if ($Global:Is64BitOperatingSystem)
+    {
+        "x64"
+    }
+    else
+    {
+        "x86"
+    }
+    $aria_Url = "https://raw.githubusercontent.com/devizer/test-and-build/master/qemu-powerman-tools/aria2-$( $Global:WindowsDownloadSuffix ).7z.exe"
+
+    $tools_Path = Combine-Path $Global:Qemu_PowerMan_DownloadImageLocation, "tools"
     $aria_7z_Exe = Combine-Path $tools_Path, "aria2c.7z.exe"
-    $aria_Exe    = Combine-Path $tools_Path, "aria2c.exe"
+    $aria_Exe = Combine-Path $tools_Path, "aria2c.exe"
     $Global:Aria_Exe = $aria_Exe
     new-item $tools_Path -ItemType Directory -EA SilentlyContinue 2> $null
-    
-    if ((Test-Path $aria_Exe -PathType Leaf) -and (Test-Path "$($aria_Exe).done" -PathType Leaf)) {
-        Say "QEMU for Windows already downloaded to '$tools_Path'"
-        return;
-    }
 
     $errors = $false
-    $webClient = new-object System.Net.WebClient;
-    $webClient.DownloadFile($aria_Url, $aria_7z_Exe)
-    pushd $tools_Path
-    & .\aria2c.7z.exe "-y" 1>$null 2>&1
-    $errors = (-not $?) -or $errors;
-    $qemu_PowerMan_Tools_Archive = "https://raw.githubusercontent.com/devizer/test-and-build/master/qemu-powerman-tools/qemu-powerman-tools.7z.exe"
-    & "$aria_Exe" "-c" $qemu_PowerMan_Tools_Archive 1>$null 2>&1
-    $errors = (-not $?) -or $errors;
-    & .\qemu-powerman-tools.7z.exe -y 1>$null 2>&1
-    $errors = (-not $?) -or $errors;
-
-    $new_Path1 = Combine-Path "$(pwd)", "qemu"
-    $new_Path2 = Combine-Path "$(pwd)", "putty"
-    $new_Path3 = Combine-Path "$(pwd)", "aria2", $Global:WindowsDownloadSuffix
-    $new_Path4 = Combine-Path "$(pwd)", "7z", $Global:WindowsDownloadSuffix
-    $new_Path5 = Combine-Path "$(pwd)", "ANSI188", $Global:WindowsDownloadSuffix
-    popd
-    
-    $append_To_PATH=""
-    @($new_Path1, $new_Path2, $new_Path3, $new_Path4, $new_Path5) | % {
-        $append_To_PATH += [System.IO.Path]::DirectorySeparatorChar + $_
-        if (-not (Test-Path $_ -PathType Container)) {
-            Write-Warning "Unable to unpack bootstrapper: '$_'"
-            $errors = $true
-        }
+    if ((Test-Path $aria_Exe -PathType Leaf) -and (Test-Path "$( $aria_Exe ).done" -PathType Leaf))
+    {
+        Say "QEMU for Windows already downloaded to '$tools_Path'"
+    } else {
+        $webClient = new-object System.Net.WebClient;
+        $webClient.DownloadFile($aria_Url, $aria_7z_Exe)
+        pushd $tools_Path
+        # unpack aria2c.exe
+        & .\aria2c.7z.exe "-y" 1>$null 2>&1
+        $errors = (-not $?) -or $errors;
+        
+        # download QEMU for windows
+        $qemu_PowerMan_Tools_Archive = "https://raw.githubusercontent.com/devizer/test-and-build/master/qemu-powerman-tools/qemu-powerman-tools.7z.exe"
+        & "$aria_Exe" "-c" $qemu_PowerMan_Tools_Archive 1>$null 2>&1
+        $errors = (-not $?) -or $errors;
+        
+        # extract QEMU for windows
+        & .\qemu-powerman-tools.7z.exe -y 1>$null 2>&1
+        $errors = (-not $?) -or $errors;
+        popd
     }
 
-    if ($errors) {
-        Write-Warning "There was errors during downloading QEMU for Windows"
-    } else {
-        $Env:PATH += $append_To_PATH
-        "ok" > "$($aria_Exe).done"
-        Write-Host "Session's PATH:"
-        Write-Host $Env:PATH.Split([System.IO.Path]::DirectorySeparatorChar) | Join-String -Separator "`n"
+    $new_Path1 = Combine-Path $tools_Path, "qemu"
+    $new_Path2 = Combine-Path $tools_Path, "putty"
+    $new_Path3 = Combine-Path $tools_Path, "aria2", $Global:WindowsDownloadSuffix
+    $new_Path4 = Combine-Path $tools_Path, "7z", $Global:WindowsDownloadSuffix
+    $new_Path5 = Combine-Path $tools_Path, "ANSI188", $Global:WindowsDownloadSuffix
+    
+    if (-not $Global:SkipCheckPath)
+    {
+        $append_To_PATH = ""
+        @($new_Path1, $new_Path2, $new_Path3, $new_Path4, $new_Path5) | % {
+            $append_To_PATH += [System.IO.Path]::PathSeparator + $_
+            if (-not(Test-Path $_ -PathType Container))
+            {
+                Write-Warning "Unable to unpack bootstrapper: '$_'"
+                $errors = $true
+            }
+        }
+
+        if ($errors)
+        {
+            Write-Warning "There was errors during downloading QEMU for Windows"
+        }
+        else
+        {
+            $Env:PATH += $append_To_PATH
+            "ok" > "$( $aria_Exe ).done"
+            Write-Host "Session's PATH:"
+            $arr1=$Env:PATH.Split([System.IO.Path]::PathSeparator);
+            $path2=[string]::Join($([Environment]::NewLine), $arr1)
+            Write-Host $path2
+            
+            $qemu_Version = (& qemu-system-arm --version 2>&1) | Out-String
+            $qemu_Version = $qemu_Version.Split([char]10)[0] 
+            Say "QEMU Version: $qemu_Version"
+        }
+        $Global:SkipCheckPath = $true;
     }
 }
