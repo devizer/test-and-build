@@ -23,9 +23,9 @@ function Qemu-PowerMan-DownloadBig{
 
 function Qemu-PowerMan-ParseMetadata
 {
-    param([System.String] $metadata)
+    param([String] $metadata)
     $ret=New-Object PSObject;
-    foreach ($row7 in $metadata.Split($([char]10,[char]13)))
+    foreach ($row7 in $metadata.Split(@([char]13,[char]10)))
     {
         Write-Host "row7: $row7" -ForegroundColor Red
         $arr7 = $row7.Split($([char]61))
