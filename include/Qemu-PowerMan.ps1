@@ -44,7 +44,7 @@ function Qemu-PowerMan-DownloadCached {
         if ($isOk -and (Test-Path $tmp_copy -PathType Leaf))
         {
             $fullDirectoryPath=[System.IO.Path]::GetDirectoryName($fullPath)
-            new-item $fullDirectoryPath -ItemType Directory 2> $null
+            new-item $fullDirectoryPath -ItemType Directory -EA SilentlyContinue 2> $null
             Move-Item $tmp_copy $fullPath -Force
             "ok" > $donePath
             return @{IsOK=$true;LocalPath=$fullPath}
@@ -59,7 +59,7 @@ function Qemu-PowerMan-DownloadCached {
 
 function Qemu-PowerMan-DownloadBig{
     param([string]$toDirectory, [string[]]$urls)
-    new-item $toDirectory -ItemType Directory 2> $null
+    new-item $toDirectory -ItemType Directory SilentlyContinue 2> $null
     $urls | % {
         $fullName = [System.IO.Path]::Combine($toDirectory, [System.IO.Path]::GetFileName($_))
         if (Test-Path $fullName) { Remove-Item $fullName -Force -EA SilentlyContinue }
