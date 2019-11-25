@@ -170,7 +170,7 @@ function Qemu-Powerman-Bootstrap
         $Global:Is64BitOperatingSystem = $true -and ${Env:ProgramFiles(x86)};
         Write-Warning "Qemu-PowerMan may not work properly on legacy windows. It is not tested using powershell 2.0 or .NET 2.0/3.5"
     }
-    if (-not[Environment]::OSVersion.Platform -like "Win*")
+    if (-not ([Environment]::OSVersion.Platform -like "Win*"))
     {
         return
     }
@@ -246,7 +246,7 @@ function Qemu-Powerman-Bootstrap
             Write-Host $path2
             
             $qemu_Version = (& qemu-system-arm --version 2>&1) | Out-String
-            $qemu_Version = $qemu_Version.Split([char]10)[0] 
+            $qemu_Version = $qemu_Version.Split([char]10)[0].Trim() 
             Say "QEMU Version: $qemu_Version"
         }
         $Global:SkipCheckPath = $true;
