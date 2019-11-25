@@ -133,7 +133,7 @@ function Qemu-PowerMan-DownloadImage{
         return $false;
     }
     $content_Metadata=Get-Content $file_Metadata -Raw
-    Say "Metadata: [$content_Metadata]"
+    Write-Host "Raw Metadata: [$content_Metadata]"
     $metadata=Qemu-PowerMan-ParseMetadata $content_Metadata
     # $metadata | fl
     Say "'$arch' STABLE_VERSION: [$($Metadata.STABLE_VERSION)], DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
@@ -225,7 +225,7 @@ function Qemu-Powerman-Bootstrap
         $append_To_PATH = ""
         @($new_Path1, $new_Path2, $new_Path3, $new_Path4, $new_Path5) | % {
             $append_To_PATH += [System.IO.Path]::PathSeparator + $_
-            if (-not(Test-Path $_ -PathType Container))
+            if (-not (Test-Path $_ -PathType Container))
             {
                 Write-Warning "Unable to unpack bootstrapper: '$_'"
                 $errors = $true
