@@ -38,8 +38,7 @@ function Qemu-PowerMan-DownloadCached {
         Say "Downloading $cacheSubfolder --> $fileNameOnly"
         $tmp_progress=[System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, ".progress", $cacheSubfolder);
         $tmp_copy=[System.IO.Path]::Combine($tmp_progress, $fileNameOnly)
-        Write-Host "tmp_copy: $tmp_copy"
-        Write-Host "tmp_progress: $tmp_progress"
+        Write-Host "Downloading is InProgress: $tmp_copy"
         $isOk = Qemu-PowerMan-DownloadBig $tmp_progress  @($url)
         if ($isOk -and (Test-Path $tmp_copy -PathType Leaf))
         {
@@ -57,9 +56,9 @@ function Qemu-PowerMan-DownloadCached {
     }
 }
 
-function Qemu-PowerMan-DownloadBig{
+function Qemu-PowerMan-DownloadBig {
     param([string]$toDirectory, [string[]]$urls)
-    new-item $toDirectory -ItemType Directory SilentlyContinue 2> $null
+    new-item $toDirectory -ItemType Directory -EA SilentlyContinue 2> $null
     $urls | % {
         $fullName = [System.IO.Path]::Combine($toDirectory, [System.IO.Path]::GetFileName($_))
         if (Test-Path $fullName) { Remove-Item $fullName -Force -EA SilentlyContinue }
@@ -135,7 +134,7 @@ function Qemu-PowerMan-DownloadImage{
     for ($i = 1; $i -le $Metadata.DOWNLOAD_PARTS_COUNT; $i++) {
         $next_url = "https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/10.2.604/debian-$arch-final.qcow2.7z.$($i.ToString("000") )";
         $isOk = Qemu-PowerMan-DownloadCached $next_url "."
-        if (!$isOk)
+        if (!$isOk.IsOK)
         {
             $errors++;
         }
