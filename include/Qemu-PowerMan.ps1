@@ -65,9 +65,9 @@ function Qemu-PowerMan-DownloadImage{
         throw "Can't access or create the '$($Global:Qemu_PowerMan_DownloadImageLocation)' directory"
     }
 
-    Say "Qeury for latest version of '$arch' image"
     $file_Metadata = [System.IO.Path]::Combine($tmp_progress, "VERSION-$arch.sh")
     $url_Metadata="https://dl.bintray.com/devizer/debian-multiarch/VERSION-$arch.sh"
+    Say "Qeury for the latest version of '$arch' image using '$url_Metadata'"
     if (-not (Qemu-PowerMan-DownloadBig $tmp_progress @($url_Metadata)))
     {
         Write-Error "Unable download metadata for '$arch' from '$url_Metadata'. Abort"
