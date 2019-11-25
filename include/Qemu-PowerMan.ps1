@@ -68,7 +68,11 @@ function Qemu-PowerMan-DownloadImage{
     Say "Qeury for latest version of '$arch' image"
     $file_Metadata=$tmp_progress2 + "VERSION-$arch.sh"
     $url_Metadata="https://dl.bintray.com/devizer/debian-multiarch/VERSION-$arch.sh"
-    Qemu-PowerMan-DownloadBig $tmp_progress @($url_Metadata) 
+    if (-not (Qemu-PowerMan-DownloadBig $tmp_progress @($url_Metadata)))
+    {
+        Write-Error "Unable download metadata for '$arch' from '$url_Metadata'. Abort"
+        return $false;
+    }
     $content_Metadata=Get-Content $file_Metadata -Raw
     Say "Metadata: [$content_Metadata]"
     $metadata=Qemu-PowerMan-ParseMetadata $content_Metadata
@@ -107,6 +111,7 @@ function Qemu-PowerMan-DownloadImage{
     }
     
     Say "Total errors for '$arch' image: $errors"
+    return $errors -eq 0;
 
     # Qemu-PowerMan-DownloadBig $tmp_progress $names
 }
