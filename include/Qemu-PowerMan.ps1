@@ -82,7 +82,7 @@ function Qemu-PowerMan-DownloadImage{
         {
             Remove-Item $next_tempcopy -Force -EA SILENTLYCONTINUE
             Say "Downloading '$next_fileonly'" 
-            $isOk=Qemu-PowerMan-DownloadBig $tmp_progress @($next_url)
+            $isOk = Qemu-PowerMan-DownloadBig $tmp_progress @($next_url)
             if ($isOk) {
                 Move-Item $next_tempcopy $next_fullpath -Force
                 "ok" > $next_donename 
