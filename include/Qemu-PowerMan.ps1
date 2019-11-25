@@ -19,7 +19,7 @@ function Qemu-PowerMan-DownloadBig{
     param([string]$toDirectory,[string[]]$urls)
     new-item $toDirectory -ItemType Directory *> $null
     & aria2c "-d$toDirectory" "-Z" $urls 
-    # return $?
+    return $?
 }
 
 function Qemu-PowerMan-ParseMetadata
@@ -69,11 +69,34 @@ function Qemu-PowerMan-DownloadImage{
     Say "DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
     $names=@()
     for ($i = 1; $i -le $Metadata.DOWNLOAD_PARTS_COUNT; $i++) {
-        $names += "https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/10.2.604/debian-$arch-final.qcow2.7z.$($i.ToString("000"))"; 
+        $next_url="https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/10.2.604/debian-$arch-final.qcow2.7z.$($i.ToString("000"))";
+        $next_fileonly=[System.IO.Path]::GetFileName($next_url);
+        $next_fullpath=$Global:Qemu_PowerMan_DownloadImageLocation + [System.IO.Path]::DirectorySeparatorChar + $next_fileonly
+        $next_donename=$next_fullpath + ".done"
+        $next_tempcopy=$tmp_progress + [System.IO.Path]::DirectorySeparatorChar + $next_fileonly;
+        if (Test-Path $next_donename -PathType Leaf)
+        {
+            Say "Already downloaded. Skipping '$next_fileonly'"
+        }
+        else
+        {
+            Remove-Item $next_tempcopy -Force -EA SILENTLYCONTINUE
+            Say "Downloading '$next_fileonly'" 
+            $isOk=Qemu-PowerMan-DownloadBig $tmp_progress @($next_url)
+            if ($isOk) {
+                Move-Item $next_tempcopy $next_fullpath -Force
+                "ok" > $next_donename 
+            }
+            else{
+                Say "ERROR downloading '$next_fileonly'"
+                Remove-Item $next_tempcopy -Force -EA SILENTLYCONTINUE *> $null
+            }
+        }
+        
+        $names += $next_url
     }
 
-    Write-Host $names
-    Qemu-PowerMan-DownloadBig $tmp_progress $names
+    # Qemu-PowerMan-DownloadBig $tmp_progress $names
     
 
     # throw "Not Implemented";
