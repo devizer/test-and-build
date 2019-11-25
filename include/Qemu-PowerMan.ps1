@@ -88,7 +88,7 @@ function Qemu-PowerMan-DownloadImage{
         $next_fullpath=$Global:Qemu_PowerMan_DownloadImageLocation + [System.IO.Path]::DirectorySeparatorChar + $next_fileonly
         $next_donename=$next_fullpath + ".done"
         $next_tempcopy=$tmp_progress + [System.IO.Path]::DirectorySeparatorChar + $next_fileonly;
-        if (Test-Path $next_donename -PathType Leaf)
+        if ((Test-Path $next_donename -PathType Leaf) -and (Test-Path $next_fullpath -PathType Leaf))
         {
             Say "Already downloaded. Skipping '$next_fileonly'"
         }
