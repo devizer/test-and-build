@@ -16,8 +16,12 @@ function Qemu-PowerMan-DownloadSmall{
 }
 
 function Qemu-PowerMan-DownloadBig{
-    param([string]$toDirectory,[string[]]$urls)
+    param([string]$toDirectory, [string[]]$urls)
     new-item $toDirectory -ItemType Directory *> $null
+    $urls | % {
+        $fullName = [System.IO.Path]::Combine($toDirectory, [System.IO.Path]::GetFileName($_))
+        if (Test-Path $fullName) { Remove-Item $fullName -Force -EA SilentlyContinue }
+    }
     & aria2c "-d$toDirectory" "-Z" $urls 
     return $?
 }
@@ -81,7 +85,7 @@ function Qemu-PowerMan-DownloadImage{
         else
         {
             Remove-Item $next_tempcopy -Force -EA SILENTLYCONTINUE
-            Say "Downloading '$next_fileonly'" 
+            Say "Downloading '$next_fileonly' of $($Metadata.DOWNLOAD_PARTS_COUNT)"
             $isOk = Qemu-PowerMan-DownloadBig $tmp_progress @($next_url)
             if ($isOk) {
                 Move-Item $next_tempcopy $next_fullpath -Force
