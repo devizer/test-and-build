@@ -133,7 +133,7 @@ function Qemu-PowerMan-DownloadImage{
         return $false;
     }
     $content_Metadata=Get-Content $file_Metadata -Raw
-    Write-Host "Raw Metadata for '$arch': [$content_Metadata]"
+    Write-Host "Raw Metadata for '$arch': $content_Metadata"
     $metadata=Qemu-PowerMan-ParseMetadata $content_Metadata
     # $metadata | fl
     Say "'$arch' STABLE_VERSION: [$($Metadata.STABLE_VERSION)], DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
