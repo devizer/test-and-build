@@ -148,8 +148,8 @@ function Qemu-PowerMan-DownloadImage{
 
     $initrd_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/initrd.img"
     $vmlinuz_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/vmlinuz"
-    $initrd_Info = Qemu-PowerMan-DownloadCached $initrd_Url "kernels/$arch"
-    $vmlinuz_Info = Qemu-PowerMan-DownloadCached $vmlinuz_Url "kernels/$arch"
+    $initrd_Info = Qemu-PowerMan-DownloadCached $initrd_Url "basic-kernels/$arch"
+    $vmlinuz_Info = Qemu-PowerMan-DownloadCached $vmlinuz_Url "basic-kernels/$arch"
     
     
     Say "Total errors for '$arch' image: $errors"
