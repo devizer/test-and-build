@@ -12,6 +12,7 @@ steps:
       echo "OUTPUT_FOLDER is .... [$OUTPUT_FOLDER]"
       echo "build number is ..... [$commits_count]"
       echo "working folder ...... [$(pwd)]"
+      echo "message ............. [$BUILD_SOURCEVERSIONMESSAGE]
 
       echo "##vso[task.setvariable variable=FINAL_SIZE]$FINAL_SIZE"
       echo "##vso[task.setvariable variable=OUTPUT_FOLDER]$OUTPUT_FOLDER"
