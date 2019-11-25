@@ -18,7 +18,8 @@ function Qemu-PowerMan-DownloadSmall{
 function Qemu-PowerMan-DownloadBig{
     param([string]$toDirectory,[string[]]$urls)
     new-item $toDirectory -ItemType Directory *> $null
-    & aria2c "-d$toDirectory" "-Z" $urls
+    & aria2c "-d$toDirectory" "-Z" $urls 
+    # return $?
 }
 
 function Qemu-PowerMan-ParseMetadata
