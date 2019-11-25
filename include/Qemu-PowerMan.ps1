@@ -26,7 +26,7 @@ function Qemu-PowerMan-DownloadBig{
     $output = (& aria2c "-d$toDirectory" "-Z" $urls 2>&1 ) | Out-String
     # $isOk = $? -and (-not $LASTEXITCODE);
     $isOk = $?;
-    # Write-Host $output 
+    Write-Host $output 
     if (!$isOk) {
         Write-Error "Error downloading $urls`n$output"
     }
