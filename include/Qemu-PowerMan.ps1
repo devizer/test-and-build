@@ -27,7 +27,7 @@ function Qemu-PowerMan-ParseMetadata
     $ret=New-Object PSObject;
     $arr8=$metadata.Split(@([char]10,[char]13))
     Write-Host "arr8 >>>"
-    $arr8 | fl
+    Write-Host ($arr8 | join-string -Separator " | ")
     Write-Host "arr8 <<<"
     foreach ($row7 in $arr8)
     {
