@@ -5,6 +5,52 @@ if (-not $Global:Qemu_PowerMan_DownloadImageLocation) {$Global:Qemu_PowerMan_Dow
 $Global:Qemu_PowerMan_DownloadImageLocation = [System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, ".local", "qemu-powerman");
 # $Global:Qemu_PowerMan_DownloadImageLocation
 
+function Qemu-PowerMan-DownloadCached {
+    param([string]$url, [string] $cacheSubfolder)
+    $fileNameOnly = [System.IO.Path]::GetFileName($url)
+    $fullPath = [System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, $cacheSubfolder, $fileNameOnly)
+    $donePath = $fullPath + ".done"
+    if ((Test-Path $donePath -PathType Leaf) -and (Test-Path $fullPath -PathType Leaf)) {
+        Say "Already cached: $cacheSubfolder --> $fileNameOnly"
+        return @{IsOK=$true;LocalPath=$fullPath}
+    }
+    else
+    {
+        Say "Downloading $cacheSubfolder --> $fileNameOnly"
+        $tmp_progress=[System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, ".progress", $cacheSubfolder);
+        $tmp_copy=[System.IO.Path]::Combine($tmp_progress, $fileNameOnly) 
+        $isOk = Qemu-PowerMan-DownloadBig $tmp_progress, @($url)
+        if ($isOk -and (Test-Path $tmp_copy -PathType Leaf))
+        {
+            Move-Item $tmp_copy $fullPath -Force
+            "ok" > $donePath
+            return @{IsOK=$true;LocalPath=$fullPath}
+        }
+        else {
+            Say "ERROR downloading $cacheSubfolder --> $fileNameOnly"
+            return @{IsOK=$false}
+        }
+        
+    }
+}
+
+function Qemu-PowerMan-DownloadBig{
+    param([string]$toDirectory, [string[]]$urls)
+    new-item $toDirectory -ItemType Directory 2> $null
+    $urls | % {
+        $fullName = [System.IO.Path]::Combine($toDirectory, [System.IO.Path]::GetFileName($_))
+        if (Test-Path $fullName) { Remove-Item $fullName -Force -EA SilentlyContinue }
+    }
+    $output = (& aria2c "-d$toDirectory" "-Z" $urls 2>&1 ) | Out-String
+    # $isOk = $? -and (-not $LASTEXITCODE);
+    $isOk = $?;
+    Write-Host $output
+    if (!$isOk) {
+        Write-Error "Error downloading $urls`n$output"
+    }
+    return $isOk
+}
+
 function Qemu-PowerMan-DownloadSmall{
     param([string]$url,[string]$file)
     $prev = [System.Net.ServicePointManager]::SecurityProtocol
@@ -16,22 +62,7 @@ function Qemu-PowerMan-DownloadSmall{
     $d.DownloadFile($url,$outfile)
 }
 
-function Qemu-PowerMan-DownloadBig{
-    param([string]$toDirectory, [string[]]$urls)
-    new-item $toDirectory -ItemType Directory *> $null
-    $urls | % {
-        $fullName = [System.IO.Path]::Combine($toDirectory, [System.IO.Path]::GetFileName($_))
-        if (Test-Path $fullName) { Remove-Item $fullName -Force -EA SilentlyContinue }
-    }
-    $output = (& aria2c "-d$toDirectory" "-Z" $urls 2>&1 ) | Out-String
-    # $isOk = $? -and (-not $LASTEXITCODE);
-    $isOk = $?;
-    Write-Host $output 
-    if (!$isOk) {
-        Write-Error "Error downloading $urls`n$output"
-    }
-    return $isOk 
-}
+
 
 function Qemu-PowerMan-ParseMetadata
 {
@@ -61,7 +92,6 @@ function Qemu-PowerMan-DownloadImage{
     # $tmp_progress2=$tmp_progress + [System.IO.Path]::DirectorySeparatorChar 
     
     Say "Downloading $arch image to: '$Global:Qemu_PowerMan_DownloadImageLocation'"
-    # new-item $tmp_progress -ItemType Directory *> $null
     
     if (-not (Test-Path $Global:Qemu_PowerMan_DownloadImageLocation -PathType Container)) {
         throw "Can't access or create the '$($Global:Qemu_PowerMan_DownloadImageLocation)' directory"
@@ -111,6 +141,12 @@ function Qemu-PowerMan-DownloadImage{
         
         $names += $next_url
     }
+
+    $initrd_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/initrd.img"
+    $vmlinuz_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/vmlinuz"
+    $initrd_Info = Qemu-PowerMan-DownloadCached $initrd_Url "$arch"
+    $vmlinuz_Info = Qemu-PowerMan-DownloadCached $vmlinuz_Url "$arch"
+    
     
     Say "Total errors for '$arch' image: $errors"
     return $errors -eq 0;
