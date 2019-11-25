@@ -127,7 +127,7 @@ function Qemu-PowerMan-DownloadImage{
     $content_Metadata=Get-Content $file_Metadata -Raw
     Say "Metadata: [$content_Metadata]"
     $metadata=Qemu-PowerMan-ParseMetadata $content_Metadata
-    $metadata | fl
+    # $metadata | fl
     Say "'$arch' STABLE_VERSION: [$($Metadata.STABLE_VERSION)], DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
     $names=@()
     for ($i = 1; $i -le $Metadata.DOWNLOAD_PARTS_COUNT; $i++) {
