@@ -8,6 +8,7 @@ $Global:Qemu_PowerMan_DownloadImageLocation = [System.IO.Path]::Combine($Global:
 function Qemu-PowerMan-DownloadCached {
     param([string]$url, [string] $cacheSubfolder)
     $fileNameOnly = [System.IO.Path]::GetFileName($url)
+    Say "Caching '$url' as '$cacheSubfolder --> $fileNameOnly'"
     $fullPath = [System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, $cacheSubfolder, $fileNameOnly)
     $donePath = $fullPath + ".done"
     if ((Test-Path $donePath -PathType Leaf) -and (Test-Path $fullPath -PathType Leaf)) {
