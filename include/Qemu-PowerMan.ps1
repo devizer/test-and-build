@@ -8,7 +8,7 @@ $Global:Qemu_PowerMan_DownloadImageLocation = [System.IO.Path]::Combine($Global:
 function Qemu-PowerMan-DownloadCached {
     param([string] $url, [string] $cacheSubfolder)
     $fileNameOnly = [System.IO.Path]::GetFileName($url)
-    Say "Caching '$url' as '$cacheSubfolder --> $fileNameOnly'"
+    # Say "Caching '$url' as '$cacheSubfolder --> $fileNameOnly'"
     $fullPath = [System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, $cacheSubfolder, $fileNameOnly)
     $donePath = $fullPath + ".done"
     if ((Test-Path $donePath -PathType Leaf) -and (Test-Path $fullPath -PathType Leaf)) {
@@ -25,7 +25,8 @@ function Qemu-PowerMan-DownloadCached {
         $isOk = Qemu-PowerMan-DownloadBig $tmp_progress  @($url)
         if ($isOk -and (Test-Path $tmp_copy -PathType Leaf))
         {
-            new-item [System.IO.Path]::GetDirecoryName($fullPath) -ItemType Directory 2> $null
+            $fullDirectoryPath=[System.IO.Path]::GetDirectoryName($fullPath)
+            new-item $fullDirectoryPath -ItemType Directory 2> $null
             Move-Item $tmp_copy $fullPath -Force
             "ok" > $donePath
             return @{IsOK=$true;LocalPath=$fullPath}
@@ -148,8 +149,10 @@ function Qemu-PowerMan-DownloadImage{
 
     $initrd_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/initrd.img"
     $vmlinuz_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/vmlinuz"
-    $initrd_Info = Qemu-PowerMan-DownloadCached $initrd_Url "basic-kernels/$arch"
-    $vmlinuz_Info = Qemu-PowerMan-DownloadCached $vmlinuz_Url "basic-kernels/$arch"
+    $initrd_Info = Qemu-PowerMan-DownloadCached $initrd_Url "basic-kernels-$arch"
+    if (-not $initrd_Info.IsOK) { $errors++}
+    $vmlinuz_Info = Qemu-PowerMan-DownloadCached $vmlinuz_Url "basic-kernels-$arch"
+    if (-not $vmlinuz_Info.IsOK) { $errors++}
     
     
     Say "Total errors for '$arch' image: $errors"
