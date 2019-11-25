@@ -51,7 +51,7 @@ function Qemu-PowerMan-DownloadImage{
     Say "Downloading $arch image to: '$Global:Qemu_PowerMan_DownloadImageLocation'"
     new-item $tmp_progress -ItemType Directory *> $null
     
-    if (-not (Test-Path $Global:Qemu_PowerMan_DownloadImageLocation -PathType Any)) {
+    if (-not (Test-Path $Global:Qemu_PowerMan_DownloadImageLocation -PathType Container)) {
         throw "Can't access or create the '$($Global:Qemu_PowerMan_DownloadImageLocation)' directory"
     }
 
