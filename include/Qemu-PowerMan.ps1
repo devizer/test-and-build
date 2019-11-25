@@ -23,8 +23,12 @@ function Qemu-PowerMan-DownloadBig{
         $fullName = [System.IO.Path]::Combine($toDirectory, [System.IO.Path]::GetFileName($_))
         if (Test-Path $fullName) { Remove-Item $fullName -Force -EA SilentlyContinue }
     }
-    & aria2c "-d$toDirectory" "-Z" $urls 
-    return $?
+    $output = { & aria2c "-d$toDirectory" "-Z" $urls }
+    $isOk = $?;
+    if (!$isOk) {
+        Write-Error "Error downloading $urls`n$output"
+    }
+    return $isOk 
 }
 
 function Qemu-PowerMan-ParseMetadata
