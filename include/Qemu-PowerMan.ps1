@@ -105,12 +105,10 @@ function Qemu-PowerMan-ParseMetadata
 function Qemu-PowerMan-DownloadImage{
     param(
         [ValidateSet("arm64", "arm", "AMD64", "i386")]
-        [string] $arch,
-        [bool] $noCache = $false
+        [string] $arch
     )
 
     $tmp_progress=[System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, ".progress");
-    # $tmp_progress2=$tmp_progress + [System.IO.Path]::DirectorySeparatorChar 
     
     Say "Downloading $arch image to: '$Global:Qemu_PowerMan_DownloadImageLocation'"
     
@@ -135,41 +133,23 @@ function Qemu-PowerMan-DownloadImage{
     Say "'$arch' STABLE_VERSION: [$($Metadata.STABLE_VERSION)], DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
     $names=@()
     for ($i = 1; $i -le $Metadata.DOWNLOAD_PARTS_COUNT; $i++) {
-        $next_url="https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/10.2.604/debian-$arch-final.qcow2.7z.$($i.ToString("000"))";
-        $next_fileonly=[System.IO.Path]::GetFileName($next_url);
-        $next_fullpath=$Global:Qemu_PowerMan_DownloadImageLocation + [System.IO.Path]::DirectorySeparatorChar + $next_fileonly
-        $next_donename=$next_fullpath + ".done"
-        $next_tempcopy=$tmp_progress + [System.IO.Path]::DirectorySeparatorChar + $next_fileonly;
-        if ((Test-Path $next_donename -PathType Leaf) -and (Test-Path $next_fullpath -PathType Leaf))
+        $next_url = "https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/10.2.604/debian-$arch-final.qcow2.7z.$($i.ToString("000") )";
+        $isOk = Qemu-PowerMan-DownloadCached $next_url "."
+        if (!$isOk)
         {
-            Say "Already downloaded. Skipping '$next_fileonly'"
+            $errors++;
         }
-        else
-        {
-            Remove-Item $next_tempcopy -Force -EA SILENTLYCONTINUE
-            Say "Downloading '$next_fileonly' of $($Metadata.DOWNLOAD_PARTS_COUNT)"
-            $isOk = Qemu-PowerMan-DownloadBig $tmp_progress @($next_url)
-            if ($isOk -and (Test-Path $next_tempcopy -PathType Leaf)) {
-                Move-Item $next_tempcopy $next_fullpath -Force
-                "ok" > $next_donename 
-            }
-            else {
-                Say "ERROR downloading '$next_fileonly'"
-                Remove-Item $next_tempcopy -Force -EA SILENTLYCONTINUE *> $null
-                $errors++;
-            }
-        }
-        
-        $names += $next_url
     }
 
+
+    
     $initrd_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/initrd.img"
-    $vmlinuz_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/vmlinuz"
     $initrd_Info = Qemu-PowerMan-DownloadCached $initrd_Url "basic-kernels-$arch"
     if (-not $initrd_Info.IsOK) { $errors++}
+
+    $vmlinuz_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/vmlinuz"
     $vmlinuz_Info = Qemu-PowerMan-DownloadCached $vmlinuz_Url "basic-kernels-$arch"
     if (-not $vmlinuz_Info.IsOK) { $errors++}
-    
     
     Say "Total errors for '$arch' image: $errors"
     return $errors -eq 0;
