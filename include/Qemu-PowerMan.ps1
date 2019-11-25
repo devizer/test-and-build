@@ -1,7 +1,9 @@
 function Combine-Path {
     param([string[]] $parts)
-    return [System.IO.Path]::Combine($parts)
+    return [System.IO.Path]::GetFullPath( [System.IO.Path]::Combine($parts) )
 }
+
+function Directory-Separator-Char { [System.IO.Path]::DirectorySeparatorChar }
 
 if ($Env:HOME) {
     # linux
@@ -14,9 +16,10 @@ elseif ($Env:LocalAppData) {
 elseif ($Env:AppData) {
     # Windows XP/2003
     $Global:Qemu_PowerMan_DownloadImageLocation = Combine-Path $Env:AppData, "qemu-powerman"
+    Write-Warning "aria2c is not fully supported on Windows XP/2003 for bintray"
 }
 else {
-    # ICS OS
+    # ICS z-OS
     $Global:Qemu_PowerMan_DownloadImageLocation = Combine-Path ([System.IO.Path]::DirectorySeparatorChar + "opt"), "qemu-powerman"
 }
 
@@ -81,8 +84,6 @@ function Qemu-PowerMan-DownloadSmall{
     $d=new-object System.Net.WebClient;
     $d.DownloadFile($url,$outfile)
 }
-
-
 
 function Qemu-PowerMan-ParseMetadata
 {
