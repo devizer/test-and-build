@@ -6,5 +6,5 @@ if (Test-Path "V:\" -PathType Container)
     $Global:Qemu_PowerMan_DownloadImageLocation = "V:\Qemu_PowerMan_DownloadImageLocation"
 }
 
-Qemu-PowerMan-DownloadImage "arm"
-Qemu-PowerMan-DownloadImage "arm64"
+$okArm = Qemu-PowerMan-DownloadImage "arm"
+$okArm64 = Qemu-PowerMan-DownloadImage "arm64"
