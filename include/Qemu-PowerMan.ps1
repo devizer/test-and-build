@@ -106,14 +106,14 @@ function Qemu-PowerMan-DownloadImage{
         [string] $arch
     )
 
-    $tmp_progress=[System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, ".progress");
-    
     Say "Downloading $arch image to: '$Global:Qemu_PowerMan_DownloadImageLocation'"
     new-item $Global:Qemu_PowerMan_DownloadImageLocation -ItemType Directory -EA SilentlyContinue 2> $null
     if (-not (Test-Path $Global:Qemu_PowerMan_DownloadImageLocation -PathType Container)) {
         throw "Can't access or create the '$($Global:Qemu_PowerMan_DownloadImageLocation)' directory"
     }
 
+    $tmp_progress = Combine-Path $Global:Qemu_PowerMan_DownloadImageLocation, ".progress"
+    
     $errors = 0;
     $file_Metadata = [System.IO.Path]::Combine($tmp_progress, "VERSION-$arch.sh")
     $url_Metadata="https://dl.bintray.com/devizer/debian-multiarch/VERSION-$arch.sh"
@@ -141,7 +141,7 @@ function Qemu-PowerMan-DownloadImage{
 
     @("initrd.img", "vmlinuz") | % {
         $kernel_url = "https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/$_"
-        $downloadStatus = Qemu-PowerMan-DownloadCached $kernel_url "basic-kernels-$arch"
+        $downloadStatus = Qemu-PowerMan-DownloadCached $kernel_url "basic-kernel-$arch"
         if (-not $downloadStatus.IsOK) { $errors++}
     }
     
