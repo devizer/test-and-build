@@ -109,7 +109,7 @@ function Qemu-PowerMan-DownloadImage{
     $tmp_progress=[System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, ".progress");
     
     Say "Downloading $arch image to: '$Global:Qemu_PowerMan_DownloadImageLocation'"
-    
+    new-item $Global:Qemu_PowerMan_DownloadImageLocation -ItemType Directory -EA SilentlyContinue 2> $null
     if (-not (Test-Path $Global:Qemu_PowerMan_DownloadImageLocation -PathType Container)) {
         throw "Can't access or create the '$($Global:Qemu_PowerMan_DownloadImageLocation)' directory"
     }
