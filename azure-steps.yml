@@ -106,11 +106,9 @@ steps:
   - script: free -m; sudo swapon
     displayName: 'show memory usage'
 
-
   - script: |
       sudo apt-get update -yqq
       command -v gem || (sudo apt-get install -y ruby-dev; sudo gem install dpl)
-
     displayName: 'INSTALL DPL using sudo'
 
   - script: |
@@ -181,5 +179,5 @@ steps:
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: 'Debian-Multiarch-Artifact-$(ARCH)'
+      artifactName: 'Debian-$(ARCH)-Multiarch'
       
