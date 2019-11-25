@@ -55,18 +55,18 @@ function Qemu-PowerMan-DownloadImage{
         [bool] $noCache = $false
     )
 
-    $tmp_progress=$Global:Qemu_PowerMan_DownloadImageLocation + [System.IO.Path]::DirectorySeparatorChar + ".progress"
-    $tmp_progress2=$tmp_progress + [System.IO.Path]::DirectorySeparatorChar 
+    $tmp_progress=[System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, ".progress");
+    # $tmp_progress2=$tmp_progress + [System.IO.Path]::DirectorySeparatorChar 
     
     Say "Downloading $arch image to: '$Global:Qemu_PowerMan_DownloadImageLocation'"
-    new-item $tmp_progress -ItemType Directory *> $null
+    # new-item $tmp_progress -ItemType Directory *> $null
     
     if (-not (Test-Path $Global:Qemu_PowerMan_DownloadImageLocation -PathType Container)) {
         throw "Can't access or create the '$($Global:Qemu_PowerMan_DownloadImageLocation)' directory"
     }
 
     Say "Qeury for latest version of '$arch' image"
-    $file_Metadata=$tmp_progress2 + "VERSION-$arch.sh"
+    $file_Metadata = [System.IO.Path]::Combine($tmp_progress, "VERSION-$arch.sh")
     $url_Metadata="https://dl.bintray.com/devizer/debian-multiarch/VERSION-$arch.sh"
     if (-not (Qemu-PowerMan-DownloadBig $tmp_progress @($url_Metadata)))
     {
