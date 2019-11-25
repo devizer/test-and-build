@@ -27,7 +27,7 @@ function Qemu-PowerMan-DownloadCached {
     param([string] $url, [string] $cacheSubfolder)
     $fileNameOnly = [System.IO.Path]::GetFileName($url)
     # Say "Caching '$url' as '$cacheSubfolder --> $fileNameOnly'"
-    $fullPath = [System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, $cacheSubfolder, $fileNameOnly)
+    $fullPath = Combine-Path $Global:Qemu_PowerMan_DownloadImageLocation, $cacheSubfolder, $fileNameOnly
     $donePath = $fullPath + ".done"
     if ((Test-Path $donePath -PathType Leaf) -and (Test-Path $fullPath -PathType Leaf)) {
         Say "Already cached: $cacheSubfolder --> $fileNameOnly"
@@ -36,8 +36,8 @@ function Qemu-PowerMan-DownloadCached {
     else
     {
         Say "Downloading $cacheSubfolder --> $fileNameOnly"
-        $tmp_progress=[System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, ".progress", $cacheSubfolder);
-        $tmp_copy=[System.IO.Path]::Combine($tmp_progress, $fileNameOnly)
+        $tmp_progress = Combine-Path $Global:Qemu_PowerMan_DownloadImageLocation, ".progress", $cacheSubfolder
+        $tmp_copy = Combine-Path $tmp_progress, $fileNameOnly
         Write-Host "Downloading is InProgress: $tmp_copy"
         $isOk = Qemu-PowerMan-DownloadBig $tmp_progress  @($url)
         if ($isOk -and (Test-Path $tmp_copy -PathType Leaf))
@@ -52,7 +52,6 @@ function Qemu-PowerMan-DownloadCached {
             Say "ERROR downloading $cacheSubfolder --> $fileNameOnly"
             return @{IsOK=$false}
         }
-        
     }
 }
 
