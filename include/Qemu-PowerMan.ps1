@@ -69,7 +69,7 @@ function Qemu-PowerMan-DownloadImage{
     Say "DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
     $names=@()
     for ($i = 1; $i -le $Metadata.DOWNLOAD_PARTS_COUNT; $i++) {
-        $names += "https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/10.2.604/debian-arm-final.qcow2.7z.$($i.ToString("000"))"; 
+        $names += "https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/10.2.604/debian-$arch-final.qcow2.7z.$($i.ToString("000"))"; 
     }
 
     Write-Host $names
