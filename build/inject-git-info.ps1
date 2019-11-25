@@ -32,7 +32,8 @@ function Get-Git-Info {
 # AssemblyInfo.cs
 $versionMain = GetVersion
 $build = (Get-Git-Info).CommitCount
-$version = "$($versionMain).$($build)"
+$the_date=[DateTime]::UtcNow.ToString("yyyy.MM.dd")
+$version = "$($versionMain).$($build)-$($the_date)"
 
 # BinTray
 $binTray = Get-Content "../bintray.json" | ConvertFrom-Json

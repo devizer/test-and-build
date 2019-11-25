@@ -17,6 +17,9 @@ popd
 
 $version=(& cat ../bintray.json | jq -r ".version.name") | Out-String
 $version=$version.Trim(@([char]10,[char]13))
+# bash: the_date=$(TZ=UTC date "+%Y-%m-%d")
+# $the_date=[DateTime]::UtcNow.ToString("yyyy-MM-dd")
+# $version="$($version_short)-$($the_date)"
 Write-Host "!> To Publish: $version"
 
 $DOWNLOAD_PARTS_COUNT=(gci "$FROM/final-$ARCH-splitted/*.qcow2.7z.*").Count
