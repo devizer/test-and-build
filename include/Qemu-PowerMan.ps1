@@ -1,8 +1,9 @@
 $Global:Qemu_PowerMan_DownloadImageLocation=$Env:HOME
 if (-not $Global:Qemu_PowerMan_DownloadImageLocation) {$Global:Qemu_PowerMan_DownloadImageLocation=$Env:LocalAppData}
 if (-not $Global:Qemu_PowerMan_DownloadImageLocation) {$Global:Qemu_PowerMan_DownloadImageLocation=$Env:AppData}
-$Global:Qemu_PowerMan_DownloadImageLocation += [System.IO.Path]::DirectorySeparatorChar + ".local" + [System.IO.Path]::DirectorySeparatorChar + "qemu-powerman" 
-$Global:Qemu_PowerMan_DownloadImageLocation
+# $Global:Qemu_PowerMan_DownloadImageLocation += [System.IO.Path]::DirectorySeparatorChar + ".local" + [System.IO.Path]::DirectorySeparatorChar + "qemu-powerman"
+$Global:Qemu_PowerMan_DownloadImageLocation = [System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, ".local", "qemu-powerman");
+# $Global:Qemu_PowerMan_DownloadImageLocation
 
 function Qemu-PowerMan-DownloadSmall{
     param([string]$url,[string]$file)
@@ -32,7 +33,7 @@ function Qemu-PowerMan-ParseMetadata
     $ret=New-Object PSObject;
     foreach ($row7 in $metadata.Replace([char]13,[char]10).Split([char]10))
     {
-        Write-Host "row7: $row7" -ForegroundColor Red
+        # Write-Host "row7: $row7" -ForegroundColor Red
         $arr7 = $row7.Split($([char]61))
         if (($arr7.Length -ge 2))
         {
