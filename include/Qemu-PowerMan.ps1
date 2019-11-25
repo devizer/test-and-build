@@ -6,7 +6,7 @@ $Global:Qemu_PowerMan_DownloadImageLocation = [System.IO.Path]::Combine($Global:
 # $Global:Qemu_PowerMan_DownloadImageLocation
 
 function Qemu-PowerMan-DownloadCached {
-    param([string]$url, [string] $cacheSubfolder)
+    param([string] $url, [string] $cacheSubfolder)
     $fileNameOnly = [System.IO.Path]::GetFileName($url)
     Say "Caching '$url' as '$cacheSubfolder --> $fileNameOnly'"
     $fullPath = [System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, $cacheSubfolder, $fileNameOnly)
@@ -19,10 +19,13 @@ function Qemu-PowerMan-DownloadCached {
     {
         Say "Downloading $cacheSubfolder --> $fileNameOnly"
         $tmp_progress=[System.IO.Path]::Combine($Global:Qemu_PowerMan_DownloadImageLocation, ".progress", $cacheSubfolder);
-        $tmp_copy=[System.IO.Path]::Combine($tmp_progress, $fileNameOnly) 
-        $isOk = Qemu-PowerMan-DownloadBig $tmp_progress, @($url)
+        $tmp_copy=[System.IO.Path]::Combine($tmp_progress, $fileNameOnly)
+        Write-Host "tmp_copy: $tmp_copy"
+        Write-Host "tmp_progress: $tmp_progress"
+        $isOk = Qemu-PowerMan-DownloadBig $tmp_progress  @($url)
         if ($isOk -and (Test-Path $tmp_copy -PathType Leaf))
         {
+            new-item [System.IO.Path]::GetDirecoryName($fullPath) -ItemType Directory 2> $null
             Move-Item $tmp_copy $fullPath -Force
             "ok" > $donePath
             return @{IsOK=$true;LocalPath=$fullPath}
@@ -145,8 +148,8 @@ function Qemu-PowerMan-DownloadImage{
 
     $initrd_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/initrd.img"
     $vmlinuz_Url="https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/vmlinuz"
-    $initrd_Info = Qemu-PowerMan-DownloadCached $initrd_Url "$arch"
-    $vmlinuz_Info = Qemu-PowerMan-DownloadCached $vmlinuz_Url "$arch"
+    $initrd_Info = Qemu-PowerMan-DownloadCached $initrd_Url "kernels/$arch"
+    $vmlinuz_Info = Qemu-PowerMan-DownloadCached $vmlinuz_Url "kernels/$arch"
     
     
     Say "Total errors for '$arch' image: $errors"
