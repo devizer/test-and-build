@@ -27,6 +27,7 @@ function Qemu-PowerMan-ParseMetadata
     $ret=New-Object PSObject;
     foreach ($row7 in $metadata.Split($([char]10,[char]13)))
     {
+        Write-Host "row7: $row7"
         $arr7 = $row7.Split($([char]61))
         if (($arr7.Length -ge 2))
         {
