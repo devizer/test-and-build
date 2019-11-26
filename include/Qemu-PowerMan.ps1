@@ -79,7 +79,7 @@ function Qemu-PowerMan-DownloadBig {
     return $isOk
 }
 
-function Qemu-PowerMan-DownloadSmall{
+function Qemu-PowerMan-DownloadSmall {
     param([string]$url,[string]$file)
     $prev = [System.Net.ServicePointManager]::SecurityProtocol
     $next = (($prev -bor [System.Net.SecurityProtocolType]::Tls11) -bor [System.Net.SecurityProtocolType]::Tls12)
@@ -195,8 +195,7 @@ function Qemu-Powerman-Bootstrap
     $Global:WindowsDownloadSuffix = if ($Global:Is64BitOperatingSystem)
     {
         "x64"
-    }
-    else
+    } else
     {
         "x86"
     }
