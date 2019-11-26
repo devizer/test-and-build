@@ -97,130 +97,222 @@ function Is-Requested-Specific-Feature{
 }
 
 # port, mem and #cores are indirectly passed via $startParams
-function Prepare-VM { param($definition, $rootDiskFullName, $guestNamePrefix="", $portNumber = 0)
-if (-not $portNumber) { $portNumber=$startParams.Port }
-$path=Split-Path -Path $rootDiskFullName;
-$fileName = [System.IO.Path]::GetFileName($rootDiskFullName)
-Write-Host "Copy kernel to '$($path)'"
-Copy-Item "$ProjectPath/kernels/$($definition.Key)/*" "$($path)/"
+function Prepare-VM
+{
+    param($definition, $rootDiskFullName, $guestNamePrefix = "", $portNumber = 0)
+    if (-not$portNumber)
+    {
+        $portNumber = $startParams.Port
+    }
+    $path = Split-Path -Path $rootDiskFullName;
+    $fileName = [System.IO.Path]::GetFileName($rootDiskFullName)
+    Write-Host "Copy kernel to '$( $path )'"
+    Copy-Item "$ProjectPath/kernels/$( $definition.Key )/*" "$( $path )/"
 
-# on 18.04 virt-format without defrag produces 1Gb file, on 19.10 - 30Mb 
-pushd $path
-& qemu-img create -f qcow2 ephemeral.temp.qcow2 200G
-& virt-format --partition=mbr --filesystem=ext4 -a ephemeral.temp.qcow2
-& qemu-img convert -O qcow2 -c ephemeral.temp.qcow2 ephemeral.qcow2
-& rm -f ephemeral.temp.qcow2
-popd
+    # on 18.04 virt-format without defrag produces 1Gb file, on 19.10 - 30Mb 
+    pushd $path
+    & qemu-img create -f qcow2 ephemeral.temp.qcow2 200G
+    & virt-format --partition = mbr --filesystem = ext4 -a ephemeral.temp.qcow2
+    & qemu-img convert -O qcow2 -c ephemeral.temp.qcow2 ephemeral.qcow2
+    & rm -f ephemeral.temp.qcow2
+    popd
 
-$hasKvm = (& sh -c "ls /dev/kvm 2>/dev/null") | Out-String
-if ($key -eq "arm") {
-    $guestName="buster-arm-v7"
-    $qemySystem="arm"
-    $paramCpu=""
-}
-elseif ($key -eq "arm64") {
-    $guestName="buster-arm-64"
-    $qemySystem="aarch64"
-    $paramCpu=" -cpu cortex-a57 "
-}
-elseif ($key -eq "i386") {
-    $guestName=if ($hasKvm) { "buster-i386-KVM" } else { "buster-i386-EMU" }
-    $qemySystem="i386"
-    # qemu-system-i386 --machine q35 -cpu ?
-    # CPU: kvm32|SandyBridge
-    $kvmCpu=if ($definition.NeedSSE4) {"SandyBridge"} else {"kvm32"}
-    $paramCpu=if ($hasKvm) { " -cpu $kvmCpu " } else { " -cpu qemu32 " }
-    $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm "} else {" "}
-}
-elseif ($key -eq "AMD64") {
-    $guestName=if ($hasKvm) { "buster-AMD64-KVM" } else { "buster-AMD64-EMU" }
-    $qemySystem="x86_64"
-    # qemu-system-i386 --machine q35 -cpu ?
-    # CPU: kvm64|SandyBridge
-    $kvmCpu=if ($definition.NeedSSE4) {"SandyBridge"} else {"kvm64"}
-    $paramCpu=if ($hasKvm) { " -cpu $kvmCpu " } else { " -cpu qemu64 " }
-    $kvmParameters=if ($definition.EnableKvm -and $hasKvm) {" -enable-kvm "} else {" "}
-}
-else {
-    throw "Unknown definition.key = '$key'"
-}
+    $hasKvm = (& sh -c "ls /dev/kvm 2>/dev/null") | Out-String
+    if ($key -eq "arm")
+    {
+        $guestName = "buster-arm-v7"
+        $qemySystem = "arm"
+        $paramCpu = ""
+    }
+    elseif ($key -eq "arm64")
+    {
+        $guestName = "buster-arm-64"
+        $qemySystem = "aarch64"
+        $paramCpu = " -cpu cortex-a57 "
+    }
+    elseif ($key -eq "i386")
+    {
+        $guestName = if ($hasKvm)
+        {
+            "buster-i386-KVM"
+        }
+        else
+        {
+            "buster-i386-EMU"
+        }
+        $qemySystem = "i386"
+        # qemu-system-i386 --machine q35 -cpu ?
+        # CPU: kvm32|SandyBridge
+        $kvmCpu = if ($definition.NeedSSE4)
+        {
+            "SandyBridge"
+        }
+        else
+        {
+            "kvm32"
+        }
+        $paramCpu = if ($hasKvm)
+        {
+            " -cpu $kvmCpu "
+        }
+        else
+        {
+            " -cpu qemu32 "
+        }
+        $kvmParameters = if ($definition.EnableKvm -and $hasKvm)
+        {
+            " -enable-kvm "
+        }
+        else
+        {
+            " "
+        }
+    }
+    elseif ($key -eq "AMD64")
+    {
+        $guestName = if ($hasKvm)
+        {
+            "buster-AMD64-KVM"
+        }
+        else
+        {
+            "buster-AMD64-EMU"
+        }
+        $qemySystem = "x86_64"
+        # qemu-system-i386 --machine q35 -cpu ?
+        # CPU: kvm64|SandyBridge
+        $kvmCpu = if ($definition.NeedSSE4)
+        {
+            "SandyBridge"
+        }
+        else
+        {
+            "kvm64"
+        }
+        $paramCpu = if ($hasKvm)
+        {
+            " -cpu $kvmCpu "
+        }
+        else
+        {
+            " -cpu qemu64 "
+        }
+        $kvmParameters = if ($definition.EnableKvm -and $hasKvm)
+        {
+            " -enable-kvm "
+        }
+        else
+        {
+            " "
+        }
+    }
+    else
+    {
+        throw "Unknown definition.key = '$key'"
+    }
 
-if ($guestNamePrefix) { $guestName="$guestNamePrefix-$guestName" }
-$sudoPrefix=if ($hasKvm -and ($definition.EnableKvm)) {"sudo "} else {""};
+    if ($guestNamePrefix)
+    {
+        $guestName = "$guestNamePrefix-$guestName"
+    }
+    $sudoPrefix = if ($hasKvm -and ($definition.EnableKvm))
+    {
+        "sudo "
+    }
+    else
+    {
+        ""
+    };
 
-# $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
-# $p2 = if ($k -eq "arm64") { " -cpu cortex-a57 "; } else {""};
+    # $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
+    # $p2 = if ($k -eq "arm64") { " -cpu cortex-a57 "; } else {""};
 
 
-$qemuCmd = "#!/usr/bin/env bash" + @" 
+    $qemuCmd = "#!/usr/bin/env bash" + @" 
 
 qemu-system-${qemySystem} -name $guestName \
-    -smp $($startParams.Cores) -m $($startParams.Mem) -M virt ${paramCpu} \
+    -smp $( $startParams.Cores ) -m $( $startParams.Mem ) -M virt ${paramCpu} \
     -initrd initrd.img \
     -kernel vmlinuz \
     -append 'root=/dev/sda1 console=ttyAMA0' \
     -global virtio-blk-device.scsi=off \
     -device virtio-scsi-device,id=scsi \
-    -drive file=$($fileName),id=rootimg,cache=unsafe,if=none -device scsi-hd,drive=rootimg \
+    -drive file=$( $fileName ),id=rootimg,cache=unsafe,if=none -device scsi-hd,drive=rootimg \
     -drive file=ephemeral.qcow2,id=ephemeral,cache=unsafe,if=none -device scsi-hd,drive=ephemeral \
-    -netdev user,hostfwd=tcp::$($portNumber)-:22,id=net0 -device virtio-net-device,netdev=net0 \
+    -netdev user,hostfwd=tcp::$( $portNumber )-:22,id=net0 -device virtio-net-device,netdev=net0 \
     -nographic
 "@;
 
-if ($definition.Key -eq "i386" -or $definition.Key -eq "AMD64") {
-    $qemuCmd = "#!/usr/bin/env bash" + @"
+    if ($definition.Key -eq "i386" -or $definition.Key -eq "AMD64")
+    {
+        $qemuCmd = "#!/usr/bin/env bash" + @"
 
 #-device rtl8139 and e1000 are not stable
-$($sudoPrefix)qemu-system-${qemySystem} -name $guestName -smp $($startParams.Cores) -m $($startParams.Mem) -M q35  $($kvmParameters) $paramCpu \
+$( $sudoPrefix )qemu-system-${qemySystem} -name $guestName -smp $( $startParams.Cores ) -m $( $startParams.Mem ) -M q35  $( $kvmParameters ) $paramCpu \
     -initrd initrd.img \
     -kernel vmlinuz -append "root=/dev/sda1 console=ttyS0" \
-    -drive file=$($fileName),id=rootimg \
+    -drive file=$( $fileName ),id=rootimg \
     -drive file=ephemeral.qcow2,id=ephemeral \
-    -netdev user,hostfwd=tcp::$($portNumber)-:22,id=unet -device e1000-82545em,netdev=unet \
+    -netdev user,hostfwd=tcp::$( $portNumber )-:22,id=unet -device e1000-82545em,netdev=unet \
     -net user \
     -nographic
 "@; # -drive file=ephemeral.qcow2 cache=unsafe \
-}
-$qemuCmd > $path/start-vm.sh
-& chmod +x "$path/start-vm.sh"
+    }
+    $qemuCmd > $path/start-vm.sh
+    & chmod +x "$path/start-vm.sh"
 
-@{ Path=$path; Command="$path/start-vm.sh"; }
+    @{ Path = $path; Command = "$path/start-vm.sh"; }
 }
 
-function Wait-For-Ssh {param($ip, $port, $user, $password)
-$at = [System.Diagnostics.Stopwatch]::StartNew();
-$pingCounter = 1;
-do
+function Wait-For-Ssh
 {
-    Write-Host "#$($pingCounter): Waiting for ssh connection to $($ip):$($port) ... " -ForegroundColor Gray
-    # $sshCmd="sshpass -p $($password) ssh -o StrictHostKeyChecking=no $($user)@$($ip) -p $($port) hostname"
-    & sshpass "-p" "$($password)" "ssh" "-o" "StrictHostKeyChecking no" "$($user)@$($ip)" "-p" "$($port)" "hostname"
-    if ($?)
+    param($ip, $port, $user, $password)
+    $at = [System.Diagnostics.Stopwatch]::StartNew();
+    $pingCounter = 1;
+    do
     {
-        Write-Host "SSH on $($ip):$($port) is online" -ForegroundColor Green
-        return $true;
-    }
-    if ($at.ElapsedMilliseconds -ge ($Global_SSH_Timeout*1000)) {
-        Say "Error. SSH Connection Timeouted. Building aborted. Guest pid #$($Global:qemuProcess) should be killed. $($at.Elapled)"
-        & sudo kill "-SIGTERM" "$($Global:qemuProcess)"
-        $Global:BuildResult.TotalCommandCount++;
-        $Global:BuildResult.FailedCommands += "SSH connection timed out: $($at.Elapled)";
-        $Global:BuildResult.IsSccessful=$false;
-        return $false;
-    }
-    Start-Sleep 1;
-    $pingCounter++;
-} while ($true)
+        Write-Host "#$( $pingCounter ): Waiting for ssh connection to $( $ip ):$( $port ) ... " -ForegroundColor Gray
+        # $sshCmd="sshpass -p $($password) ssh -o StrictHostKeyChecking=no $($user)@$($ip) -p $($port) hostname"
+        & sshpass "-p" "$( $password )" "ssh" "-o" "StrictHostKeyChecking no" "$( $user )@$( $ip )" "-p" "$( $port )" "hostname"
+        if ($?)
+        {
+            Write-Host "SSH on $( $ip ):$( $port ) is online" -ForegroundColor Green
+            return $true;
+        }
+        if ($at.ElapsedMilliseconds -ge ($Global_SSH_Timeout*1000))
+        {
+            Say "Error. SSH Connection Timeouted. Building aborted. Guest pid #$( $Global:qemuProcess ) should be killed. $( $at.Elapled )"
+            & sudo kill "-SIGTERM" "$( $Global:qemuProcess )"
+            $Global:BuildResult.TotalCommandCount++;
+            $Global:BuildResult.FailedCommands += "SSH connection timed out: $( $at.Elapled )";
+            $Global:BuildResult.IsSccessful = $false;
+            return $false;
+        }
+        Start-Sleep 1;
+        $pingCounter++;
+    } while ($true)
 
 }
 
-function Remote-Command-Raw { param($cmd, $ip, $port, $user, $password, [bool] $reconnect = $false, [bool] $destructive = $false)
-if (-not $Global:GuestLog) { $Global:GuestLog="/tmp/$([Guid]::NewGuid().ToString("N"))"}
-$rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
-$tmpCmdLocalFullName="$mapto/tmp/$rnd"
-$cmd_Colorless=if ($ENV:BUILD_DEFINITIONNAME) {"export SAY_COLORLESS=true"} else {""};
-# next line fails on disconnected guest: DirectoryNotFoundException 
-$remoteCmd = "#!/usr/bin/env bash`n$cmd_Colorless`n" + @"
+function Remote-Command-Raw
+{
+    param($cmd, $ip, $port, $user, $password, [bool] $reconnect = $false, [bool] $destructive = $false)
+    if (-not$Global:GuestLog)
+    {
+        $Global:GuestLog = "/tmp/$([Guid]::NewGuid().ToString("N") )"
+    }
+    $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
+    $tmpCmdLocalFullName = "$mapto/tmp/$rnd"
+    $cmd_Colorless = if ($ENV:BUILD_DEFINITIONNAME)
+    {
+        "export SAY_COLORLESS=true"
+    }
+    else
+    {
+        ""
+    };
+    # next line fails on disconnected guest: DirectoryNotFoundException 
+    $remoteCmd = "#!/usr/bin/env bash`n$cmd_Colorless`n" + @"
 unset PS1
 if [[ -d /etc/profile.d ]]; then
   for i in /etc/profile.d/*.sh; do
@@ -236,46 +328,77 @@ if false && [[ -f ~/.profile ]]; then
 fi
 # export PATH="`$PATH:/boot"
 export DEBIAN_FRONTEND=noninteractive
-($cmd) 2>&1 | tee -a "$($Global:GuestLog)-$($user)"
+($cmd) 2>&1 | tee -a "$( $Global:GuestLog )-$( $user )"
 "@
 
-# Write-Host "REMOTE-SCRIPT: `n[$remoteCmd]"
+    # Write-Host "REMOTE-SCRIPT: `n[$remoteCmd]"
 
-try { $remoteCmd > $tmpCmdLocalFullName; $errorInfo = $null; }
-catch { $errorInfo = "Fail store command as the $($tmpCmdLocalFullName) file: $($_.Exception)" }
-
-& chmod +x $tmpCmdLocalFullName
-if ($false -and $reconnect) {
-    Write-Host "Temparary un-mount guest root fs"
-    & umount -f $mapto
-}
-$localCmd="sshpass -p `'$($password)`' ssh -o 'StrictHostKeyChecking no' $($user)@$($ip) -p $($port) /tmp/$rnd"
-if ($false -and $reconnect) {
-    $mountCmd = "echo pass | sshfs -o password_stdin 'root@localhost:/' -p $( $startParams.Port ) '$mapto'"
-    Write-Host "RE-Mount command: [$mountCmd]"
-    & bash -c "$mountCmd"
-    & ls -la $mapto
-}
-Write-Host "#: $cmd"
-if ($errorInfo -eq $null) {
-    & bash -c "$localCmd"
-    $isExitOk = $?;
-    $isExitOkInfo=if ($isExitOk) {"OK"} else {"ERR"}
-    $destructiveInfo=if ($destructive) {" DESTRUCTIVE!"} else {""}
-    Write-Host "$($isExitOkInfo):$($destructiveInfo) [$cmd]"
-    if ((-not $isExitOk) -and (-not $destructive)) { $errorInfo = "Failed to execute remote command: [$cmd]" }
-    else {
-        & rm -f $tmpCmdLocalFullName
-        if (-not $? -and (-not $destructive)) { $errorInfo = "Failed to clean up remote command: [$cmd]" }
+    try
+    {
+        $remoteCmd > $tmpCmdLocalFullName; $errorInfo = $null;
     }
-}
+    catch
+    {
+        $errorInfo = "Fail store command as the $( $tmpCmdLocalFullName ) file: $( $_.Exception )"
+    }
 
-$Global:BuildResult.TotalCommandCount++;
+    & chmod +x $tmpCmdLocalFullName
+    if ($false -and $reconnect)
+    {
+        Write-Host "Temparary un-mount guest root fs"
+        & umount -f $mapto
+    }
+    $localCmd = "sshpass -p `'$( $password )`' ssh -o 'StrictHostKeyChecking no' $( $user )@$( $ip ) -p $( $port ) /tmp/$rnd"
+    if ($false -and $reconnect)
+    {
+        $mountCmd = "echo pass | sshfs -o password_stdin 'root@localhost:/' -p $( $startParams.Port ) '$mapto'"
+        Write-Host "RE-Mount command: [$mountCmd]"
+        & bash -c "$mountCmd"
+        & ls -la $mapto
+    }
+    Write-Host "#: $cmd"
+    if ($errorInfo -eq $null)
+    {
+        & bash -c "$localCmd"
+        $isExitOk = $?;
+        $isExitOkInfo = if ($isExitOk)
+        {
+            "OK"
+        }
+        else
+        {
+            "ERR"
+        }
+        $destructiveInfo = if ($destructive)
+        {
+            " DESTRUCTIVE!"
+        }
+        else
+        {
+            ""
+        }
+        Write-Host "$( $isExitOkInfo ):$( $destructiveInfo ) [$cmd]"
+        if ((-not$isExitOk) -and (-not$destructive))
+        {
+            $errorInfo = "Failed to execute remote command: [$cmd]"
+        }
+        else
+        {
+            & rm -f $tmpCmdLocalFullName
+            if (-not$? -and (-not$destructive))
+            {
+                $errorInfo = "Failed to clean up remote command: [$cmd]"
+            }
+        }
+    }
 
-if ($errorInfo) {
-    $Global:BuildResult.FailedCommands += "#: $cmd`n$errorInfo";
-    $Global:BuildResult.IsSccessful=$false;
-}
+    $Global:BuildResult.TotalCommandCount++;
+
+    if ($errorInfo)
+    {
+        $Global:BuildResult.FailedCommands += "#: $cmd`n$errorInfo";
+        $Global:BuildResult.IsSccessful = $false;
+    }
 }
 
 function Wait-For-Process
