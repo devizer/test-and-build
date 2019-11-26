@@ -137,13 +137,23 @@ function Qemu-PowerMan-DownloadImage{
     $metadata=Qemu-PowerMan-ParseMetadata $content_Metadata
     # $metadata | fl
     Say "'$arch' STABLE_VERSION: [$($Metadata.STABLE_VERSION)], DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
-    $cachedVersionFile = Combine-Path $Global:Qemu_PowerMan_DownloadImageLocation, ".cached-$arch-version"
-    $cachedVersion = Get-Content $cachedVersionFile
+
+    # Caching debian-$($arch)-final.qcow2.7z*
+    $cachedVersionFile = Combine-Path $Global:Qemu_PowerMan_DownloadImageLocation, "Cached-$arch-Version"
+    $cachedVersion = "undefined"
+    if (Test-Path $cachedVersionFile)
+    {
+        try { $cachedVersion = Get-Content $cachedVersionFile -EA SilentlyContinue }
+        catch {  }
+    }
+    Say "Cached Version: '$cachedVersion'"
     if ($cachedVersion -ne $Metadata.STABLE_VERSION) {
-        Say "Actual Version was not cached. Clearing stored image if it is cached" 
-        Remove-Item $Global:Qemu_PowerMan_DownloadImageLocation + [System.IO.Path]::DirectorySeparatorChar + "/debian-$($arch)-final.qcow2.7z*"
+        Say "Actual Version [$($Metadata.STABLE_VERSION)] was never cached. Clearing previously stored image if it was cached" 
+        Remove-Item ($Global:Qemu_PowerMan_DownloadImageLocation + [System.IO.Path]::DirectorySeparatorChar + "debian-$($arch)-final.qcow2.7z*") -Force
         $Metadata.STABLE_VERSION > $cachedVersionFile
     }
+    # done: caching
+    
     $names=@()
     for ($i = 1; $i -le $Metadata.DOWNLOAD_PARTS_COUNT; $i++) {
         $next_url = "https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/$($Metadata.STABLE_VERSION)/debian-$arch-final.qcow2.7z.$($i.ToString("000") )";
