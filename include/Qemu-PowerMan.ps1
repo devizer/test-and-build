@@ -137,6 +137,13 @@ function Qemu-PowerMan-DownloadImage{
     $metadata=Qemu-PowerMan-ParseMetadata $content_Metadata
     # $metadata | fl
     Say "'$arch' STABLE_VERSION: [$($Metadata.STABLE_VERSION)], DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
+    $cachedVersionFile = Combine-Path $Global:Qemu_PowerMan_DownloadImageLocation, ".cached-$arch-version"
+    $cachedVersion = Get-Content $cachedVersionFile
+    if ($cachedVersion -ne $Metadata.STABLE_VERSION) {
+        Say "Actual Version was not cached. Clearing stored image if it is cached" 
+        Remove-Item $Global:Qemu_PowerMan_DownloadImageLocation + [System.IO.Path]::DirectorySeparatorChar + "/debian-$($arch)-final.qcow2.7z*"
+        $Metadata.STABLE_VERSION > $cachedVersionFile
+    }
     $names=@()
     for ($i = 1; $i -le $Metadata.DOWNLOAD_PARTS_COUNT; $i++) {
         $next_url = "https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/$($Metadata.STABLE_VERSION)/debian-$arch-final.qcow2.7z.$($i.ToString("000") )";
