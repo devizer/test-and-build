@@ -139,7 +139,7 @@ function Qemu-PowerMan-DownloadImage{
     Say "'$arch' STABLE_VERSION: [$($Metadata.STABLE_VERSION)], DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
     $names=@()
     for ($i = 1; $i -le $Metadata.DOWNLOAD_PARTS_COUNT; $i++) {
-        $next_url = "https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/10.2.604/debian-$arch-final.qcow2.7z.$($i.ToString("000") )";
+        $next_url = "https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/$($Metadata.STABLE_VERSION)/debian-$arch-final.qcow2.7z.$($i.ToString("000") )";
         $isOk = Qemu-PowerMan-DownloadCached $next_url "."
         if (!$isOk.IsOK)
         {
