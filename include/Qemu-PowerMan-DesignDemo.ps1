@@ -1,6 +1,6 @@
 . ./Qemu-PowerMan.ps1
 
-function Qemu-Powerman-DesignDemo {
+function Qemu-PowerMan-DesignDemo {
 
     $vm = New-Object PSObject -Property @{
         Arch = "arm";
@@ -9,7 +9,7 @@ function Qemu-Powerman-DesignDemo {
             @{ Host = 3306; Guest = 3306 },
             @{ Host = 8080; Guest = 80 }
         );
-        CommandOnLoad = 'echo "Arch is $(uname -m). Take a look on benchmark"; 7z b; systemctl start redis';
+        CommandOnLoad = 'echo "Arch is $(uname -m). Take a look on benchmarks"; 7z b; systemctl start redis';
         CopyOnLoad = @{ FromHost = "/some/path"; ToGuest = "/sources" };
         Memory = "300M";
         Cores = 4;
