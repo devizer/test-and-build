@@ -66,13 +66,15 @@ function Qemu-PowerMan-DesignDemo {
     # 3 options at the end
     # option 1:
     $okShutdown = $vm.Shutdown(60)
+    
+    Write-Host "Total Errors: $($vm.Errors.Count)"
 
     # option 2: keep it running permanently till reboot
     # On linux guest root is mapped to $($HostFolder)/root-fs
     
-    # option 3: Install Windows- or SystemD-service and enable it to start it on reboot and shutdown it on host shutdown 
+    # option 3: Install Windows- or SystemD-service and enable starting on reboot and shutdowning on host shutdown 
     $vm.InstallService(@{
-        Key = "Arm32_BuildServer"; 
+        Key = "Some_Arm32_BuildServer"; 
         Description = "ARMv7 32 bit Build Server";
         ShutdownTimeout = 120; # it is on linux only?
     })
