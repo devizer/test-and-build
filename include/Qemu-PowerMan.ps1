@@ -269,3 +269,72 @@ function Qemu-Powerman-Bootstrap
     }
 }
 
+function Qemu-PowerMan-Impl-Start {
+    param([PSObject] $vm)
+    throw "$($MyInvocation.InvocationName) Not Implemented"
+}
+
+function Qemu-PowerMan-Impl-Connect {
+    param([PSObject] $vm, [int] $timeout = 300) # 300 is for slow ATOM, 5 y.o. xeon needs 30 seconds
+    if ($timeout -le 0) { $timeout = 300}
+    throw "$($MyInvocation.InvocationName) Not Implemented (timeout is $timeout)"
+}
+
+function Qemu-PowerMan-Impl-CopyToGuest {
+    param([PSObject] $vm, [string] $FromHost, [string] $ToGuest)
+    throw "$($MyInvocation.InvocationName) Not Implemented (from $FromHost to $ToGuest)"
+}
+
+function Qemu-PowerMan-Impl-CopyFromGuest {
+    param([PSObject] $vm, [string] $FromGuest, [string] $ToHost)
+    throw "$($MyInvocation.InvocationName) Not Implemented (from $FromGuest to $ToHost)"
+}
+
+function Qemu-PowerMan-Impl-Run {
+    param([PSObject] $vm, $Whatever)
+    # $Whatever is a string os PSObject, see Qemu-PowerMan-Design.ps1
+    throw "$($MyInvocation.InvocationName) Not Implemented (to run is $Whatever)"
+}
+
+function Qemu-PowerMan-Impl-Shutdown {
+    param([PSObject] $vm, [int] $timeout = 300)
+    if ($timeout -le 0) { $timeout = 300}
+    throw "$($MyInvocation.InvocationName) Not Implemented (timeout is $timeout)"
+}
+
+
+
+function Qemu-PowerMan-Deploy {
+    param([PSObject] $vm)
+
+    Add-Member -MemberType ScriptMethod -InputObject $vm -Name "Start" -Value {
+        return Qemu-PowerMan-Impl-Start -VM $vm
+    }
+
+    Add-Member -MemberType ScriptMethod -InputObject $vm -Name "Connect" -Value {
+        return Qemu-PowerMan-Impl-Connect -VM $vm -TimeOut $args[0]
+    }
+
+    Add-Member -MemberType ScriptMethod -InputObject $vm -Name "CopyToGuest" -Value {
+        return Qemu-PowerMan-Impl-CopyToGuest -VM $vm -FromHost $args[0] -ToGuest $args[1]
+    }
+
+    Add-Member -MemberType ScriptMethod -InputObject $vm -Name "CopyFromGuest" -Value {
+        return Qemu-PowerMan-Impl-CopyFromGuest -VM $vm -FromGuest $args[0] -ToHost $args[1]
+    }
+
+    Add-Member -MemberType ScriptMethod -InputObject $vm -Name "Run" -Value {
+        return Qemu-PowerMan-Impl-Run -VM $vm -Whatever $args[0]
+    }
+
+    Add-Member -MemberType ScriptMethod -InputObject $vm -Name "Shutdown" -Value {
+        return Qemu-PowerMan-Impl-Shutdown -VM $vm -Timeout $args[0]
+    }
+
+    Add-Member -MemberType ScriptMethod -InputObject $vm -Name "InstallService" -Value {
+        return Qemu-PowerMan-Impl-InstallService -VM $vm -ServiceDescription $args[0]
+    }
+
+    return $true;
+}
+    
