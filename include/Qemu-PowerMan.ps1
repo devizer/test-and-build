@@ -25,7 +25,7 @@ function Qemu-PowerMan-OnLoad
     }
     else
     {
-        # ICS z-OS
+        # ICS rocket-OS: use \opt or /opt
         $Global:Qemu_PowerMan_DownloadImageLocation = Combine-Path ([System.IO.Path]::DirectorySeparatorChar + "opt"), "qemu-powerman"
     }
 }; Qemu-PowerMan-OnLoad
@@ -268,3 +268,4 @@ function Qemu-Powerman-Bootstrap
         $Global:SkipCheckPath = $true;
     }
 }
+
