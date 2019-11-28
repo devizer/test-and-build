@@ -16,11 +16,13 @@ function Qemu-PowerMan-DesignDemo {
         HostFolder = "/my-vms/an-arm-vm";
         GuestWorkDir = "/super-project";  # or "/home/user/my-project"
         User = "root";                    # or "user",
-        ResetRootDisk = $false;           # reset root (/dev/sdb) disk before deployment?
+        ResetRootDisk = $false;           # reset root (/dev/sda) disk before deployment?
         ResetEphemeralDisk = $false;      # reset /dev/sdb disk before deployment?
         Env = @{
-            BUILD_VERSION = "0.42";
-            BUILD_CONFIGURATION = "Debug";
+            LC_ALL="en_US.UTF-8";
+            LANG="en_US.UTF-8";
+            LANGUAGE="en_US.UTF-8";
+            BUILD_DATE=[Datetime]::UtcNow;
         };
     };
     

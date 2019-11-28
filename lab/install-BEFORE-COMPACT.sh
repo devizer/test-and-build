@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # sudo /etc/cron.daily/logrotate
 echo '#!/usr/bin/env bash
 cd /var/log
