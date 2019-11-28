@@ -31,13 +31,13 @@ function Qemu-PowerMan-DesignDemo {
         throw "Unable to start and esteblish connection to VM";
     }
     
-    # Mapped root works on linux and MacOS only
+    # Mapped root-fs works on linux and MacOS only
     & cp "-r" "/some/host/dir" "$($vm.MappedRoot)/root/guest/dir"
 
     # On Windows only CopyToGuest and CopyFromGuest works
     $vm.CopyToGuest("/some/host/dir", "/root/guest/dir") 
 
-    # simple Run() uses predefined user in Qemu-PowerMan-Deploy method: root
+    # simple Run() uses predefined user and env vars
     $vm.Run('echo "Hi, I am $(whoami)"')
 
     # but we can change a default user to ether 'root' or 'user'
@@ -47,7 +47,7 @@ function Qemu-PowerMan-DesignDemo {
     $vm.Run('echo "Hi, I am $(whoami)"') 
     $vm.Run('LC_ALL="es_ES.UTF8"; echo "Hi, I am $(whoami)"')
 
-    # full featured Execute
+    # full featured Run
     $vm.Run(@{ 
         User = "root";
         Cmd = "bash build.sh"

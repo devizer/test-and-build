@@ -55,3 +55,4 @@ if [[ -d "$HOME/bin" ]]; then
 fi
 ' > /etc/profile.d/Path-To-Bin-At-Home.sh
 
+bash install-BEFORE-COMPACT.sh
