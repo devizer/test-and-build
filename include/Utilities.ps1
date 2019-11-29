@@ -377,20 +377,20 @@ function Produce-Report {
     $reportFile = "$PrivateReport/$key/Debian-10-Buster-$key-$suffix.md"
     "|  Debian 10 Buster <u>**$($key)**</u> |`n|-------|" > $reportFile
 
-    $probes | % { $probe=$_; $cmd = $_.Cmd;
-    $responseFile="/tmp/response-$(([Guid]::NewGuid()).ToString("N"))"
-    # Write-Host "Port: $($startParams.Port)" 
-    Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass" > $responseFile 2>&1
-    $response=Get-Content $responseFile -Raw
-    Write-Host "Response for [$cmd]:`n$($response)"
-    $title = $probe.Cmd; if ($probe.Name) { $title=$probe.Name }
-    "| $title |" >> $reportFile
-    # "| $response |" >> $reportFile
-    Output-To-Markdown $response $probe >> $reportFile
-    & rm -f "$responseFile"
+    $probes | % {
+        $probe = $_; $cmd = $_.Cmd;
+        $responseFile = "/tmp/response-$(([Guid]::NewGuid()).ToString("N") )"
+        # Write-Host "Port: $($startParams.Port)" 
+        Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass" > $responseFile 2>&1
+        $response = Get-Content $responseFile -Raw
+        Write-Host "Response for [$cmd]:`n$( $response )"
+        $title = IIF $probe.Name -Then $probe.Name -Else $probe.Cmd; 
+        "| $title |" >> $reportFile
+        # "| $response |" >> $reportFile
+        Output-To-Markdown $response $probe >> $reportFile
+        & rm -f "$responseFile"
     }
 }
-
 
 function IIF{
     param($IsOk, $Then, $Else)
