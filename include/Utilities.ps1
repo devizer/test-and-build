@@ -371,7 +371,7 @@ function Inplace-Enlarge
 
 function Produce-Report {
     param($definition, $startParams, $suffix)
-    $key=$definition.Key
+    $key = $definition.Key
     Say "Produce Report for [$key]"
     # & mkdir -p "$PrivateReport"
     $reportFile = "$PrivateReport/$key/Debian-10-Buster-$key-$suffix.md"
