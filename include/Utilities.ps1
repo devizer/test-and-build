@@ -112,7 +112,7 @@ function Prepare-VM
     # on 18.04 virt-format without defrag produces 1Gb file, on 19.10 - 30Mb 
     pushd $path
     & qemu-img create -f qcow2 ephemeral.temp.qcow2 200G
-    & virt-format --partition = mbr --filesystem = ext4 -a ephemeral.temp.qcow2
+    & virt-format --partition=mbr --filesystem=ext4 -a ephemeral.temp.qcow2
     & qemu-img convert -O qcow2 -c ephemeral.temp.qcow2 ephemeral.qcow2
     & rm -f ephemeral.temp.qcow2
     popd
