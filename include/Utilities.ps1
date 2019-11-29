@@ -52,7 +52,7 @@ function Output-To-Markdown{
     $outputAsMarkdown="";
     $outputLine=0;
     @($outputAsArray) | % {
-        if ((-not $probe.Head) -or ($outputLine -lt $probe.Head)) {
+        if ((! $probe.Head) -or ($outputLine -lt $probe.Head)) {
             if ($outputAsMarkdown) { $outputAsMarkdown += "<br>" }
             $outputAsMarkdown += "**``" + $_ + "``**"
         }
@@ -100,7 +100,7 @@ function Is-Requested-Specific-Feature{
 function Prepare-VM
 {
     param($definition, $rootDiskFullName, $guestNamePrefix = "", $portNumber = 0)
-    if (-not$portNumber)
+    if (! $portNumber)
     {
         $portNumber = $startParams.Port
     }
@@ -132,79 +132,23 @@ function Prepare-VM
     }
     elseif ($key -eq "i386")
     {
-        $guestName = if ($hasKvm)
-        {
-            "buster-i386-KVM"
-        }
-        else
-        {
-            "buster-i386-EMU"
-        }
+        $guestName = IIF $hasKvm -Then "buster-i386-KVM" -Else "buster-i386-EMU" 
         $qemySystem = "i386"
         # qemu-system-i386 --machine q35 -cpu ?
         # CPU: kvm32|SandyBridge
-        $kvmCpu = if ($definition.NeedSSE4)
-        {
-            "SandyBridge"
-        }
-        else
-        {
-            "kvm32"
-        }
-        $paramCpu = if ($hasKvm)
-        {
-            " -cpu $kvmCpu "
-        }
-        else
-        {
-            " -cpu qemu32 "
-        }
-        $kvmParameters = if ($definition.EnableKvm -and $hasKvm)
-        {
-            " -enable-kvm "
-        }
-        else
-        {
-            " "
-        }
+        $kvmCpu = IIF $definition.NeedSSE4 -Then "SandyBridge" -Else "kvm32" 
+        $paramCpu = IIF $hasKvm -Then " -cpu $kvmCpu " -Else " -cpu qemu32 "  
+        $kvmParameters = IIF ($definition.EnableKvm -and $hasKvm) -Then " -enable-kvm " -Else " " 
     }
     elseif ($key -eq "AMD64")
     {
-        $guestName = if ($hasKvm)
-        {
-            "buster-AMD64-KVM"
-        }
-        else
-        {
-            "buster-AMD64-EMU"
-        }
+        $guestName = IIF ($hasKvm) -Then "buster-AMD64-KVM" -Else "buster-AMD64-EMU"
         $qemySystem = "x86_64"
         # qemu-system-i386 --machine q35 -cpu ?
         # CPU: kvm64|SandyBridge
-        $kvmCpu = if ($definition.NeedSSE4)
-        {
-            "SandyBridge"
-        }
-        else
-        {
-            "kvm64"
-        }
-        $paramCpu = if ($hasKvm)
-        {
-            " -cpu $kvmCpu "
-        }
-        else
-        {
-            " -cpu qemu64 "
-        }
-        $kvmParameters = if ($definition.EnableKvm -and $hasKvm)
-        {
-            " -enable-kvm "
-        }
-        else
-        {
-            " "
-        }
+        $kvmCpu = IIF ($definition.NeedSSE4) -Then "SandyBridge" -Else "kvm64"
+        $paramCpu = IIF ($hasKvm) -Then " -cpu $kvmCpu " -Else " -cpu qemu64 " 
+        $kvmParameters = IIF ($definition.EnableKvm -and $hasKvm) -Then " -enable-kvm " -Else " "
     }
     else
     {
@@ -215,19 +159,13 @@ function Prepare-VM
     {
         $guestName = "$guestNamePrefix-$guestName"
     }
-    $sudoPrefix = if ($hasKvm -and ($definition.EnableKvm))
-    {
-        "sudo "
-    }
-    else
-    {
-        ""
-    };
+    $sudoPrefix = IIF ($hasKvm -and ($definition.EnableKvm)) -Then "sudo " -Else ""
 
     # $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
     # $p2 = if ($k -eq "arm64") { " -cpu cortex-a57 "; } else {""};
 
 
+    # ARM 64/32
     $qemuCmd = "#!/usr/bin/env bash" + @" 
 
 qemu-system-${qemySystem} -name $guestName \
@@ -243,6 +181,7 @@ qemu-system-${qemySystem} -name $guestName \
     -nographic
 "@;
 
+    # i386/AMD64
     if ($definition.Key -eq "i386" -or $definition.Key -eq "AMD64")
     {
         $qemuCmd = "#!/usr/bin/env bash" + @"
@@ -297,21 +236,14 @@ function Wait-For-Ssh
 function Remote-Command-Raw
 {
     param($cmd, $ip, $port, $user, $password, [bool] $reconnect = $false, [bool] $destructive = $false)
-    if (-not$Global:GuestLog)
+    if (! $Global:GuestLog)
     {
         $Global:GuestLog = "/tmp/$([Guid]::NewGuid().ToString("N") )"
     }
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     $tmpCmdLocalFullName = "$mapto/tmp/$rnd"
-    $cmd_Colorless = if ($ENV:BUILD_DEFINITIONNAME)
-    {
-        "export SAY_COLORLESS=true"
-    }
-    else
-    {
-        ""
-    };
-    # next line fails on disconnected guest: DirectoryNotFoundException 
+    # Azlue Pipelines blocks/elemenate colors in terminal
+    $cmd_Colorless = IIF ($ENV:BUILD_DEFINITIONNAME) -Then "export SAY_COLORLESS=true" -Else ""  
     $remoteCmd = "#!/usr/bin/env bash`n$cmd_Colorless`n" + @"
 unset PS1
 if [[ -d /etc/profile.d ]]; then
@@ -333,13 +265,14 @@ export DEBIAN_FRONTEND=noninteractive
 
     # Write-Host "REMOTE-SCRIPT: `n[$remoteCmd]"
 
+    # next line fails on disconnected guest: DirectoryNotFoundException 
     try
     {
         $remoteCmd > $tmpCmdLocalFullName; $errorInfo = $null;
     }
     catch
     {
-        $errorInfo = "Fail store command as the $( $tmpCmdLocalFullName ) file: $( $_.Exception )"
+        $errorInfo = "Failed to store command as the $( $tmpCmdLocalFullName ) file: $( $_.Exception )"
     }
 
     & chmod +x $tmpCmdLocalFullName
@@ -361,31 +294,17 @@ export DEBIAN_FRONTEND=noninteractive
     {
         & bash -c "$localCmd"
         $isExitOk = $?;
-        $isExitOkInfo = if ($isExitOk)
-        {
-            "OK"
-        }
-        else
-        {
-            "ERR"
-        }
-        $destructiveInfo = if ($destructive)
-        {
-            " DESTRUCTIVE!"
-        }
-        else
-        {
-            ""
-        }
+        $isExitOkInfo = IIF $isExitOk "OK" "ERR" 
+        $destructiveInfo = IIF $destructive " DESTRUCTIVE!" "" 
         Write-Host "$( $isExitOkInfo ):$( $destructiveInfo ) [$cmd]"
-        if ((-not$isExitOk) -and (-not$destructive))
+        if ((! $isExitOk) -and (! $destructive))
         {
             $errorInfo = "Failed to execute remote command: [$cmd]"
         }
         else
         {
             & rm -f $tmpCmdLocalFullName
-            if (-not$? -and (-not$destructive))
+            if (! $? -and (! $destructive))
             {
                 $errorInfo = "Failed to clean up remote command: [$cmd]"
             }
@@ -471,5 +390,9 @@ function Produce-Report {
     & rm -f "$responseFile"
     }
 }
-    
 
+
+function IIF{
+    param($IsOk, $Then, $Else)
+    if ($isOk) {$then} else {$else}
+} 
