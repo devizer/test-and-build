@@ -5,7 +5,12 @@ ARCH=$1
 
 # COMMAND LINE TOOLS
 for f in "Say" "try-and-retry" "smart-apt-install" "lazy-apt-update" "list-packages"; do
-    sudo cp permanent-scripts/${f}.sh /usr/local/bin/${f}
+    if [[ -f permanent-scripts/${f}.sh ]]; then
+        sudo cp permanent-scripts/${f}.sh /usr/local/bin/${f}
+    else
+        echo "Downloading https://raw.githubusercontent.com/devizer/test-and-build/master/lab/permanent-scripts/${f}.sh"
+        sudo curl -ksSL -o /usr/local/bin/${f} "https://raw.githubusercontent.com/devizer/test-and-build/master/lab/permanent-scripts/${f}.sh"
+    fi
     chmod +x /usr/local/bin/${f}
 done
 
