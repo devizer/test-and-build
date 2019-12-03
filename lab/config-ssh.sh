@@ -9,7 +9,8 @@ for f in "Say" "Show-System-Stat" "try-and-retry" "smart-apt-install" "lazy-apt-
         sudo cp permanent-scripts/${f}.sh /usr/local/bin/${f}
     else
         echo "Downloading https://raw.githubusercontent.com/devizer/test-and-build/master/lab/permanent-scripts/${f}.sh"
-        sudo curl -ksSL -o /usr/local/bin/${f} "https://raw.githubusercontent.com/devizer/test-and-build/master/lab/permanent-scripts/${f}.sh"
+        cmd="sudo curl -ksSL -o /usr/local/bin/${f} https://raw.githubusercontent.com/devizer/test-and-build/master/lab/permanent-scripts/${f}.sh"
+        eval $cmd || eval $cmd || eval $cmd
     fi
     chmod +x /usr/local/bin/${f}
 done
