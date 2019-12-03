@@ -24,6 +24,8 @@ fi
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.2 -i /opt/dotnet
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.0 -i /opt/dotnet
       export DOTNET_ROOT="/opt/dotnet"
+      mkdir -p /etc/dotnet
+      echo '/opt/dotnet' > /etc/dotnet/install_location
       try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
       # time dotnet --info || true
 

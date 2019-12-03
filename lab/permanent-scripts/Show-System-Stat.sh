@@ -40,7 +40,7 @@ function ShowSystemStat() {
   user_nice=$((user_nice/100))
   local system=$(echo $first_line | awk '{print $4}')
   system=$((system/100))
-  local total=$((user_normal + user_nice + user_normal))
+  local total=$((user_normal + user_nice + system))
   local uptime=$(GetUptimeInSeconds)
   # echo uptime in seconds: $uptime 
   
