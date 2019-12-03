@@ -19,10 +19,10 @@ fi
       sudo mkdir -p /opt/dotnet;
       export PATH="/opt/dotnet:$HOME/.dotnet/tools:$PATH"
       # for arm it starts from 2.1
-      try-and-retry curl -o /tmp/dotnet-install.sh -ksSL $DOTNET_Url
-      time try-and-retry timeout 666 sudo bash /tmp/dotnet-install.sh -c 2.1 -i /opt/dotnet
-      time try-and-retry timeout 666 sudo bash /tmp/dotnet-install.sh -c 2.2 -i /opt/dotnet
-      time try-and-retry timeout 666 sudo bash /tmp/dotnet-install.sh -c 3.0 -i /opt/dotnet
+      try-and-retry curl -o /tmp/_dotnet-install.sh -ksSL $DOTNET_Url
+      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.1 -i /opt/dotnet
+      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.2 -i /opt/dotnet
+      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.0 -i /opt/dotnet
       export DOTNET_ROOT="/opt/dotnet"
       try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
       # time dotnet --info || true
@@ -39,7 +39,7 @@ if [[ -s "/opt/dotnet/dotnet" ]]; then
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
     DOTNET_CLI_TELEMETRY_OPTOUT=1
 fi
-' > /etc/profile.d/dotnet-core.sh
+' | sudo tee /etc/profile.d/dotnet-core.sh >/dev/null
 sudo -u user mkdir -p /home/user/.dotnet/tools
 mkdir -p ~/.dotnet/tools
 Say "Configured shared environment for .NET Core"
