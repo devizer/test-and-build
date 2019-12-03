@@ -58,6 +58,33 @@ System CPU Usage .............. $system_formatted
 Total CPU Usage ............... $total_formatted
 Uptime ........................ $uptime_formatted"
 }
+function FormatBytes() {
+    local bytes=$1
+    if [[ "$bytes" -lt 9000 ]]; then echo "$bytes bytes"; 
+    elif [[ "$bytes" -lt 9000000 ]]; then bytes=$((bytes/1024)); echo "$bytes KB";
+    elif [[ "$bytes" -lt 9000000000 ]]; then bytes=$((bytes/1048576)); echo "$bytes MB";
+    else bytes=$((bytes/1073741824)); echo "$bytes GB";
+    fi
+}
+
+function ShowNetStat() {
+    if [[ ! -f /proc/net/dev ]]; then return; fi
+    local line
+    cat /proc/net/dev | sed -n '3,$p' | while read line; do
+        local name=$(echo $line | awk '{print $1}')
+        # echo "NET [$name]"
+        if [[ "$name" == *":" ]]; then
+            local recv=$(echo $line | awk '{print $2}')
+            local sent=$(echo $line | awk '{print $10}')
+            name="${name} ";local n=0; while [[ $n -lt 55 && "${#name}" -lt 31 ]]; do n=$((n+1));name="${name}."; done
+            if [[ "$sent" -gt 0 && "$recv" -gt 0 ]]; then
+                echo "$name $(FormatBytes $sent) [sent] + $(FormatBytes $recv) [recieved]"
+            fi  
+        fi 
+        
+    done
+}
 
 # while true; do clear; ShowSystemStat; sleep 2; done
 ShowSystemStat
+ShowNetStat
