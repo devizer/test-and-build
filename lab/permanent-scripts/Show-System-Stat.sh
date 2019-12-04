@@ -12,10 +12,12 @@ function format_seconds() {
   else 
      elapsed=$(TZ=UTC date -r "${elapsed}" "+%H:%M:%S");
   fi
-  if [[ $days -eq 0 ]]; then 
+  if [[ ${days} -eq 0 ]]; then 
     echo ${elapsed}
-  else 
-    echo "$days days, $elapsed"  
+  elif [[ ${days} -eq 1 ]]; then
+    echo "1 day, $elapsed"
+  else
+    echo "$days days, $elapsed"
   fi
 }
 
@@ -61,9 +63,9 @@ Uptime ........................ $uptime_formatted"
 function FormatBytes() {
     local bytes=$1
     if [[ "$bytes" -lt 9000 ]]; then echo "$bytes bytes"; 
-    elif [[ "$bytes" -lt 9000000 ]]; then bytes=$((bytes/1024)); echo "$bytes KB";
-    elif [[ "$bytes" -lt 9000000000 ]]; then bytes=$((bytes/1048576)); echo "$bytes MB";
-    else bytes=$((bytes/1073741824)); echo "$bytes GB";
+    elif [[ "$bytes" -lt 9000000 ]]; then bytes=$((bytes/1024)); echo "$bytes Kb";
+    elif [[ "$bytes" -lt 9000000000 ]]; then bytes=$((bytes/1048576)); echo "$bytes Mb";
+    else bytes=$((bytes/1073741824)); echo "$bytes Gb";
     fi
 }
 
