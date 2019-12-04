@@ -70,7 +70,7 @@ function FormatBytes() {
 function ShowNetStat() {
     if [[ ! -f /proc/net/dev ]]; then return; fi
     local line
-    cat /proc/net/dev | sed -n '3,$p' | while read line; do
+    cat /proc/net/dev | sed -n '3,$p' | sort | while read line; do
         local name=$(echo $line | awk '{print $1}')
         # echo "NET [$name]"
         if [[ "$name" == *":" ]]; then
