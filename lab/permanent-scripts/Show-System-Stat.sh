@@ -62,11 +62,12 @@ Uptime ........................ $uptime_formatted"
 }
 function FormatBytes() {
     local bytes=$1
-    if [[ "$bytes" -lt 9000 ]]; then echo "$bytes bytes"; 
-    elif [[ "$bytes" -lt 9000000 ]]; then bytes=$((bytes/1024)); echo "$bytes Kb";
-    elif [[ "$bytes" -lt 9000000000 ]]; then bytes=$((bytes/1048576)); echo "$bytes Mb";
-    else bytes=$((bytes/1073741824)); echo "$bytes Gb";
+    if [[ "$bytes" -lt 9000 ]]; then bytes="$bytes bytes"; 
+    elif [[ "$bytes" -lt 9000000 ]]; then bytes=$((bytes/1024)); bytes="$bytes Kb";
+    elif [[ "$bytes" -lt 9000000000 ]]; then bytes=$((bytes/1048576)); bytes="$bytes Mb";
+    else bytes=$((bytes/1073741824)); bytes="$bytes Gb";
     fi
+    echo $bytes
 }
 
 function ShowNetStat() {
@@ -80,7 +81,11 @@ function ShowNetStat() {
             local sent=$(echo $line | awk '{print $10}')
             name="${name} ";local n=0; while [[ $n -lt 55 && "${#name}" -lt 31 ]]; do n=$((n+1));name="${name}."; done
             if [[ "$sent" -gt 0 && "$recv" -gt 0 ]]; then
-                echo "$name $(FormatBytes $sent) [sent] + $(FormatBytes $recv) [recieved]"
+                sent=$(FormatBytes $sent)
+                recv=$(FormatBytes $recv)
+                local sent_formatted=`printf %-7s "$sent"`
+                local recv_formatted=`printf %-7s "$recv"`
+                echo "$name ${sent_formatted} [sent] + ${recv_formatted} [recieved]"
             fi  
         fi 
         
