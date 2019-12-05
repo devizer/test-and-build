@@ -28,7 +28,7 @@ fi
       mkdir -p /etc/dotnet
       echo '/opt/dotnet' > /etc/dotnet/install_location
       try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
-      # time dotnet --info || true
+      time dotnet --info || true
 
 Say "Configuring shared environment for .NET Core"
 echo '#!/usr/bin/env bash
