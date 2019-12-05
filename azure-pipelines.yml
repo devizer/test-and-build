@@ -10,6 +10,26 @@ jobs:
     steps:
       - template: azure-steps.yml
 
+  - job: AMD64
+    variables:
+      ARCH: AMD64
+    timeoutInMinutes: 599
+    cancelTimeoutInMinutes: 1
+    pool:
+      vmImage: 'ubuntu-18.04'
+    steps:
+      - template: azure-steps.yml
+
+  - job: i386
+    variables:
+      ARCH: i386
+    timeoutInMinutes: 599
+    cancelTimeoutInMinutes: 1
+    pool:
+      vmImage: 'ubuntu-18.04'
+    steps:
+      - template: azure-steps.yml
+
   - job: ARM64_V8
     variables:
       ARCH: arm64
