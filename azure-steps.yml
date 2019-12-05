@@ -19,10 +19,15 @@ steps:
     displayName: 'INIT/MAIN [$(ARCH)] (define FINAL_SIZE and OUTPUT_FOLDER)'
 
   - script: |
+      bash install-build-tools.sh 
+      Show-System-Stat
+    displayName: 'Show System Stat on boot'
+
+  - script: |
       lsb_release -a
       apt-cache policy qemu-system-arm
       apt-cache policy libguestfs-tools
-    displayName: 'Show visualization tools versions'
+    displayName: 'Show virtualization tools versions'
 
 #  - script: 'export DEBIAN_FRONTEND=noninteractive; sudo apt update -qq; sudo apt upgrade -yqq'
 #    displayName: 'apt upgrade'
@@ -46,7 +51,7 @@ steps:
       lsb_release -a
       apt-cache policy qemu-system-arm
       apt-cache policy libguestfs-tools
-    displayName: 'Show visualization tools versions **Again**'
+    displayName: 'Show virtualization tools versions **Again**'
 
 
   - powershell: |
@@ -180,4 +185,8 @@ steps:
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: 'Debian-$(ARCH)-Multiarch'
+      
+  - script: |
+      Show-System-Stat
+    displayName: 'Show System Stat on Finish'
       
