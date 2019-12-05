@@ -53,12 +53,12 @@ function ShowSystemStat() {
   local uptime_formatted="$(format_seconds ${uptime})"
   
   
-  echo "User CPU Usage (normal priority) ......... $user_normal_formatted
-User CPU Usage (low priority) ............ $user_nice_formatted
-System CPU Usage ......................... $system_formatted
-------------------------------------------
-Total CPU Usage .......................... $total_formatted
-Uptime ................................... $uptime_formatted"
+  echo "User CPU Usage (normal priority) ..... $user_normal_formatted
+User CPU Usage (low priority) ........ $user_nice_formatted
+System CPU Usage ..................... $system_formatted
+--------------------------------------
+Total CPU Usage ...................... $total_formatted
+Uptime ............................... $uptime_formatted"
 }
 function FormatBytes() {
     local bytes=$1
@@ -79,7 +79,7 @@ function ShowNetStat() {
         if [[ "$name" == *":" ]]; then
             local recv=$(echo $line | awk '{print $2}')
             local sent=$(echo $line | awk '{print $10}')
-            name="${name} ";local n=0; while [[ $n -lt 55 && "${#name}" -lt 42 ]]; do n=$((n+1));name="${name}."; done
+            name="${name} ";local n=0; while [[ $n -lt 55 && "${#name}" -lt 38 ]]; do n=$((n+1));name="${name}."; done
             if [[ "$sent" -gt 0 && "$recv" -gt 0 ]]; then
                 sent=$(FormatBytes $sent)
                 recv=$(FormatBytes $recv)
