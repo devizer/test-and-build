@@ -4,7 +4,8 @@
 export NVM_DIR="/opt/nvm"
 Say "Installing nvm to $NVM_DIR" 
 mkdir -p "$NVM_DIR"
-script=https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.0/install.sh; 
+# 0.35.0 doesnt work on AMD64 without kvm
+script=https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.1/install.sh; 
 (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 chown user:user -R "$NVM_DIR" 
 [[ -s "$NVM_DIR/nvm.sh" ]] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -37,7 +38,7 @@ if [[ -n "$TRAVIS" ]]; then
     export CPPFLAGS="$CFLAGS"
 fi
 
-time nvm install --lts node  # 12.13
+time nvm install --lts # node  # 12.13
 nvm cache clear
 df -h
 # Say "Installing NodeJS LATEST"
