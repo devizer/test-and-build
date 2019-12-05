@@ -123,6 +123,15 @@ function Build
         Remote-Command-Raw "$mustHavePackages" "localhost" $startParams.Port "root" "pass"
     }
 
+    if ($Is_Requested_Dotnet)
+    {
+        Say "Installing DotNet Core for [$key]"
+        Remote-Command-Raw "cd /tmp/build; bash install-DOTNET.sh; command -v dotnet && dotnet --info || true" "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; dotnet --info' "localhost" $startParams.Port "root" "pass"
+        Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; dotnet --info' "localhost" $startParams.Port "user" "pass"
+        # TODO: Add dotnet restore
+    }
+
     if ($Is_Requested_Mono)
     {
         Say "Installing Latest Mono [$key]"
@@ -142,15 +151,6 @@ function Build
     }
 
 
-
-    if ($Is_Requested_Dotnet)
-    {
-        Say "Installing DotNet Core for [$key]"
-        Remote-Command-Raw "cd /tmp/build; bash install-DOTNET.sh; command -v dotnet && dotnet --info || true" "localhost" $startParams.Port "root" "pass"
-        Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; dotnet --info' "localhost" $startParams.Port "root" "pass"
-        Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; dotnet --info' "localhost" $startParams.Port "user" "pass"
-        # TODO: Add dotnet restore
-    }
 
     if ($Is_Requested_Powershell)
     {
