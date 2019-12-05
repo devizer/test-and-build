@@ -34,13 +34,24 @@ Say "Configuring shared environment for .NET Core"
 echo '#!/usr/bin/env bash
 if [[ -s "/opt/dotnet/dotnet" ]]; then 
     DOTNET_ROOT=/opt/dotnet
+    export DOTNET_ROOT 
     PATH="/opt/dotnet:$PATH"
     if [[ -d "$HOME/.dotnet/tools" ]]; then
         PATH="$PATH:$HOME/.dotnet/tools"
     fi
+    export PATH 
+    
     DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0
+    export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER
+    
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+    export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER
+    
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+    export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT
+    
     DOTNET_CLI_TELEMETRY_OPTOUT=1
+    export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER
 fi
 ' | sudo tee /etc/profile.d/dotnet-core.sh >/dev/null
 sudo -u user mkdir -p /home/user/.dotnet/tools
