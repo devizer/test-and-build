@@ -4,7 +4,7 @@ function Build
     $key = $definition.key
     $image = $definition.Image
 
-    $the_PrivateReport = $PrivateReport/$($definition.Image)
+    $the_PrivateReport = "$PrivateReport/$($definition.Image)"
     & mkdir -p $the_PrivateReport
     & rm -rf "$the_PrivateReport/*"
 
