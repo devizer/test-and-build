@@ -51,7 +51,8 @@ usermod -aG sudo user
 
 echo '#!/usr/bin/env bash
 if [[ -d "$HOME/bin" ]]; then
-    export PATH="$PATH:$HOME/bin"
+    PATH="$PATH:$HOME/bin"
+    export PATH
 fi
 ' > /etc/profile.d/Path-To-Bin-At-Home.sh
 
