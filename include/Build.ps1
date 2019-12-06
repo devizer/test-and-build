@@ -33,7 +33,7 @@ function Build
     Say "Downloading basic image: $key"
     $file_UrlPart = [string]::Format($definition.DownloadFileFormat, $key,"00[1-$( $definition.BasicParts )]")
     $file_LocalPart = [string]::Format($definition.DownloadFileFormat, $key,"00#1")
-    $download_cmd = "curl $( $definition.BaseUrl )$($file_UrlPart) -o '$file_LocalPart'";
+    $download_cmd = "curl -kSL $( $definition.BaseUrl )$($file_UrlPart) -o '$file_LocalPart'";
     Write-Host "shell command: [$download_cmd]";
     & mkdir -p downloads-$image;
     pushd downloads-$image
@@ -273,7 +273,7 @@ function Build
     & ls -la
     popd
 
-    & umount -f $mapto >/dev/null 2>&1
+    & bash -c "umount -f $mapto >/dev/null 2>&1"
 
     Say "The End"
     popd
