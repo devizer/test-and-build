@@ -1,6 +1,6 @@
 # https://aka.ms/yaml
 jobs:
-  - job: ARM32_V7
+  - job: Debian_10_ARM32_V7
     variables:
       ARCH: arm
       IMAGE: Debian-10-arm
@@ -11,7 +11,7 @@ jobs:
     steps:
       - template: azure-steps.yml
 
-  - job: CentOS-6-x64
+  - job: CentOS_6_x64
     variables:
       ARCH: AMD64
       IMAGE: CentOS-6-AMD64
@@ -22,7 +22,7 @@ jobs:
     steps:
       - template: azure-steps.yml
 
-  - job: AMD64
+  - job: Debian_10_AMD64
     variables:
       ARCH: AMD64
       IMAGE: Debian-10-AMD64
@@ -43,7 +43,7 @@ jobs:
 #    steps:
 #      - template: azure-steps.yml
 
-  - job: ARM64_V8
+  - job: Debian_10_ARM64_V8
     variables:
       ARCH: arm64
       IMAGE: Debian-10-arm64
