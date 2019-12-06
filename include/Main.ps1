@@ -4,7 +4,7 @@ $probes=@(
 @{Cmd="nunit3-console --version"; Head=1},
 @{Cmd="xunit.console"; Head=1},
 @{Cmd="dotnet --list-sdks"; Name=".NET Core SDKs"; SkipOn=@("i386")},
-@{Cmd="echo $(dotnet benchmark --version 2>&1)";Name=".NET Core Benchmark tool"}
+@{Cmd="echo `$(dotnet benchmark --version 2>&1)";Name=".NET Core Benchmark tool"}
 @{Cmd="mono --version"; Head=1},
 @{Cmd="msbuild /version"; Head=1},
 @{Cmd="pwsh --version"; SkipOn=@("i386")},
