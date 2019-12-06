@@ -8,6 +8,8 @@ for f in $(sudo find .); do
 done
 echo ""
 
+sudo yum clean all || true
+
 cd /
 rm -rf $HOME/.cache/mozilla
 rm -rf $HOME/.cache/google-chrome

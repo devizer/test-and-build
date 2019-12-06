@@ -25,6 +25,10 @@ fi
 arg="$1"
 if [ "$arg" = "" ]; then
     echo "$ret"
+    exit 0
 elif [ "$arg" = "$ret" ]; then
     echo "$ret"
+    exit 0
+else
+    exit 1
 fi

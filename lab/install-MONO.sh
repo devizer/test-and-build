@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
-if [[ "$(command -v mono)" == "" ]]; then
+
+function Install_Mono_on_RedHat() {
+  if [[ "$(Is-RedHat 6)" ]]; then
+    rpm --import "http://pool.sks-keyservers.net/pks/lookup?op=get&search=0x3fa7e0328081bff6a14da29aa6a19b38d3d831ef"
+    su -c 'curl https://download.mono-project.com/repo/centos6-stable.repo | tee /etc/yum.repos.d/mono-centos6-stable.repo'
+  elif [[ "$(Is-RedHat 7)" ]]; then
+    rpmkeys --import "http://pool.sks-keyservers.net/pks/lookup?op=get&search=0x3fa7e0328081bff6a14da29aa6a19b38d3d831ef"
+    su -c 'curl https://download.mono-project.com/repo/centos7-stable.repo | tee /etc/yum.repos.d/mono-centos7-stable.repo'
+  elif [[ "$(Is-RedHat 8)" || true ]]; then
+    rpmkeys --import "http://pool.sks-keyservers.net/pks/lookup?op=get&search=0x3fa7e0328081bff6a14da29aa6a19b38d3d831ef"
+    su -c 'curl https://download.mono-project.com/repo/centos8-stable.repo | tee /etc/yum.repos.d/mono-centos8-stable.repo'
+  fi
+  
+  yum install -y mono-complete msbuild nuget
+}
+
+function Install_Mono_on_Debians() {
   try-and-retry lazy-apt-update 
   try-and-retry sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A6A19B38D3D831EF
 #  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
@@ -16,6 +32,14 @@ if [[ "$(command -v mono)" == "" ]]; then
   # sudo apt update
   systemctl stop mono-xsp4
   systemctl disable mono-xsp4
+}
+
+if [[ "$(command -v mono)" == "" ]]; then
+  if [[ "$(Is-RedHat)" ]]; then
+    Install_Mono_on_RedHat
+  else
+    Install_Mono_on_Debians
+  fi
 fi
 
 # it fails if nuget is absent 

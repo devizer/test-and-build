@@ -13,7 +13,7 @@ if [[ "$ARCH" == "i386" ]]; then
 fi
 
       url=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-dependencies.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash
-      sudo apt clean
+      [[ ! "$(Is-RedHat)" ]] && sudo apt clean
       DOTNET_Url=https://dot.net/v1/dotnet-install.sh; 
       mkdir -p ~/.dotnet/tools;
       sudo mkdir -p /opt/dotnet;
@@ -28,7 +28,7 @@ fi
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.0 -i /opt/dotnet
       try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.1 -i /opt/dotnet
-      time dotnet --info || true
+      Say ".NET Core benchmark tool version: [$(dotnet benchmark --version 2>&1)]"
 
 Say "Configuring shared environment for .NET Core"
 echo '#!/usr/bin/env bash

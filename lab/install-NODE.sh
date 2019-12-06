@@ -24,6 +24,7 @@ echo '#!/usr/bin/env bash
 NVM_DIR=/opt/nvm
 if [[ -s "$NVM_DIR/nvm.sh" ]]; then 
     . "$NVM_DIR/nvm.sh"  # This loads nvm
+    export NVM_DIR 
 else
     unset NVM_DIR
 fi 
@@ -38,7 +39,14 @@ if [[ -n "$TRAVIS" ]]; then
     export CPPFLAGS="$CFLAGS"
 fi
 
-time nvm install --lts # node  # 12.13
+if [[ "$(Is-RedHat 6)" ]]; then
+    node_ver=10
+    echo "NodeJS LTS 12.x+ is not supported on CentOS/RedHat 6. v10.17 will be installed" 
+else
+    node_ver="--lts"
+fi
+Say "Installing NodeJS version [$node_ver]"
+time nvm install "$node_ver" # node  # 12.13
 nvm cache clear
 df -h
 # Say "Installing NodeJS LATEST"
