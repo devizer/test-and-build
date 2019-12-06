@@ -29,6 +29,8 @@ $definitions=@(
 @{
     Image="CentOS-6-AMD64";
     key="AMD64"; BasicParts=5; RootQcow="CentOS-6-amd64.raw";
+    NeedSSE4=$false;
+    EnableKvm=$true;
     RamForBuildingMb=1200;
     SizeForBuildingMb=8200; # from 2G
     DefaultPort=2205;

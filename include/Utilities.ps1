@@ -101,6 +101,7 @@ function Is-Requested-Specific-Feature{
 function Prepare-VM
 {
     param($definition, $rootDiskFullName, $guestNamePrefix = "", $portNumber = 0)
+    $key=$definition.Key
     if (! $portNumber)
     {
         $portNumber = $startParams.Port
