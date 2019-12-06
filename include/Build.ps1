@@ -239,7 +239,7 @@ function Build
     # & umount -f $mapto # NOOOO shutdown?????
 
     Say "SHUTDOWN [$image::$key] GUEST"
-    Remote-Command-Raw "rm -rf /tmp/build; Say 'Size of the /tmp again:'; du /tmp -d 1 -h; sudo shutdown now" "localhost" $startParams.Port "root" "$($definition.UsersPassword)" $false $true
+    Remote-Command-Raw "rm -rf /tmp/build; Say 'Size of the /tmp again:'; du /tmp -d 1 -h; sudo shutdown now &; poweroff -h now &" "localhost" $startParams.Port "root" "$($definition.UsersPassword)" $false $true
     Wait-For-Process $Global:qemuProcess "$image::$key"
 
     Say "Final compact [$image::$key]"

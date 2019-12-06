@@ -173,6 +173,7 @@ function Prepare-VM
     # $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
     # $p2 = if ($k -eq "arm64") { " -cpu cortex-a57 "; } else {""};
 
+    # if archive contains cloud-config.qcow2 then attach it
     $expected_CloudConfig="cloud-config.qcow2";
     if (Test-Path (Combine-Path($path,$expected_CloudConfig))) {
         $cloudConfig_Param="-drive file=cloud-config.qcow2,format=qcow2,id=config"
