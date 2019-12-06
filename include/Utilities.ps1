@@ -1,3 +1,10 @@
+function Combine-Path {
+    param([string[]] $parts)
+    return [System.IO.Path]::GetFullPath( [System.IO.Path]::Combine($parts) )
+}
+
+function Directory-Separator-Char { [System.IO.Path]::DirectorySeparatorChar.ToString() }
+
 function Pretty-Format {
     param([Hashtable] $arg, $indent = 5)
     $space=new-object system.string([char]32, $indent)
@@ -107,6 +114,7 @@ function Prepare-VM
         $portNumber = $startParams.Port
     }
     $path = Split-Path -Path $rootDiskFullName;
+    $path = "$($path)"
     $fileName = [System.IO.Path]::GetFileName($rootDiskFullName)
     Write-Host "Copy kernel to '$( $path )'"
     Copy-Item "$ProjectPath/kernels/$( $definition.KernelFolderName )/*" "$( $path )/"
@@ -119,22 +127,21 @@ function Prepare-VM
     & rm -f ephemeral.temp.qcow2
     popd
 
+    $guestName = $definition.Image;
     $hasKvm = (& sh -c "ls /dev/kvm 2>/dev/null") | Out-String
     if ($key -eq "arm")
     {
-        $guestName = "buster-arm-v7"
         $qemySystem = "arm"
         $paramCpu = ""
     }
     elseif ($key -eq "arm64")
     {
-        $guestName = "buster-arm-64"
         $qemySystem = "aarch64"
         $paramCpu = " -cpu cortex-a57 "
     }
     elseif ($key -eq "i386")
     {
-        $guestName = IIF $hasKvm -Then "buster-i386-KVM" -Else "buster-i386-EMU" 
+        $guestName = IIF $hasKvm -Then "$($definition.Image)-KVM" -Else "$($definition.Image)-EMU" 
         $qemySystem = "i386"
         # qemu-system-i386 --machine q35 -cpu ?
         # CPU: kvm32|SandyBridge
@@ -144,7 +151,7 @@ function Prepare-VM
     }
     elseif ($key -eq "AMD64")
     {
-        $guestName = IIF ($hasKvm) -Then "buster-AMD64-KVM" -Else "buster-AMD64-EMU"
+        $guestName = IIF ($hasKvm) -Then "$($definition.Image)-KVM" -Else "$($definition.Image)-EMU"
         $qemySystem = "x86_64"
         # qemu-system-i386 --machine q35 -cpu ?
         # CPU: kvm64|SandyBridge
@@ -166,6 +173,10 @@ function Prepare-VM
     # $p1="arm"; $k=$definition.Key; if ($k -eq "arm64") {$p1="aarch64";} elseif ($k -eq "i386") {$p1="i386";}
     # $p2 = if ($k -eq "arm64") { " -cpu cortex-a57 "; } else {""};
 
+    $expected_CloudConfig="cloud-config.qcow2";
+    if (Test-Path (Combine-Path($path,$expected_CloudConfig))) {
+        $cloudConfig_Param="-drive file=cloud-config.qcow2,format=qcow2,id=config"
+    }
 
     # ARM 64/32
     $qemuCmd = "#!/usr/bin/env bash" + @" 
@@ -179,6 +190,7 @@ qemu-system-${qemySystem} -name $guestName \
     -device virtio-scsi-device,id=scsi \
     -drive file=$( $fileName ),id=rootimg,cache=unsafe,if=none -device scsi-hd,drive=rootimg \
     -drive file=ephemeral.qcow2,id=ephemeral,cache=unsafe,if=none -device scsi-hd,drive=ephemeral \
+    $cloudConfig_Param \
     -netdev user,hostfwd=tcp::$( $portNumber )-:22,id=net0 -device virtio-net-device,netdev=net0 \
     -nographic
 "@;
@@ -194,6 +206,7 @@ $( $sudoPrefix )qemu-system-${qemySystem} -name $guestName -smp $( $startParams.
     -kernel vmlinuz -append "root=/dev/sda1 console=ttyS0" \
     -drive file=$( $fileName ),id=rootimg \
     -drive file=ephemeral.qcow2,id=ephemeral \
+    $cloudConfig_Param \
     -netdev user,hostfwd=tcp::$( $portNumber )-:22,id=unet -device e1000-82545em,netdev=unet \
     -net user \
     -nographic

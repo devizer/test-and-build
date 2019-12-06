@@ -1,4 +1,5 @@
 . ./Qemu-PowerMan.ps1
+. ./Utilities.ps1
 
 function Qemu-PowerMan-DesignDemo {
 

@@ -1,9 +1,3 @@
-function Combine-Path {
-    param([string[]] $parts)
-    return [System.IO.Path]::GetFullPath( [System.IO.Path]::Combine($parts) )
-}
-
-function Directory-Separator-Char { [System.IO.Path]::DirectorySeparatorChar }
 
 function Qemu-PowerMan-OnLoad
 {
