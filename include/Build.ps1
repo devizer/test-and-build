@@ -84,7 +84,7 @@ function Build
     $mapto = "$build_folder/rootfs-$( $image )"
     Write-Host "Mapping Folder is [$mapto]";
     & mkdir -p "$mapto"
-    $mountCmd = "echo pass | sshfs -o password_stdin 'root@localhost:/' -p $( $startParams.Port ) '$mapto'"
+    $mountCmd = "echo $($definition.UsersPassword) | sshfs -o password_stdin 'root@localhost:/' -p $( $startParams.Port ) '$mapto'"
     Write-Host "Mount command: [$mountCmd]"
     & bash -c "$mountCmd"
     & ls -la "$mapto"

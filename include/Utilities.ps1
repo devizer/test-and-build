@@ -300,7 +300,7 @@ export DEBIAN_FRONTEND=noninteractive
     $localCmd = "sshpass -p `'$( $password )`' ssh -o 'StrictHostKeyChecking no' $( $user )@$( $ip ) -p $( $port ) /tmp/$rnd"
     if ($false -and $reconnect)
     {
-        $mountCmd = "echo pass | sshfs -o password_stdin 'root@localhost:/' -p $( $startParams.Port ) '$mapto'"
+        $mountCmd = "echo $($password) | sshfs -o password_stdin 'root@localhost:/' -p $( $startParams.Port ) '$mapto'"
         Write-Host "RE-Mount command: [$mountCmd]"
         & bash -c "$mountCmd"
         & ls -la $mapto
