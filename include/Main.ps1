@@ -27,6 +27,21 @@ $BasicImagePath=(new-object System.IO.DirectoryInfo($p)).FullName + [IO.Path]::D
 
 $definitions=@(
 @{
+    Image="CentOS-6-AMD64";
+    key="AMD64"; BasicParts=5; RootQcow="CentOS-6-amd64.raw";
+    RamForBuildingMb=1200;
+    SizeForBuildingMb=6000; # from 2G
+    DefaultPort=2205;
+    SwapMb=64;
+    # BaseUrl="file:///github.com/"
+    # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
+    BaseUrl="https://dl.bintray.com/devizer/debian-multiarch/basic-images/";
+    DownloadFileFormat="CentOS-6-amd64.raw.7z.{1}";
+    KernelFolderName="CentOS-6-AMD64";
+    BinTrayRepo="CentOS-6-AMD64-for-building-and-testing";
+},
+@{
+    Image="Debian-10-arm64";
     key="arm64"; BasicParts=5; RootQcow="disk.arm64.qcow2.raw";
     RamForBuildingMb=1200;
     SizeForBuildingMb=6000; # from 2G
@@ -34,9 +49,13 @@ $definitions=@(
     SwapMb=64;
     # BaseUrl="file:///github.com/"
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
-    BaseUrl="file://$BasicImagePath"
+    BaseUrl="file://$BasicImagePath";
+    KernelFolderName="arm64";
+    DownloadFileFormat="debian-arm64.qcow2.7z.{1}";
+    BinTrayRepo="debian-arm64-for-building-and-testing";
 },
 @{
+    Image="Debian-10-arm";
     key="arm"; BasicParts=5;
     RootQcow="disk.expanded.qcow2.raw" # it is 5Gb
     RamForBuildingMb=800;
@@ -45,8 +64,12 @@ $definitions=@(
     SwapMb=32;
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/";
     BaseUrl="file://$BasicImagePath"
+    KernelFolderName="arm";
+    DownloadFileFormat="debian-arm.qcow2.7z.{1}";
+    BinTrayRepo="debian-arm-for-building-and-testing";
 },
 @{
+    Image="Debian-10-AMD64";
     key="AMD64"; BasicParts=5; RootQcow="debian-AMD64.basic.qcow2"
     NeedSSE4=$false;
     EnableKvm=$true;
@@ -56,9 +79,13 @@ $definitions=@(
     SwapMb="none";
     # BaseUrl="file:///github.com/"
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
-    BaseUrl="file://$BasicImagePath"
+    BaseUrl="file://$BasicImagePath";
+    KernelFolderName="AMD64";
+    DownloadFileFormat="debian-AMD64.qcow2.7z.{1}";
+    BinTrayRepo="debian-AMD64-for-building-and-testing";
 },
 @{
+    Image="Debian-10-i386";
     key="i386"; BasicParts=5; RootQcow="debian-i386.qcow2"
     NeedSSE4=$false;
     EnableKvm=$true;
@@ -68,7 +95,10 @@ $definitions=@(
     SwapMb="none";
     # BaseUrl="file:///github.com/"
     # BaseUrl="https://raw.githubusercontent.com/devizer/test-and-build/master/basic-images/"
-    BaseUrl="file://$BasicImagePath"
+    BaseUrl="file://$BasicImagePath";
+    KernelFolderName="i386";
+    DownloadFileFormat="debian-i386.qcow2.7z.{1}";
+    BinTrayRepo="debian-i386-for-building-and-testing";
 });
 
 

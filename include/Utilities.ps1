@@ -97,6 +97,7 @@ function Is-Requested-Specific-Feature{
 }
 
 # port, mem and #cores are indirectly passed via $startParams
+# REFACTORED
 function Prepare-VM
 {
     param($definition, $rootDiskFullName, $guestNamePrefix = "", $portNumber = 0)
@@ -107,7 +108,7 @@ function Prepare-VM
     $path = Split-Path -Path $rootDiskFullName;
     $fileName = [System.IO.Path]::GetFileName($rootDiskFullName)
     Write-Host "Copy kernel to '$( $path )'"
-    Copy-Item "$ProjectPath/kernels/$( $definition.Key )/*" "$( $path )/"
+    Copy-Item "$ProjectPath/kernels/$( $definition.KernelFolderName )/*" "$( $path )/"
 
     # on 18.04 virt-format without defrag produces 1Gb file, on 19.10 - 30Mb 
     pushd $path
@@ -320,12 +321,13 @@ export DEBIAN_FRONTEND=noninteractive
     }
 }
 
+# REFACTORED
 function Wait-For-Process
 {
     param($process, $name)
-    Say "Waiting for shutdown of [$key]"
+    Say "Waiting for shutdown of [$name]"
     $process.WaitForExit()
-    Say "[$key] VM gracefully powered off"
+    Say "[$name] VM gracefully powered off"
 }
 
 function Final-Compact

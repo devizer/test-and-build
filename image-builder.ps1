@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
 param(
-    [ValidateSet("arm64", "arm", "AMD64", "i386")]    
+    [ValidateSet("Debian-10-arm64", "Debian-10-arm", "Debian-10-AMD64", "Debian-10-i386", "CentOS-6-AMD64")]    
     [string[]] $Images,
     [string] $Only,
     [string] $Skip,
@@ -63,7 +63,7 @@ Say "TOTAL PHYSICAL CORE(s): $([Environment]::ProcessorCount). Building '$images
 $allTheFine = $true; 
 $imagesToBuild | % {
     $nameToBuild=$_
-    $definition = $definitions | where { $_.Key -eq $nameToBuild} | select -First 1
+    $definition = $definitions | where { $_.Image -eq $nameToBuild} | select -First 1
     if (-not $definition) {
         Write-Host "Unknown image '$nameToBuild'" -ForegroundColor Red;
     }
@@ -72,14 +72,14 @@ $imagesToBuild | % {
         $globalStartParams.Port = $definition.DefaultPort;
         $globalStartParams.Mem="$($definition.RamForBuildingMb)M"
         Write-Host "Next image:`n$(Pretty-Format $definition)" -ForegroundColor Yellow;
-        $Global:BuildConsoleTitle = "|>$($definition.Key) $($globalStartParams.Mem) $($globalStartParams.Cores)*Cores {$featuresToInstall} --> $($Global_FinalSize) ===--"
+        $Global:BuildConsoleTitle = "|>$($definition.Image) $($globalStartParams.Mem) $($globalStartParams.Cores)*Cores {$featuresToInstall} --> $($Global_FinalSize) ===--"
 
         Build $definition $globalStartParams;
         $allTheFine = $allTheFine -and $Global:BuildResult.IsSccessful;
-        $summaryFileName = "$PrivateReport/$($definition.Key)/summary.log"
+        $summaryFileName = "$PrivateReport/$($definition.Image)/summary.log"
         Say "Summary file name: $summaryFileName"
 
-        "Summary for $($definition.Key)" > $summaryFileName
+        "Summary for $($definition.Image)" > $summaryFileName
         "Total Commands:  $($Global:BuildResult.TotalCommandCount)" >> $summaryFileName
         "Failed Commands: $($Global:BuildResult.FailedCommands.Count)"   >> $summaryFileName
         "Elapsed: $(Get-Elapsed)"   >> $summaryFileName
