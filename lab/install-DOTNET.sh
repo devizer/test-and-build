@@ -13,6 +13,11 @@ if [[ "$ARCH" == "i386" ]]; then
 fi
 
 Say "Configuring shared environment for .NET Core"
+
+if [[ "$(uname -r)" != 2* ]]; then 
+    var_HTTP_SOCKET="DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0" 
+fi
+
 echo '#!/usr/bin/env bash
 if [[ -s "/opt/dotnet/dotnet" ]]; then 
     DOTNET_ROOT=/opt/dotnet
@@ -23,11 +28,11 @@ if [[ -s "/opt/dotnet/dotnet" ]]; then
     fi
     export PATH 
     
-    DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0
+    '$var_HTTP_SOCKET'
     export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER
     
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
-    export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER
+    export DOTNET_SKIP_FIRST_TIME_EXPERIENCE
     
     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
     export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT
@@ -43,7 +48,7 @@ Say "Configured shared environment for .NET Core"
 
 
       export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
-      export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0
+      # export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0
       url=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-dependencies.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash
       [[ ! "$(Is-RedHat)" ]] && sudo apt clean
       DOTNET_Url=https://dot.net/v1/dotnet-install.sh; 
