@@ -39,6 +39,7 @@ $definitions=@(
     DownloadFileFormat="CentOS-6-amd64.raw.7z.{1}";
     KernelFolderName="CentOS-6-AMD64";
     BinTrayRepo="CentOS-6-AMD64-for-building-and-testing";
+    UsersPassword="p1ssw0rd";
 },
 @{
     Image="Debian-10-arm64";
@@ -53,6 +54,7 @@ $definitions=@(
     KernelFolderName="arm64";
     DownloadFileFormat="debian-arm64.qcow2.7z.{1}";
     BinTrayRepo="debian-arm64-for-building-and-testing";
+    UsersPassword="pass";
 },
 @{
     Image="Debian-10-arm";
@@ -67,6 +69,7 @@ $definitions=@(
     KernelFolderName="arm";
     DownloadFileFormat="debian-arm.qcow2.7z.{1}";
     BinTrayRepo="debian-arm-for-building-and-testing";
+    UsersPassword="pass";
 },
 @{
     Image="Debian-10-AMD64";
@@ -83,6 +86,7 @@ $definitions=@(
     KernelFolderName="AMD64";
     DownloadFileFormat="debian-AMD64.qcow2.7z.{1}";
     BinTrayRepo="debian-AMD64-for-building-and-testing";
+    UsersPassword="pass";
 },
 @{
     Image="Debian-10-i386";
@@ -99,6 +103,7 @@ $definitions=@(
     KernelFolderName="i386";
     DownloadFileFormat="debian-i386.qcow2.7z.{1}";
     BinTrayRepo="debian-i386-for-building-and-testing";
+    UsersPassword="pass";
 });
 
 

@@ -383,7 +383,7 @@ function Produce-Report {
         $probe = $_; $cmd = $_.Cmd;
         $responseFile = "/tmp/response-$(([Guid]::NewGuid()).ToString("N") )"
         # Write-Host "Port: $($startParams.Port)" 
-        Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "pass" > $responseFile 2>&1
+        Remote-Command-Raw $cmd "localhost" $startParams.Port "root" "$($defenition.UsersPassword)" > $responseFile 2>&1
         $response = Get-Content $responseFile -Raw
         Write-Host "Response for [$cmd]:`n$( $response )"
         $title = IIF $probe.Name -Then $probe.Name -Else $probe.Cmd; 
