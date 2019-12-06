@@ -54,8 +54,8 @@ echo '
 AcceptEnv Build_* APPVEYOR* TRAVIS* BUILD_*
 ' >> /etc/ssh/sshd_config
 
+# centos 6 does not support it
 if [[ "$(uname -r)" != 2* ]]; then 
-    # centos 6 does not support it 
     echo "SetEnv ARCH='$ARCH'" >> /etc/ssh/sshd_config 
 fi
 
