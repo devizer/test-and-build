@@ -376,8 +376,8 @@ function Produce-Report {
     $key = $definition.Key
     Say "Produce Report for [$key]"
     # & mkdir -p "$PrivateReport"
-    $reportFile = "$PrivateReport/$key/Debian-10-Buster-$key-$suffix.md"
-    "|  Debian 10 Buster <u>**$($key)**</u> |`n|-------|" > $reportFile
+    $reportFile = "$PrivateReport/$($definition.Image)/$image-$suffix.md"
+    "|  <u>**$($definition.Image)**</u> |`n|-------|" > $reportFile
 
     $probes | % {
         $probe = $_; $cmd = $_.Cmd;
