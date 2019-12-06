@@ -8,6 +8,7 @@ steps:
 
       commits_count=$(git log -n 999999 --date=raw --pretty=format:"%cd" | wc -l)
       echo "ARCH is ............. [$ARCH]"
+      echo "IMAGE is ............ [$IMAGE]"
       echo "FINAL_SIZE is ....... [$FINAL_SIZE]"
       echo "OUTPUT_FOLDER is .... [$OUTPUT_FOLDER]"
       echo "build number is ..... [$commits_count]"
@@ -16,7 +17,7 @@ steps:
 
       echo "##vso[task.setvariable variable=FINAL_SIZE]$FINAL_SIZE"
       echo "##vso[task.setvariable variable=OUTPUT_FOLDER]$OUTPUT_FOLDER"
-    displayName: 'INIT/MAIN [$(ARCH)] (define FINAL_SIZE and OUTPUT_FOLDER)'
+    displayName: 'INIT/MAIN [$(IMAGE)::$(ARCH)] (define FINAL_SIZE and OUTPUT_FOLDER)'
 
   - script: |
       bash install-build-tools.sh 
@@ -136,7 +137,7 @@ steps:
         echo "OUTPUT_FOLDER is [$OUTPUT_FOLDER]"
         # -Only Nothing ? 
         export TERM=xterm
-        sudo -E pwsh -command ./image-builder.ps1 -Only_____ Nothing -Images $ARCH -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER | tee $BUILD_ARTIFACTSTAGINGDIRECTORY/image-builder.log
+        sudo -E pwsh -command ./image-builder.ps1 -Only_____ Nothing -Images $IMAGE -FinalSize $FINAL_SIZE -OutputFolder $OUTPUT_FOLDER | tee $BUILD_ARTIFACTSTAGINGDIRECTORY/image-builder.log
         sudo df -T -h
         echo "::--> on finish"
         cat Private-Report/*/*onfinish*
@@ -150,13 +151,13 @@ steps:
         echo "::--> Installed Packages"
         cat Private-Report/**/installed-packages*
       
-    displayName: 'BUILD [$(ARCH)] IMAGE'
+    displayName: 'BUILD [$(IMAGE)::$(ARCH)] IMAGE'
 
   - script: tree $OUTPUT_FOLDER --du -h || true
-    displayName: '$(OUTPUT_FOLDER) DISK USAGE'
+    displayName: '$(OUTPUT_FOLDER) DISK USAGE for [$(IMAGE)::$(ARCH)]'
 
   - script: tree --du -h || true
-    displayName: 'Working Folder DISK USAGE'
+    displayName: 'Working Folder DISK USAGE for [$(IMAGE)::$(ARCH)]'
 
   - script: 'pushd $OUTPUT_FOLDER; find .; popd || true'
     displayName: '[Temp, KillIt] LIST BUILD OUTPUT'
@@ -166,12 +167,12 @@ steps:
       pushd deploy;
       needDeploy=$(echo "$BUILD_SOURCEVERSIONMESSAGE" | grep -i "the stable")
       if [[ $needDeploy ]]; then
-        sudo bash -c "BINTRAY_API_KEY=$(BINTRAY_API_KEY) pwsh deploy-to-bintray.ps1 -From $OUTPUT_FOLDER -Arch $ARCH" | tee $BUILD_ARTIFACTSTAGINGDIRECTORY/deploy-to-bintray.log
+        sudo bash -c "BINTRAY_API_KEY=$(BINTRAY_API_KEY) pwsh deploy-to-bintray.ps1 -From $OUTPUT_FOLDER -Arch $ARCH -Image $IMAGE" | tee $BUILD_ARTIFACTSTAGINGDIRECTORY/deploy-to-bintray.log
       else
         echo 'Missing "the stable" keyword in commit message. Skip Deploy'
       fi
       popd
-    displayName: 'PUBLISH to BINTRAY'
+    displayName: 'PUBLISH [$(IMAGE)::$(ARCH)] to BINTRAY'
 
   - script: 'echo "Current PWD is [$(pwd)]"; tree $BUILD_REPOSITORY_LOCALPATH --du -h;'
     displayName: 'SHOW source folder structure AFTER BUILD'

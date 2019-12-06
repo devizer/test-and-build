@@ -4,10 +4,12 @@ param(
     [Parameter(Position=0,mandatory=$true)]
     [string] $FROM,
     [Parameter(Position=1,mandatory=$true)]
-    [string] $ARCH
+    [string] $ARCH,
+    [Parameter(Position=2,mandatory=$true)]
+    [string] $IMAGE
 )
 
-$Source_Folder="$(pwd)/tmp/debian-to-bintray-$ARCH"
+$Source_Folder="$(pwd)/tmp/$IMAGE-to-bintray"
 & mkdir -p $Source_Folder
 
 # Prepare version
@@ -22,7 +24,7 @@ $version=$version.Trim(@([char]10,[char]13))
 # $version="$($version_short)-$($the_date)"
 Write-Host "!> To Publish: $version"
 
-$DOWNLOAD_PARTS_COUNT=(gci "$FROM/final-$ARCH-splitted/*.qcow2.7z.*").Count
+$DOWNLOAD_PARTS_COUNT=(gci "$FROM/final-$IMAGE-splitted/*.qcow2.7z.*").Count
 Write-Host "!> DOWNLOAD_PARTS_COUNT: $DOWNLOAD_PARTS_COUNT"
 
 # Build Source Folder
@@ -35,7 +37,7 @@ pushd "$Source_Folder/public-bintray"
 popd
 # & ln -f -s "$FROM/final-$ARCH-splitted" "$Source_Folder/public-bintray/$version"
 & mkdir -p "$Source_Folder/public-bintray/$version"; 
-$cp_Cmd="cp -f $FROM/final-$ARCH-splitted/* $Source_Folder/public-bintray/$version"
+$cp_Cmd="cp -f $FROM/final-$IMAGE-splitted/* $Source_Folder/public-bintray/$version"
 Write-Host "|# $cp_Cmd"
 df -T -h
 & bash -c "$cp_Cmd"
@@ -43,7 +45,9 @@ df -T -h
 
 Write-Host "!> Final bintray.json"
 $binTray=$Global:BinTray_Object
+# TODO: WRONG Bintray's Package name FOR CENTOS
 $package="debian-$ARCH-for-building-and-testing"
+if ($image -like "CentOS*") {$package = "CentOS-6-AMD64-for-building-and-testing"};
 $binTray.package.name=$package
 $binTray.package.repo=$package
 Write-Host "!> Final bintray.json`n$binTray"
@@ -75,7 +79,7 @@ pushd metadata
 
 STABLE_VERSION=$version
 DOWNLOAD_PARTS_COUNT=$DOWNLOAD_PARTS_COUNT
-"@ > "public-bintray/VERSION-$ARCH.sh"
+"@ > "public-bintray/VERSION-$IMAGE.sh"
 dpl --provider=bintray --file=bintray.json --user=devizer "--key=$($Env:BINTRAY_API_KEY)" --skip-cleanup
 popd
 

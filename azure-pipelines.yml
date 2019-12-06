@@ -3,6 +3,18 @@ jobs:
   - job: ARM32_V7
     variables:
       ARCH: arm
+      IMAGE: Debian-10-arm
+    timeoutInMinutes: 599
+    cancelTimeoutInMinutes: 1
+    pool:
+      vmImage: 'ubuntu-18.04'
+    steps:
+      - template: azure-steps.yml
+
+  - job: CentOS-6-x64
+    variables:
+      ARCH: AMD64
+      IMAGE: CentOS-6-AMD64
     timeoutInMinutes: 599
     cancelTimeoutInMinutes: 1
     pool:
@@ -13,6 +25,7 @@ jobs:
   - job: AMD64
     variables:
       ARCH: AMD64
+      IMAGE: Debian-10-AMD64
     timeoutInMinutes: 599
     cancelTimeoutInMinutes: 1
     pool:
@@ -20,19 +33,20 @@ jobs:
     steps:
       - template: azure-steps.yml
 
-  - job: i386
-    variables:
-      ARCH: i386
-    timeoutInMinutes: 599
-    cancelTimeoutInMinutes: 1
-    pool:
-      vmImage: 'ubuntu-18.04'
-    steps:
-      - template: azure-steps.yml
+#  - job: i386
+#    variables:
+#      ARCH: i386
+#    timeoutInMinutes: 599
+#    cancelTimeoutInMinutes: 1
+#    pool:
+#      vmImage: 'ubuntu-18.04'
+#    steps:
+#      - template: azure-steps.yml
 
   - job: ARM64_V8
     variables:
       ARCH: arm64
+      IMAGE: Debian-10-arm64
     timeoutInMinutes: 599
     cancelTimeoutInMinutes: 1
     pool:
