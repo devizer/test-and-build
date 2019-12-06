@@ -3,7 +3,7 @@ function Build
     param($definition, $startParams)
     $key = $definition.key
     $image = $definition.Image
-
+    
     $the_PrivateReport = "$PrivateReport/$($definition.Image)"
     & mkdir -p $the_PrivateReport
     & rm -rf "$the_PrivateReport/*"
@@ -31,7 +31,7 @@ function Build
     pushd $build_folder
 
     Say "Downloading basic image: $key"
-    $file_UrlPart = [string]::Format($definition.DownloadFileFormat, $key,"[1-$( $definition.BasicParts )]")
+    $file_UrlPart = [string]::Format($definition.DownloadFileFormat, $key,"00[1-$( $definition.BasicParts )]")
     $file_LocalPart = [string]::Format($definition.DownloadFileFormat, $key,"00#1")
     $download_cmd = "curl $( $definition.BaseUrl )$($file_UrlPart) -o '$file_LocalPart'";
     Write-Host "shell command: [$download_cmd]";
