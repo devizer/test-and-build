@@ -1,16 +1,20 @@
 $probes=@(
 @{Cmd="echo `$ARCH"},
-@{Cmd="nuget"; Head=1},
+# .NET
 @{Cmd="nunit3-console --version"; Head=1},
 @{Cmd="xunit.console"; Head=1},
 @{Cmd="dotnet --list-sdks"; Name=".NET Core SDKs"; SkipOn=@("i386")},
+@{Cmd="echo $(dotnet benchmark --version 2>&1)";Name=".NET Core Benchmark tool"}
 @{Cmd="mono --version"; Head=1},
 @{Cmd="msbuild /version"; Head=1},
 @{Cmd="pwsh --version"; SkipOn=@("i386")},
+@{Cmd="nuget"; Head=1},
+# React/Angular
 @{Cmd="nvm --version "; Head=1},
 @{Cmd="node --version"; Head=1},
 @{Cmd="npm --version"; Head=1},
 @{Cmd="yarn --version"; Head=1},
+# etc
 @{Cmd="docker version --format '{{.Server.Version}}'"},
 @{Cmd="docker-compose version"; Head=1},
 @{Cmd="mysql -N -B -uroot -pPASS -e `"SHOW VARIABLES LIKE 'version';`""},
