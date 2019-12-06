@@ -266,7 +266,9 @@ function Build
     $finalArchivePath = "$(pwd)"
     popd
     pushd $finalQcowPath
-    & nice "$Global_7z_Compress_Priority" 7z a -t7z "-mmt$Global_7z_Threads" $Global_7z_Compress_Args.Split([char]32) -v28m "$finalArchive" "."
+    $cmd_Split_Final="nice $Global_7z_Compress_Priority 7z a -t7z -mmt$Global_7z_Threads $Global_7z_Compress_Args -v28m $finalArchive ."
+    Write-Host "#: $cmd_Split_Final"
+    & bash -c "$cmd_Split_Final"
     Say "The Final archive content with compresion ratio [$finalArchive]"
     & 7z l "$($finalArchive).001"
     popd
