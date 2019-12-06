@@ -49,10 +49,15 @@ sed -i 's/#PermitUserEnvironment no/PermitUserEnvironment yes/g' /etc/ssh/sshd_c
 sed -i 's/AcceptEnv LANG LC_\*//g' /etc/ssh/sshd_config
 sed -i 's/#Compression delayed/Compression no/g' /etc/ssh/sshd_config
 echo '
-SetEnv ARCH='$ARCH'
+
 # Next Line doesnt work
 AcceptEnv Build_* APPVEYOR* TRAVIS* BUILD_*
 ' >> /etc/ssh/sshd_config
+
+if [[ "$(uname -r)" != 2* ]]; then 
+    # centos 6 does not support it 
+    echo "SetEnv ARCH='$ARCH'" >> /etc/ssh/sshd_config 
+fi
 
 echo '
 export SORRY_BASH_completion_is_ALIVE_and_Kicking=true
