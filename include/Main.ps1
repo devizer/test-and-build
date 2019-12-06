@@ -30,7 +30,7 @@ $definitions=@(
     Image="CentOS-6-AMD64";
     key="AMD64"; BasicParts=5; RootQcow="CentOS-6-amd64.raw";
     RamForBuildingMb=1200;
-    SizeForBuildingMb=6000; # from 2G
+    SizeForBuildingMb=8200; # from 2G
     DefaultPort=2205;
     SwapMb=64;
     # BaseUrl="file:///github.com/"
