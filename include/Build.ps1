@@ -273,6 +273,8 @@ function Build
     & ls -la
     popd
 
+    & umount -f $mapto >/dev/null 2>&1
+
     Say "The End"
     popd
     Stop-Transcript
