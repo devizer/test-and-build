@@ -4,7 +4,7 @@
 ARCH=$1
 
 # COMMAND LINE TOOLS
-for f in "Say" "Show-System-Stat" "try-and-retry" "smart-apt-install" "lazy-apt-update" "list-packages" "Is-RedHat"; do
+for f in "Reset-Target-Framework" "Say" "Show-System-Stat" "try-and-retry" "smart-apt-install" "lazy-apt-update" "list-packages" "Is-RedHat"; do
     if [[ -f permanent-scripts/${f}.sh ]]; then
         sudo cp permanent-scripts/${f}.sh /usr/local/bin/${f}
     else
