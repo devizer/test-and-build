@@ -9,6 +9,7 @@ done
 echo ""
 
 sudo yum clean all || true
+dotnet nuget locals all --clear || true
 
 cd /
 rm -rf $HOME/.cache/mozilla
