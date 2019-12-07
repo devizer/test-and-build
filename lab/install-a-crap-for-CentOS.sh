@@ -80,5 +80,6 @@ function install_console_tools() {
 }
   
 install_imagemagick
+# imagemagick should be  
 install_ffmpeg
 install_console_tools
