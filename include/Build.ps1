@@ -139,7 +139,7 @@ function Build
     if ($Is_Requested_Mono)
     {
         Say "Installing Latest Mono [$image::$key]"
-        Remote-Command-Raw "cd /tmp/build; bash -e install-MONO.sh" "localhost" $startParams.Port "root" "$($definition.UsersPassword)"
+        Remote-Command-Raw "cd /tmp/build; bash install-MONO.sh" "localhost" $startParams.Port "root" "$($definition.UsersPassword)"
         Remote-Command-Raw 'Say "I am ROOT"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp' "localhost" $startParams.Port "root" "$($definition.UsersPassword)"
         Remote-Command-Raw 'Say "I am USER"; echo PATH is [$PATH]; mono --version; msbuild /version; echo ""; nuget >/tmp/.tmp; cat /tmp/.tmp | head -4; rm /tmp/.tmp' "localhost" $startParams.Port "user" "$($definition.UsersPassword)"
 
