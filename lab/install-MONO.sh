@@ -2,17 +2,17 @@
 
 function Install_Mono_on_RedHat() {
   if [[ "$(Is-RedHat 6)" ]]; then
-    rpm --import "http://pool.sks-keyservers.net/pks/lookup?op=get&search=0x3fa7e0328081bff6a14da29aa6a19b38d3d831ef"
+    try-and-retry rpm --import "http://pool.sks-keyservers.net/pks/lookup?op=get&search=0x3fa7e0328081bff6a14da29aa6a19b38d3d831ef"
     Say "Installing RedHat/CentOS 6 repo using [https://download.mono-project.com/repo/centos6-stable.repo]"
-    su -c 'curl https://download.mono-project.com/repo/centos6-stable.repo | tee /etc/yum.repos.d/mono-centos6-stable.repo'
+    try-and-retry su -c 'curl https://download.mono-project.com/repo/centos6-stable.repo | tee /etc/yum.repos.d/mono-centos6-stable.repo'
   elif [[ "$(Is-RedHat 7)" ]]; then
-    rpmkeys --import "http://pool.sks-keyservers.net/pks/lookup?op=get&search=0x3fa7e0328081bff6a14da29aa6a19b38d3d831ef"
+    try-and-retry rpmkeys --import "http://pool.sks-keyservers.net/pks/lookup?op=get&search=0x3fa7e0328081bff6a14da29aa6a19b38d3d831ef"
     Say "Installing RedHat/CentOS 7 repo using [https://download.mono-project.com/repo/centos7-stable.repo]"
-    su -c 'curl https://download.mono-project.com/repo/centos7-stable.repo | tee /etc/yum.repos.d/mono-centos7-stable.repo'
+    try-and-retry su -c 'curl https://download.mono-project.com/repo/centos7-stable.repo | tee /etc/yum.repos.d/mono-centos7-stable.repo'
   elif [[ "$(Is-RedHat 8)" || true ]]; then
-    rpmkeys --import "http://pool.sks-keyservers.net/pks/lookup?op=get&search=0x3fa7e0328081bff6a14da29aa6a19b38d3d831ef"
+    try-and-retry rpmkeys --import "http://pool.sks-keyservers.net/pks/lookup?op=get&search=0x3fa7e0328081bff6a14da29aa6a19b38d3d831ef"
     Say "Installing RedHat/CentOS 8 repo using [https://download.mono-project.com/repo/centos8-stable.repo]"
-    su -c 'curl https://download.mono-project.com/repo/centos8-stable.repo | tee /etc/yum.repos.d/mono-centos8-stable.repo'
+    try-and-retry su -c 'curl https://download.mono-project.com/repo/centos8-stable.repo | tee /etc/yum.repos.d/mono-centos8-stable.repo'
   fi
   
   yum install -y mono-complete msbuild nuget
