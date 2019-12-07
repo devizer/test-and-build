@@ -177,15 +177,15 @@ steps:
   - script: 'echo "Current PWD is [$(pwd)]"; tree $BUILD_REPOSITORY_LOCALPATH --du -h;'
     displayName: 'SHOW source folder structure AFTER BUILD'
   
-  - script: 7z a $BUILD_ARTIFACTSTAGINGDIRECTORY/Output_Folder-$ARCH.7z -mx1 "-xr!*qcow2*" "-xr!.git" "$OUTPUT_FOLDER" || true
+  - script: 7z a $BUILD_ARTIFACTSTAGINGDIRECTORY/Output_Folder-$ARCH.7z -mx1 "-xr!*.raw*" "-xr!*qcow2*" "-xr!.git" "$OUTPUT_FOLDER" || true
     displayName: 'Send OUTPUT_FOLDER to artifact'
-  - script: 7z a $BUILD_ARTIFACTSTAGINGDIRECTORY/Source_Folder-$ARCH.7z -mx1 "-xr!*qcow2*" "-xr!.git" "$BUILD_REPOSITORY_LOCALPATH" || true
+  - script: 7z a $BUILD_ARTIFACTSTAGINGDIRECTORY/Source_Folder-$ARCH.7z -mx1 "-xr!*.raw*" "-xr!*qcow2*" "-xr!.git" "$BUILD_REPOSITORY_LOCALPATH" || true
     displayName: 'Send Source_Folder to artifact'
 
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: 'Debian-$(ARCH)-Multiarch'
+      artifactName: '$(IMAGE)'
       
   - script: |
       Show-System-Stat
