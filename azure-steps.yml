@@ -74,8 +74,8 @@ steps:
         cmd=$1
         disk=$2
         caption="$3"
-        toilet -f term -F border "$caption"
         pushd "$disk" >/dev/null
+        toilet -f term -F border "$caption ($(pwd))"
         echo "Benchmark '$(pwd)' folder"
         fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=$cmd
         rm -f fiotest* 
