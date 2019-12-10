@@ -82,17 +82,19 @@ steps:
         echo ""
       }
 
+      sudo chown -R $(whoami) /mnt
+      go_fio read      /mnt "sda2: Sequential read"
+      go_fio write     /mnt "sda2: Sequential write"
+      go_fio randread  /mnt "sda2: Random read"
+      go_fio randwrite /mnt "sda2: Random write"
+      rm -f /mnt/fiotest*
+
       go_fio read      .    "sda1: Sequential read"
       go_fio write     .    "sda1: Sequential write"
       go_fio randread  .    "sda1: Random read"
       go_fio randwrite .    "sda1: Random write"
       rm -f ./fiotest*
 
-      go_fio read      /mnt "sda2: Sequential read"
-      go_fio write     /mnt "sda2: Sequential write"
-      go_fio randread  /mnt "sda2: Random read"
-      go_fio randwrite /mnt "sda2: Random write"
-      rm -f /mnt/fiotest*
     displayName: 'DISK benchmark: sda1 (working) and sda2 (second)'
 
   - script: 7z b
