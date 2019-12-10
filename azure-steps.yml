@@ -59,9 +59,42 @@ steps:
       # Using an input-macro:
       Write-Host "This works: $(BINTRAY_API_KEY)"
       Write-Host "Length: $(($Env:BINTRAY_API_KEY).Length)"  
-  
-  - script: 'echo "Source Code is [$(pwd)]"; sudo apt update -qq >/dev/null 2>/dev/null; sudo apt-get install tree -y >/dev/null 2>/dev/null || sudo apt-get install tree -y; tree --du -h; sudo apt purge man-db >/dev/null 2>/dev/null' 
+    displayName: 'Test secured vars'
+
+  - script: |
+      echo "Source Code is [$(pwd)]"; 
+      sudo apt update -qq >/dev/null 2>/dev/null; 
+      sudo apt-get install fio tree -y >/dev/null 2>/dev/null || sudo apt-get install tree -y; 
+      tree --du -h; 
+      sudo apt purge man-db >/dev/null 2>/dev/null
     displayName: 'SHOW source folder structure, ACCELERATE build'
+
+  - script: |
+      echo "Benchmark '$(pwd)' folder"
+      fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=read
+    displayName: 'DISK benchmark: Sequential reads'
+
+  - script: |
+      echo "Benchmark '$(pwd)' folder"
+      fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=write
+    displayName: 'DISK benchmark: Sequential write'
+
+  - script: |
+      echo "Benchmark '$(pwd)' folder"
+      fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=randread
+    displayName: 'DISK benchmark: Random read'
+
+  - script: |
+      echo "Benchmark '$(pwd)' folder"
+      fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=randwrite
+      rm -f fiotest* 
+    displayName: 'DISK benchmark: Random write'
+
+  - script: 7z b
+    displayName: 'CPU and MEMORY benchmark'
+
+
+
 
   - script: uname -a
     displayName: 'show kernel version'
@@ -104,7 +137,7 @@ steps:
       touch $path/hi
       df -T -h
 
-    displayName: 'PREPARE /transient-builds'
+    displayName: 'PREPARE /transient-builds as compressed 12G volume'
 
   - script: sudo lscpu
     displayName: 'show cpu'
@@ -158,9 +191,6 @@ steps:
 
   - script: tree --du -h || true
     displayName: 'Working Folder DISK USAGE for [$(IMAGE)::$(ARCH)]'
-
-  - script: 'pushd $OUTPUT_FOLDER; find .; popd || true'
-    displayName: '[Temp, KillIt] LIST BUILD OUTPUT'
 
   - script: |
       pwd; 
