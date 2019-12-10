@@ -243,5 +243,7 @@ steps:
       
   - script: |
       Show-System-Stat
+      echo
+      df -h -T
     displayName: 'Show System Stat on Finish'
       
