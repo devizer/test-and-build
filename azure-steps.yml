@@ -80,7 +80,7 @@ steps:
         if [[ $cmd == "rand"* ]]; then
            fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=$cmd --runtime=30
         else
-           fio --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=1024k --size=1G --readwrite=$cmd --runtime=30
+           fio --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=1024k --size=2G --readwrite=$cmd --runtime=30
         fi
         popd >/dev/null
         echo ""
