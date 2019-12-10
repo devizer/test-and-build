@@ -70,13 +70,13 @@ steps:
     displayName: 'SHOW source folder structure, ACCELERATE build'
 
   - script: |
-      echo "Benchmark '$(pwd)' folder"
       function go_fio() {
         cmd=$1
         disk=$2
         caption="$3"
         toilet -f term -F border "$caption"
         pushd "$disk" >/dev/null
+        echo "Benchmark '$(pwd)' folder"
         fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=$cmd
         rm -f fiotest* 
         popd >/dev/null
