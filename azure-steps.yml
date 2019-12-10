@@ -104,11 +104,11 @@ steps:
       path="/sdb1-accelerated"
       sudo mkdir -p "$path"
       sudo umount /mnt
-      mkfs.ext2 -f -L ext2-accelerated "$file"
+      mkfs.ext2 -L ext2-accelerated "$file"
       sudo mount -t ext2 "$file" "$path" -o rw,noatime,nodiratime,errors=remount-ro
       sudo chown -R $(whoami) "$path"
       go_fio_4tests $path "sdb1 (Accelerated)"
-      
+      sudo umount "$path"
 
     displayName: 'DISK benchmark: sda1 (working) and sda2 (second)'
 
