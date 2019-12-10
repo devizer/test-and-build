@@ -78,7 +78,6 @@ steps:
         toilet -f term -F border "$caption ($(pwd))"
         echo "Benchmark '$(pwd)' folder"
         fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=$cmd
-        rm -f fiotest* 
         popd >/dev/null
         echo ""
       }
@@ -87,10 +86,13 @@ steps:
       go_fio write     .    "sda1: Sequential write"
       go_fio randread  .    "sda1: Random read"
       go_fio randwrite .    "sda1: Random write"
+      rm -f ./fiotest*
+
       go_fio read      /mnt "sda2: Sequential read"
       go_fio write     /mnt "sda2: Sequential write"
       go_fio randread  /mnt "sda2: Random read"
       go_fio randwrite /mnt "sda2: Random write"
+      rm -f /mnt/fiotest*
     displayName: 'DISK benchmark: sda1 (working) and sda2 (second)'
 
   - script: 7z b
