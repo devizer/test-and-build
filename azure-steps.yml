@@ -157,7 +157,7 @@ steps:
       sudo mkfs.btrfs -f -L a-disk "$file" -O ^extref,^skinny-metadata
       echo "MOUNTING $file as $path"
       # compress-force=zstd:13 does not work
-      sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force=zlib:8,commit=299
+      sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force=zlib:8,commit=298
       sudo chown $(whoami) $path
       touch $path/hi
       df -T -h
