@@ -89,23 +89,31 @@ steps:
       function go_fio_4tests() {
         local disk=$1
         local caption=$2
-        go_fio_1test read      $disk "$caption Sequential read"
-        go_fio_1test write     $disk "$caption Sequential write"
-        go_fio_1test randread  $disk "$caption Random read"
-        go_fio_1test randwrite $disk "$caption Random write"
+        go_fio_1test read      $disk "${caption}: Sequential read"
+        go_fio_1test write     $disk "${caption}: Sequential write"
+        go_fio_1test randread  $disk "${caption}: Random read"
+        go_fio_1test randwrite $disk "${caption}: Random write"
         rm -f $disk/fiotest
       }
       
       sudo chown -R $(whoami) /mnt
-      go_fio_4tests /mnt "sda2:"
-      go_fio_4tests .    "sda1:"
+      go_fio_4tests /mnt "sdb1 (default)"
+      go_fio_4tests .    "sda1"
+      
+      file=/dev/sdb1
+      path="/sdb1-accelerated"
+      sudo mkdir -p "$path"
+      sudo umount /mnt
+      mkfs.ext2 -f -L ext2-accelerated "$file"
+      sudo mount -t ext2 "$file" "$path" -o rw,noatime,nodiratime,errors=remount-ro
+      sudo chown -R $(whoami) "$path"
+      go_fio_4tests $path "sdb1 (Accelerated)"
+      
 
     displayName: 'DISK benchmark: sda1 (working) and sda2 (second)'
 
   - script: 7z b
     displayName: 'CPU and MEMORY benchmark'
-
-
 
 
   - script: uname -a
