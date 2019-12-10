@@ -102,11 +102,15 @@ steps:
       
       file=/dev/sdb1
       path="/sdb1-accelerated"
+      echo "Accelerating $file as $path"
       sudo mkdir -p "$path"
       sudo umount /mnt
       sudo mkfs.ext2 -L ext2-accelerated "$file"
       sudo mount -t ext2 "$file" "$path" -o rw,noatime,nodiratime,errors=remount-ro
       sudo chown -R $(whoami) "$path"
+      df -h -T
+      echo ""
+      
       go_fio_4tests $path "sdb1 (Accelerated)"
       sudo umount "$path"
 
