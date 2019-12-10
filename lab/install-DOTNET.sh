@@ -38,7 +38,7 @@ if [[ -s "/opt/dotnet/dotnet" ]]; then
     export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT
     
     DOTNET_CLI_TELEMETRY_OPTOUT=1
-    export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER
+    export DOTNET_CLI_TELEMETRY_OPTOUT
 fi
 ' | sudo tee /etc/profile.d/dotnet-core.sh >/dev/null
 sudo -u user mkdir -p /home/user/.dotnet/tools
@@ -60,6 +60,17 @@ Say "Configured shared environment for .NET Core"
       echo '/opt/dotnet' > /etc/dotnet/install_location
       # for arm it starts from 2.1
       try-and-retry curl -o /tmp/_dotnet-install.sh -ksSL $DOTNET_Url
+      
+      if false && [[ "$(uname -m)" == "x86_64" ]]; then
+          # rzc fails if .NET Core SDK 2.0 installed
+          Say "Installing .NET Core 1.0 SDK"
+          time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 1.0 -i /opt/dotnet
+          Say "Installing .NET Core 1.1 SDK"
+          time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 1.1 -i /opt/dotnet
+          Say "Installing .NET Core 2.0 SDK"
+          time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.0 -i /opt/dotnet
+      fi
+      
       Say "Installing .NET Core 2.1 SDK"
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.1 -i /opt/dotnet
       Say "Installing .NET Core 2.2 SDK"

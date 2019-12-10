@@ -40,6 +40,8 @@ Say "BUILD FOLDER IS [$build_folder]"
 
 # 1st run
 # mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf test-and-build; git clone https://github.com/devizer/test-and-build.git; cd test-and-build; bash build-all.sh
+# or 
+# mkdir -p ~/build/devizer; cd ~/build/devizer; rm -rf test-and-build; git clone git@github.com:devizer/test-and-build.git; cd test-and-build; bash build-all.sh
 
 # next run
 # cd ~/build/devizer/test-and-build; git pull; pwsh -command ./image-builder.ps1 -Images arm,i386,arm64

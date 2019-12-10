@@ -114,14 +114,14 @@ steps:
 
   - script: |
       sudo apt-get update -yqq
-      command -v gem || (sudo apt-get install -y ruby-dev; sudo gem install dpl)
+      command -v gem || (sudo apt-get install -y ruby-dev; sudo gem install dpl dpl-releases)
     displayName: 'INSTALL DPL using sudo'
 
   - script: |
         sudo apt update -qq >/dev/null;
         sudo apt install -y libguestfs-tools sshpass sshfs qemu-system-arm qemu-block-extra qemu-utils p7zip-full \
           libguestfs-tools qemu-system-arm qemu-system-i386 \
-          qemu-kvm libvirt-bin virtinst bridge-utils cpu-checker | grep 'Setting\|Processing\|Created'
+          qemu-kvm virtinst bridge-utils cpu-checker libvirt-bin  | grep 'Setting\|Processing\|Created'
 
         sudo apt clean
 
