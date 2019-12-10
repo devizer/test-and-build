@@ -64,31 +64,34 @@ steps:
   - script: |
       echo "Source Code is [$(pwd)]"; 
       sudo apt update -qq >/dev/null 2>/dev/null; 
-      sudo apt-get install fio tree -y >/dev/null 2>/dev/null || sudo apt-get install tree -y; 
+      sudo apt-get install toilet fio tree -y >/dev/null 2>/dev/null || sudo apt-get install tree -y; 
       tree --du -h; 
       sudo apt purge man-db >/dev/null 2>/dev/null
     displayName: 'SHOW source folder structure, ACCELERATE build'
 
   - script: |
       echo "Benchmark '$(pwd)' folder"
-      fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=read
-    displayName: 'DISK benchmark: Sequential reads'
+      function go_fio() {
+        cmd=$1
+        disk=$2
+        caption="$3"
+        toilet -f term -F border "$caption"
+        pushd "$disk" >/dev/null
+        fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=$cmd
+        rm -f fiotest* 
+        popd >/dev/null
+        echo ""
+      }
 
-  - script: |
-      echo "Benchmark '$(pwd)' folder"
-      fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=write
-    displayName: 'DISK benchmark: Sequential write'
-
-  - script: |
-      echo "Benchmark '$(pwd)' folder"
-      fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=randread
-    displayName: 'DISK benchmark: Random read'
-
-  - script: |
-      echo "Benchmark '$(pwd)' folder"
-      fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=randwrite
-      rm -f fiotest* 
-    displayName: 'DISK benchmark: Random write'
+      go_fio read      .    "sda1: Sequential read"
+      go_fio write     .    "sda1: Sequential write"
+      go_fio randread  .    "sda1: Random read"
+      go_fio randwrite .    "sda1: Random write"
+      go_fio read      /mnt "sda2: Sequential read"
+      go_fio write     /mnt "sda2: Sequential write"
+      go_fio randread  /mnt "sda2: Random read"
+      go_fio randwrite /mnt "sda2: Random write"
+    displayName: 'DISK benchmark: sda1 (working) and sda2 (second)'
 
   - script: 7z b
     displayName: 'CPU and MEMORY benchmark'
