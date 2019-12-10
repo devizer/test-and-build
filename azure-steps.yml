@@ -70,30 +70,35 @@ steps:
     displayName: 'SHOW source folder structure, ACCELERATE build'
 
   - script: |
-      function go_fio() {
-        cmd=$1
-        disk=$2
-        caption="$3"
+      function go_fio_1test() {
+        local cmd=$1
+        local disk=$2
+        local caption="$3"
         pushd "$disk" >/dev/null
         toilet -f term -F border "$caption ($(pwd))"
         echo "Benchmark '$(pwd)' folder"
-        fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=$cmd
+        if [[ $cmd == "rand"* ]]; then
+           fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=$cmd
+        else
+           fio --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=1024k --size=1G --readwrite=write --runtime=30
+        fi
         popd >/dev/null
         echo ""
       }
-
+      
+      function go_fio_4tests() {
+        local disk=$1
+        local caption=$2
+        go_fio_1test read      $disk "$caption Sequential read"
+        go_fio_1test write     $disk "$caption Sequential write"
+        go_fio_1test randread  $disk "$caption Random read"
+        go_fio_1test randwrite $disk "$caption Random write"
+        rm -f $disk/fiotest
+      }
+      
       sudo chown -R $(whoami) /mnt
-      go_fio read      /mnt "sda2: Sequential read"
-      go_fio write     /mnt "sda2: Sequential write"
-      go_fio randread  /mnt "sda2: Random read"
-      go_fio randwrite /mnt "sda2: Random write"
-      rm -f /mnt/fiotest*
-
-      go_fio read      .    "sda1: Sequential read"
-      go_fio write     .    "sda1: Sequential write"
-      go_fio randread  .    "sda1: Random read"
-      go_fio randwrite .    "sda1: Random write"
-      rm -f ./fiotest*
+      go_fio_4tests /mnt "sda2:"
+      go_fio_4tests .    "sda1:"
 
     displayName: 'DISK benchmark: sda1 (working) and sda2 (second)'
 
