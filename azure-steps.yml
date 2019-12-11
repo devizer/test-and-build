@@ -70,6 +70,25 @@ steps:
     displayName: 'SHOW source folder structure, ACCELERATE build'
 
   - script: |
+      mkdir -p ~/tmp/disk-benchmark
+      pushd ~/tmp/disk-benchmark
+        git clone https://github.com/devizer/KernelManagementLab
+        cd KernelManagementLab/BenchmarkLab
+        dotnet build -c Release -o bin/temp
+        cd bin/temp
+        exe="$(pwd)/Universe.Benchmark.dll"
+        printf "#!/usr/bin/env bash\ndotnet $exe \"\$@\"\n" | sudo tee /usr/local/bin/disk-benchmark
+        chmod +x /usr/local/bin/disk-benchmark
+      popd
+      disk-benchmark --help
+    displayName: 'Install disk-benchmark'
+
+  - script: |
+      disk-benchmark --path=.    --size=1024000 --block=4096 --time=30000 --flavour=random | cat
+      disk-benchmark --path=/mnt --size=1024000 --block=4096 --time=30000 --flavour=random | cat
+    displayName: 'DISK benchmark using fio: sda1 (working) and sda2 (second)'
+
+  - script: |
       function go_fio_1test() {
         local cmd=$1
         local disk=$2
@@ -78,9 +97,9 @@ steps:
         toilet -f term -F border "$caption ($(pwd))"
         echo "Benchmark '$(pwd)' folder"
         if [[ $cmd == "rand"* ]]; then
-           fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=$cmd --runtime=30 --ramp_time=10
+           fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=$cmd --runtime=30 --ramp_time=20
         else
-           fio --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=1024k --size=2G --readwrite=$cmd --runtime=30 --ramp_time=10
+           fio --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=1024k --size=2G --readwrite=$cmd --runtime=30 --ramp_time=20
         fi
         popd >/dev/null
         echo ""
@@ -114,7 +133,7 @@ steps:
       go_fio_4tests $path "sdb1 (Accelerated)"
       sudo umount "$path"
 
-    displayName: 'DISK benchmark: sda1 (working) and sda2 (second)'
+    displayName: 'DISK benchmark using fio: sda1 (working) and sda2 (second)'
 
   - script: 7z b
     displayName: 'CPU and MEMORY benchmark'
