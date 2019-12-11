@@ -78,7 +78,7 @@ steps:
         cd bin/temp
         exe="$(pwd)/Universe.Benchmark.dll"
         printf "#!/usr/bin/env bash\ndotnet $exe \"\$@\"\n" | sudo tee /usr/local/bin/disk-benchmark
-        chmod +x /usr/local/bin/disk-benchmark
+        sudo chmod +x /usr/local/bin/disk-benchmark
       popd
       disk-benchmark --help
     displayName: 'Install disk-benchmark'
@@ -86,7 +86,7 @@ steps:
   - script: |
       disk-benchmark --path=.    --size=1024000 --block=4096 --time=30000 --flavour=random | cat
       disk-benchmark --path=/mnt --size=1024000 --block=4096 --time=30000 --flavour=random | cat
-    displayName: 'DISK benchmark using fio: sda1 (working) and sda2 (second)'
+    displayName: 'DISK benchmark using disk-benchmark: sda1 (working) and sda2 (second)'
 
   - script: |
       function go_fio_1test() {
