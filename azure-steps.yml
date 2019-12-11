@@ -70,7 +70,7 @@ steps:
     displayName: 'SHOW source folder structure, ACCELERATE build'
 
   - script: 'script=https://raw.githubusercontent.com/devizer/glist/master/install-disk-benchmark-from-source.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -sSL $script) | bash'
-    displayName: 'Install disk-benchmark'
+    displayName: 'Install disk-benchmark from sources'
 
   - script: |
       time disk-benchmark --path=.    --size=7000000 --block=4096 --time=30000 --flavour=random | cat
