@@ -73,12 +73,15 @@ steps:
     displayName: 'Install disk-benchmark from sources'
 
   - script: |
-      time disk-benchmark --path=.    --size=7000000 --block=4096 --time=30000 --flavour=random | cat
+      SIZE=$((10*1024*1024))
+      time disk-benchmark --path=.    --size=$SIZE --block=4096 --time=30000 --flavour=random | cat
       sudo chown -R $(whoami) /mnt
-      time disk-benchmark --path=/mnt --size=7000000 --block=4096 --time=30000 --flavour=random | cat
+      time disk-benchmark --path=/mnt --size=$SIZE --block=4096 --time=30000 --flavour=random | cat
     displayName: 'DISK benchmark using "disk-benchmark": sda1 (working) and sda2 (second)'
 
   - script: |
+      SIZE=10G
+
       function go_fio_1test() {
         local cmd=$1
         local disk=$2
@@ -87,9 +90,9 @@ steps:
         toilet -f term -F border "$caption ($(pwd))"
         echo "Benchmark '$(pwd)' folder"
         if [[ $cmd == "rand"* ]]; then
-           fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=2G --readwrite=$cmd --runtime=30 --ramp_time=20
+           fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=$SIZE --readwrite=$cmd --runtime=30 --ramp_time=20
         else
-           fio --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=1024k --size=2G --readwrite=$cmd --runtime=30 --ramp_time=20
+           fio --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=1024k --size=$SIZE --readwrite=$cmd --runtime=30 --ramp_time=20
         fi
         popd >/dev/null
         echo ""
@@ -106,6 +109,7 @@ steps:
       }
       
       sudo chown -R $(whoami) /mnt
+      
       go_fio_4tests /mnt "sdb1 (default)"
       go_fio_4tests .    "sda1"
       
