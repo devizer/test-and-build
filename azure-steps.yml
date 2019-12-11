@@ -79,7 +79,9 @@ steps:
         cd bin/temp
         exe="$(pwd)/Universe.Benchmark.dll"
         echo '#!/usr/bin/env bash
-          dotnet '$exe' "$@"' | sudo tee /usr/local/bin/disk-benchmark
+          set -e
+          dotnet '$exe' "$@"
+        ' | sudo tee /usr/local/bin/disk-benchmark
         sudo chmod +x /usr/local/bin/disk-benchmark
       popd
       disk-benchmark --help
