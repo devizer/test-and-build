@@ -70,17 +70,19 @@ steps:
     displayName: 'SHOW source folder structure, ACCELERATE build'
 
   - script: |
-      mkdir -p ~/build/disk-benchmark
-      pushd ~/build/disk-benchmark
+      mkdir -p ~/build/disk-benchmark-source
+      pushd ~/build/disk-benchmark-source
         git clone https://github.com/devizer/KernelManagementLab
         cd KernelManagementLab/BenchmarkLab
         git pull
         dotnet build -c Release -o bin/temp -f netcoreapp2.2
+        dotnet=$(command -v dotnet)
         cd bin/temp
         exe="$(pwd)/Universe.Benchmark.dll"
         echo '#!/usr/bin/env bash
           set -e
-          dotnet '$exe' "$@"
+          export DOTNET_ROOT="'$(dirname $dotnet)'"
+          '$dotnet' '$exe' "$@"
         ' | sudo tee /usr/local/bin/disk-benchmark
         sudo chmod +x /usr/local/bin/disk-benchmark
       popd
@@ -91,7 +93,7 @@ steps:
       disk-benchmark --path=.    --size=1024000 --block=4096 --time=30000 --flavour=random | cat
       sudo chown -R $(whoami) /mnt
       disk-benchmark --path=/mnt --size=1024000 --block=4096 --time=30000 --flavour=random | cat
-    displayName: 'DISK benchmark using disk-benchmark: sda1 (working) and sda2 (second)'
+    displayName: 'DISK benchmark using "disk-benchmark": sda1 (working) and sda2 (second)'
 
   - script: |
       function go_fio_1test() {
@@ -138,7 +140,7 @@ steps:
       go_fio_4tests $path "sdb1 (Accelerated)"
       sudo umount "$path"
 
-    displayName: 'DISK benchmark using fio: sda1 (working) and sda2 (second)'
+    displayName: 'DISK benchmark using "fio": sda1 (working) and sda2 (second)'
 
   - script: 7z b
     displayName: 'CPU and MEMORY benchmark'
