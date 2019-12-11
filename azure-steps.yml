@@ -89,6 +89,7 @@ steps:
 
   - script: |
       disk-benchmark --path=.    --size=1024000 --block=4096 --time=30000 --flavour=random | cat
+      sudo chown -R $(whoami) /mnt
       disk-benchmark --path=/mnt --size=1024000 --block=4096 --time=30000 --flavour=random | cat
     displayName: 'DISK benchmark using disk-benchmark: sda1 (working) and sda2 (second)'
 
