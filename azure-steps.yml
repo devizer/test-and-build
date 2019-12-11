@@ -70,14 +70,16 @@ steps:
     displayName: 'SHOW source folder structure, ACCELERATE build'
 
   - script: |
-      mkdir -p ~/tmp/disk-benchmark
-      pushd ~/tmp/disk-benchmark
+      mkdir -p ~/build/disk-benchmark
+      pushd ~/build/disk-benchmark
         git clone https://github.com/devizer/KernelManagementLab
         cd KernelManagementLab/BenchmarkLab
-        dotnet build -c Release -o bin/temp
+        git pull
+        dotnet build -c Release -o bin/temp -f netcoreapp2.2
         cd bin/temp
         exe="$(pwd)/Universe.Benchmark.dll"
-        printf "#!/usr/bin/env bash\ndotnet $exe \"\$@\"\n" | sudo tee /usr/local/bin/disk-benchmark
+        echo '#!/usr/bin/env bash
+          dotnet '$exe' "$@"' | sudo tee /usr/local/bin/disk-benchmark
         sudo chmod +x /usr/local/bin/disk-benchmark
       popd
       disk-benchmark --help
