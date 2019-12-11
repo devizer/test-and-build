@@ -73,9 +73,9 @@ steps:
     displayName: 'Install disk-benchmark'
 
   - script: |
-      time disk-benchmark --path=.    --size=1024000 --block=4096 --time=30000 --flavour=random | cat
+      time disk-benchmark --path=.    --size=7000000 --block=4096 --time=30000 --flavour=random | cat
       sudo chown -R $(whoami) /mnt
-      time disk-benchmark --path=/mnt --size=1024000 --block=4096 --time=30000 --flavour=random | cat
+      time disk-benchmark --path=/mnt --size=7000000 --block=4096 --time=30000 --flavour=random | cat
     displayName: 'DISK benchmark using "disk-benchmark": sda1 (working) and sda2 (second)'
 
   - script: |
