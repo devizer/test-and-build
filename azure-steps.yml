@@ -73,14 +73,14 @@ steps:
     displayName: 'Install disk-benchmark from sources'
 
   - script: |
-      SIZE=$((10*1024*1024))
+      SIZE=$((1*1024*1024))
       time disk-benchmark --path=.    --size=$SIZE --block=4096 --time=30000 --flavour=random | cat
       sudo chown -R $(whoami) /mnt
       time disk-benchmark --path=/mnt --size=$SIZE --block=4096 --time=30000 --flavour=random | cat
     displayName: 'DISK benchmark using "disk-benchmark": sda1 (working) and sda2 (second)'
 
   - script: |
-      SIZE=10G
+      SIZE=1G
 
       function go_fio_1test() {
         local cmd=$1
@@ -176,6 +176,12 @@ steps:
       df -T -h
 
     displayName: 'PREPARE /transient-builds as compressed 12G volume'
+    
+  - script: |
+      SIZE=$((10*1024*1024))
+      time disk-benchmark --path=/transient-builds --size=$SIZE --block=4096 --time=30000 --flavour=random | cat
+    displayName: 'Benchmark AGAIN compressed sdb1'
+    
 
   - script: sudo lscpu
     displayName: 'show cpu'
