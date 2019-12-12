@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # need a permission to /opt and /usr/bin/local
 
-toClear=""; if [[ "$1" == "--clean" ]]; then toClear="true"; fi
+toClear=""; if [[ "$1" == "--clear" ]]; then toClear="true"; fi
  
-target=$HOME/build/devizer/NET-TEST-RUNNERS
+target="${NET_TEST_RUNNERS_INSTALL_DIR:-$HOME/build/devizer/NET-TEST-RUNNERS}"
 target_tmp=${target}.$(basename "$(mktemp)")
 mkdir -p ${target_tmp}
 pushd ${target_tmp} >/dev/null
