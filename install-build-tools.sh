@@ -24,6 +24,8 @@ if [[ "$usystem" == "Linux" ]]; then
   cmd_drop_cache="sync; sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null"
 elif [[ "$usystem" == "Darwin" ]]; then
   cmd_drop_cache="sync; sudo sync; sudo purge"
+else 
+  cmd_drop_cache="echo 'Drop-FS-Cache: Only Linux and macOS are currently supported'"
 fi
 
 if [[ -n "$cmd_drop_cache" ]]; then
