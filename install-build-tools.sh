@@ -18,3 +18,20 @@ for f in "Reset-Target-Framework" "Say" "Show-System-Stat" "try-and-retry" "smar
     fi
     sudo chmod +x /usr/local/bin/${f}
 done
+
+usystem="$(uname -s)"
+if [[ "$usystem" == "Linux" ]]; then
+  cmd_drop_cache="sync; sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null"
+elif [[ "$usystem" == "Darwin" ]]; then
+  cmd_drop_cache="sync; sudo sync; sudo purge"
+fi
+
+if [[ -n "$cmd_drop_cache" ]]; then
+  echo "Creating Drop-FS-Cache at /usr/local/bin:"
+  body="#!/usr/bin/env bash\n\n$cmd_drop_cache\n"
+  echo -e $body | sudo tee /usr/local/bin/Drop-FS-Cache >/dev/null
+  sudo chmod +x /usr/local/bin/Drop-FS-Cache
+fi
+
+
+
