@@ -13,10 +13,10 @@ function create_launcher() {
         full_path="$(pwd)/$search_the"
         body="#!/usr/bin/env bash\n\nmono $full_path \"\$@\""
         echo "Creating link to $full_path as $name[.exe]"
-        echo -e $body > /usr/local/bin/${name}
-        chmod +x /usr/local/bin/${name}
-        echo -e $body > /usr/local/bin/${name}.exe
-        chmod +x /usr/local/bin/${name}.exe
+        echo -e $body | sudo tee  /usr/local/bin/${name} >/dev/null
+        sudo chmod +x /usr/local/bin/${name}
+        echo -e $body | sudo tee /usr/local/bin/${name}.exe >/dev/null
+        sudo chmod +x /usr/local/bin/${name}.exe
         echo "ok: Unit Test Runner [$search_the] SUCCESSFULLY LINKED as [$full_path] to /usr/local/bin/${name}"
     else
         errors=$((errors+1))
