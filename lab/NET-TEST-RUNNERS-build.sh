@@ -15,7 +15,7 @@ function Header() {
  
 XFW_VER="${XFW_VER:-net47}"
 target="${NET_TEST_RUNNERS_INSTALL_DIR:-$HOME/build/devizer/NET-TEST-RUNNERS}"
-Header "Install dir for Unit Test Runners (NUnit & xUnit): $target, $FW_VER"
+Header "Install dir for Unit Test Runners (NUnit & xUnit): $target, $XFW_VER"
 target_tmp=${target}.$(basename "$(mktemp)")
 mkdir -p ${target_tmp}
 pushd ${target_tmp} >/dev/null
