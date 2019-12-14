@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# export FW_VER=net47 NET_TEST_RUNNERS_INSTALL_DIR=/opt/net-test-runners; script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/NET-TEST-RUNNERS-build.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | sudo -E bash
 # need a permission to /opt and /usr/bin/local
 set -e 
 set -u
@@ -12,8 +13,9 @@ function Header() {
 }
 # toClear=""; if [[ "$1" == "--clear" ]]; then toClear="true"; fi
  
+FW_VER="${FW_VER:-net47}"
 target="${NET_TEST_RUNNERS_INSTALL_DIR:-$HOME/build/devizer/NET-TEST-RUNNERS}"
-Header "Install dir for Unit Test Runners (NUnit & xUnit): $target"
+Header "Install dir for Unit Test Runners (NUnit & xUnit): $target, $FW_VER"
 target_tmp=${target}.$(basename "$(mktemp)")
 mkdir -p ${target_tmp}
 pushd ${target_tmp} >/dev/null
@@ -27,7 +29,7 @@ eval $cmd || eval $cmd || eval $cmd
 
 echo '
 # framework: auto-detect
-framework: net47
+framework: '$FW_VER'
 
 source https://api.nuget.org/v3/index.json
 
@@ -48,8 +50,7 @@ mono .paket/paket.exe install
 
 cd packages
 rm -rf System* 
-find -name "*.nupkg" | xargs rm -f
-
+rm -f **/*.nupkg
 
 popd >/dev/null
 
