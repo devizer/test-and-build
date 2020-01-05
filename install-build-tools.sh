@@ -12,7 +12,7 @@ for f in "Reset-Target-Framework" "Say" "Show-System-Stat" "try-and-retry" "smar
     else
         remote_file_url="https://raw.githubusercontent.com/devizer/test-and-build/master/lab/permanent-scripts/${f}.sh"
         echo "Downloading $remote_file_url"
-        cmd="curl -ksSL -o /usr/local/bin/${f} $remote_file_url || wget --no-check-certificate -quiet -O /usr/local/bin/${f} $remote_file_url"
+        cmd="curl -ksSL -o /usr/local/bin/${f} $remote_file_url || wget --no-check-certificate --quiet -O /usr/local/bin/${f} $remote_file_url"
         exec_cmd "$cmd" || exec_cmd "$cmd" || exec_cmd "$cmd"
         # eval $cmd || eval $cmd || eval $cmd
     fi
