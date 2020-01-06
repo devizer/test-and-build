@@ -1,5 +1,4 @@
 
-
 function Qemu-PowerMan-OnLoad
 {
     if ($Env:HOME)
