@@ -1,4 +1,5 @@
 
+
 function Qemu-PowerMan-OnLoad
 {
     if ($Env:HOME)
@@ -103,11 +104,11 @@ function Qemu-PowerMan-ParseMetadata
 
 function Qemu-PowerMan-DownloadImage{
     param(
-        [ValidateSet("arm64", "arm", "AMD64", "i386")]
-        [string] $arch
+        [ValidateSet("CentOS-6-AMD64", "Debian-10-arm64", "Debian-10-arm", "Debian-10-AMD64", "Debian-10-i386")]
+        [string] $image
     )
 
-    Say "Downloading $arch image to: '$Global:Qemu_PowerMan_DownloadImageLocation'"
+    Say "Downloading $image image to: '$Global:Qemu_PowerMan_DownloadImageLocation'"
     new-item $Global:Qemu_PowerMan_DownloadImageLocation -ItemType Directory -EA SilentlyContinue 2> $null
     Qemu-Powerman-Bootstrap
     if (-not (Test-Path $Global:Qemu_PowerMan_DownloadImageLocation -PathType Container)) {
@@ -117,23 +118,23 @@ function Qemu-PowerMan-DownloadImage{
     $tmp_progress = Combine-Path $Global:Qemu_PowerMan_DownloadImageLocation, ".progress"
     
     $errors = 0;
-    $file_Metadata = [System.IO.Path]::Combine($tmp_progress, "VERSION-$arch.sh")
-    $url_Metadata="https://dl.bintray.com/devizer/debian-multiarch/VERSION-$arch.sh"
-    Say "Qeury for the latest version of '$arch' image using '$url_Metadata'"
+    $file_Metadata = [System.IO.Path]::Combine($tmp_progress, "VERSION-$image.sh")
+    $url_Metadata="https://dl.bintray.com/devizer/debian-multiarch/VERSION-$image.sh"
+    Say "Qeury for the latest version of '$image' image using '$url_Metadata'"
     if (-not (Qemu-PowerMan-DownloadBig $tmp_progress @($url_Metadata)))
     {
-        Write-Error "Unable download metadata for '$arch' from '$url_Metadata'. Abort"
+        Write-Error "Unable download metadata for '$image' from '$url_Metadata'. Abort"
         $errors++
         return $false;
     }
     $content_Metadata=Get-Content $file_Metadata -Raw
-    Write-Host "Raw Metadata for '$arch': $content_Metadata"
+    Write-Host "Raw Metadata for '$image': $content_Metadata"
     $metadata=Qemu-PowerMan-ParseMetadata $content_Metadata
     # $metadata | fl
-    Say "'$arch' STABLE_VERSION: [$($Metadata.STABLE_VERSION)], DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
+    Say "'$image' STABLE_VERSION: [$($Metadata.STABLE_VERSION)], DOWNLOAD_PARTS_COUNT: [$($Metadata.DOWNLOAD_PARTS_COUNT)]"
 
     # Caching debian-$($arch)-final.qcow2.7z*
-    $cachedVersionFile = Combine-Path $Global:Qemu_PowerMan_DownloadImageLocation, "Cached-$arch-Version"
+    $cachedVersionFile = Combine-Path $Global:Qemu_PowerMan_DownloadImageLocation, "Cached-$image-Version"
     $cachedVersion = "undefined"
     if (Test-Path $cachedVersionFile)
     {
@@ -143,14 +144,16 @@ function Qemu-PowerMan-DownloadImage{
     Say "Cached Version: '$cachedVersion'"
     if ($cachedVersion -ne $Metadata.STABLE_VERSION) {
         Say "Actual Version [$($Metadata.STABLE_VERSION)] was never cached. Clearing previously stored image if it was cached" 
-        Remove-Item ($Global:Qemu_PowerMan_DownloadImageLocation + [System.IO.Path]::DirectorySeparatorChar + "debian-$($arch)-final.qcow2.7z*") -Force
+        Remove-Item ($Global:Qemu_PowerMan_DownloadImageLocation + [System.IO.Path]::DirectorySeparatorChar + "debian-$($image)-final.qcow2.7z*") -Force
         $Metadata.STABLE_VERSION > $cachedVersionFile
     }
     # done: caching
     
     $names=@()
     for ($i = 1; $i -le $Metadata.DOWNLOAD_PARTS_COUNT; $i++) {
-        $next_url = "https://dl.bintray.com/devizer/debian-$arch-for-building-and-testing/$($Metadata.STABLE_VERSION)/debian-$arch-final.qcow2.7z.$($i.ToString("000") )";
+        $bin_tray_repo=($definitions | % { if ($_.Image -eq $image) {$_.BinTrayRepo} })
+        Write-Host "BinTray Repo: $bin_tray_repo"
+        $next_url = "https://dl.bintray.com/devizer/$bin_tray_repo/$($Metadata.STABLE_VERSION)/$($image)-final.qcow2.7z.$($i.ToString("000") )";
         $isOk = Qemu-PowerMan-DownloadCached $next_url "."
         if (!$isOk.IsOK)
         {
@@ -159,12 +162,13 @@ function Qemu-PowerMan-DownloadImage{
     }
 
     @("initrd.img", "vmlinuz") | % {
-        $kernel_url = "https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/$_"
-        $downloadStatus = Qemu-PowerMan-DownloadCached $kernel_url "basic-kernel-$arch"
-        if (-not $downloadStatus.IsOK) { $errors++}
+        # as of now it is embedded intu 7z
+        # $kernel_url = "https://raw.githubusercontent.com/devizer/test-and-build/master/kernels/$arch/$_"
+        # $downloadStatus = Qemu-PowerMan-DownloadCached $kernel_url "basic-kernel-$arch"
+        # if (-not $downloadStatus.IsOK) { $errors++}
     }
     
-    Say "Total errors for '$arch' image: $errors"
+    Say "Total errors for '$image' image: $errors"
     return $errors -eq 0;
 }
 
@@ -186,13 +190,7 @@ function Qemu-Powerman-Bootstrap
         return
     }
 
-    $Global:WindowsDownloadSuffix = if ($Global:Is64BitOperatingSystem)
-    {
-        "x64"
-    } else
-    {
-        "x86"
-    }
+    $Global:WindowsDownloadSuffix = Iif $Global:Is64BitOperatingSystem -Then "x64" -Else "x86"
     $aria_Url = "https://raw.githubusercontent.com/devizer/test-and-build/master/qemu-powerman-tools/aria2-$( $Global:WindowsDownloadSuffix ).7z.exe"
 
     $tools_Path = Combine-Path $Global:Qemu_PowerMan_DownloadImageLocation, "tools"
@@ -284,7 +282,7 @@ function Qemu-PowerMan-Impl-CopyFromGuest {
     throw "$($MyInvocation.InvocationName) Not Implemented (from $FromGuest to $ToHost)"
 }
 
-function Qemu-PowerMan-Impl-Run {
+function Qemu-PowerMan-Impl-Exec {
     param([PSObject] $vm, $Whatever)
     # $Whatever is a string os PSObject, see Qemu-PowerMan-Design.ps1
     throw "$($MyInvocation.InvocationName) Not Implemented (to run is $Whatever)"
@@ -317,7 +315,7 @@ function Qemu-PowerMan-Deploy {
         return Qemu-PowerMan-Impl-CopyFromGuest -VM $vm -FromGuest $args[0] -ToHost $args[1]
     }
 
-    Add-Member -MemberType ScriptMethod -InputObject $vm -Name "Run" -Value {
+    Add-Member -MemberType ScriptMethod -InputObject $vm -Name "Exec" -Value {
         return Qemu-PowerMan-Impl-Run -VM $vm -Whatever $args[0]
     }
 

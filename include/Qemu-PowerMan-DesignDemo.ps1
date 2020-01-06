@@ -41,14 +41,14 @@ function Qemu-PowerMan-DesignDemo {
     $vm.CopyToGuest("/some/host/dir", "/root/guest/dir") 
 
     # simple Run() uses predefined user and env vars
-    $vm.Run('echo "Hi, I am $(whoami)"')
+    $vm.Exec('echo "Hi, I am $(whoami)"')
 
     # but we can change a default user to ether 'root' or 'user'
     $vm.User = "user"; # or "root"
-    $vm.Run('echo "Hi, I am $(whoami)"')
+    $vm.Exec('echo "Hi, I am $(whoami)"')
     $vm.User = "root"; # or "user"
-    $vm.Run('echo "Hi, I am $(whoami)"') 
-    $vm.Run('LC_ALL="es_ES.UTF8"; echo "Hi, I am $(whoami)"')
+    $vm.Exec('echo "Hi, I am $(whoami)"') 
+    $vm.Exec('LC_ALL="es_ES.UTF8"; echo "Hi, I am $(whoami)"')
 
     # full featured Run
     $vm.Run(@{ 
@@ -75,7 +75,7 @@ function Qemu-PowerMan-DesignDemo {
     # option 2: keep it running permanently till reboot
     # On linux guest root is mapped to $($HostFolder)/root-fs
     
-    # option 3: Install Windows- or SystemD-service and enable starting on reboot and shutdowning on host shutdown 
+    # option 3: Install Windows- or SystemD-service and enable starting on reboot and shutdowning on host shutdown
     $vm.InstallService(@{
         Key = "Some_Arm32_BuildServer"; 
         Description = "ARMv7 32 bit Build Server";
