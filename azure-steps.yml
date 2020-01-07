@@ -66,7 +66,7 @@ steps:
       sudo apt update -qq >/dev/null 2>/dev/null; 
       sudo apt-get install toilet fio tree -y >/dev/null 2>/dev/null || sudo apt-get install tree -y; 
       tree --du -h; 
-      sudo apt purge man-db >/dev/null 2>/dev/null
+      sudo apt-get purge man-db >/dev/null 2>/dev/null
     displayName: 'SHOW source folder structure, ACCELERATE build'
 
   - script: 'script=https://raw.githubusercontent.com/devizer/glist/master/install-disk-benchmark-from-source.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -sSL $script) | bash'
@@ -172,7 +172,7 @@ steps:
       sudo mkfs.btrfs -f -L a-disk "$file" -O ^extref,^skinny-metadata
       echo "MOUNTING $file as $path"
       # compress-force=zstd:13 does not work
-      sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force=zlib:8,commit=298
+      sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force=zlib:6,commit=298,nobarrier,space_cache
       sudo chown $(whoami) $path
       touch $path/hi
       df -T -h
@@ -194,7 +194,7 @@ steps:
   - script: |
       sudo apt-get update -yqq
       command -v gem || (sudo apt-get install -y ruby-dev; sudo gem install dpl dpl-releases)
-    displayName: 'INSTALL DPL using sudo'
+    displayName: 'INSTALL DPL as sudo'
 
   - script: |
         sudo apt update -qq >/dev/null;
