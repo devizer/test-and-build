@@ -293,8 +293,6 @@ function Qemu-PowerMan-Impl-Shutdown {
     throw "$($MyInvocation.InvocationName) Not Implemented (timeout is $timeout)"
 }
 
-
-
 function Qemu-PowerMan-Deploy {
     param([PSObject] $vm)
 
