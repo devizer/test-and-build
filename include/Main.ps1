@@ -26,7 +26,8 @@ $probes=@(
 )
 
 Write-Host "Main PSScriptRoot: $PSScriptRoot"
-$p=$(Join-Path $PSScriptRoot ".." "basic-images")
+# $p=$(Join-Path $PSScriptRoot ".." "basic-images") # only pwsh 6+
+$p=Combine-Path $PSScriptRoot, "..", "basic-images"
 $BasicImagePath=(new-object System.IO.DirectoryInfo($p)).FullName + [IO.Path]::DirectorySeparatorChar
 
 $definitions=@(

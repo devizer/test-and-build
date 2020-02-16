@@ -9,8 +9,8 @@ param(
     [string] $OutputFolder = "/transient-builds/test-and-build"
 )
 
-. "$($PSScriptRoot)\include\Main.ps1"
 . "$($PSScriptRoot)\include\Utilities.ps1"
+. "$($PSScriptRoot)\include\Main.ps1"
 . "$($PSScriptRoot)\include\Build.ps1"
 
 $Global_Ignore_Features=$Skip

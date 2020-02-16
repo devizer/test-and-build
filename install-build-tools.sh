@@ -12,11 +12,11 @@ for f in "Reset-Target-Framework" "Say" "Show-System-Stat" "try-and-retry" "smar
     else
         remote_file_url="https://raw.githubusercontent.com/devizer/test-and-build/master/lab/permanent-scripts/${f}.sh"
         echo "Downloading $remote_file_url"
-        cmd="curl -ksSL -o /usr/local/bin/${f} $remote_file_url || wget --no-check-certificate -O /usr/local/bin/${f} $remote_file_url" 
+        cmd="curl -ksSL -o /usr/local/bin/${f} $remote_file_url || wget --no-check-certificate --quiet -O /usr/local/bin/${f} $remote_file_url"
         exec_cmd "$cmd" || exec_cmd "$cmd" || exec_cmd "$cmd"
         # eval $cmd || eval $cmd || eval $cmd
     fi
-    sudo chmod +x /usr/local/bin/${f}
+    exec_cmd "chmod +x /usr/local/bin/${f}"
 done
 
 usystem="$(uname -s)"
@@ -29,10 +29,10 @@ else
 fi
 
 if [[ -n "$cmd_drop_cache" ]]; then
-  echo "Creating Drop-FS-Cache at /usr/local/bin:"
+  echo "Creating Drop-FS-Cache at /usr/local/bin"
   body="#!/usr/bin/env bash\n\n$cmd_drop_cache\n"
-  echo -e $body | sudo tee /usr/local/bin/Drop-FS-Cache >/dev/null
-  sudo chmod +x /usr/local/bin/Drop-FS-Cache
+  echo -e $body | exec_cmd "tee /usr/local/bin/Drop-FS-Cache >/dev/null"
+  exec_cmd "chmod +x /usr/local/bin/Drop-FS-Cache"
 fi
 
 

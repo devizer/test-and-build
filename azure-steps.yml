@@ -66,68 +66,70 @@ steps:
       sudo apt update -qq >/dev/null 2>/dev/null; 
       sudo apt-get install toilet fio tree -y >/dev/null 2>/dev/null || sudo apt-get install tree -y; 
       tree --du -h; 
-      sudo apt purge man-db >/dev/null 2>/dev/null
+      sudo apt-get purge man-db >/dev/null 2>/dev/null
     displayName: 'SHOW source folder structure, ACCELERATE build'
 
   - script: 'script=https://raw.githubusercontent.com/devizer/glist/master/install-disk-benchmark-from-source.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -sSL $script) | bash'
     displayName: 'Install disk-benchmark from sources'
 
-  - script: |
-      SIZE=$((1*1024*1024))
-      time disk-benchmark --path=.    --size=$SIZE --block=4096 --time=30000 --flavour=random | cat
-      sudo chown -R $(whoami) /mnt
-      time disk-benchmark --path=/mnt --size=$SIZE --block=4096 --time=30000 --flavour=random | cat
-    displayName: 'DISK benchmark using "disk-benchmark": sda1 (working) and sda2 (second)'
+#  - script: |
+#      SIZE=$((1*1024*1024))
+#      time disk-benchmark --path=.    --size=$SIZE --block=4096 --time=30000 --flavour=random | cat
+#      sudo chown -R $(whoami) /mnt
+#      time disk-benchmark --path=/mnt --size=$SIZE --block=4096 --time=30000 --flavour=random | cat
+#    displayName: 'DISK benchmark using "disk-benchmark": sda1 (working) and sda2 (second)'
 
-  - script: |
-      SIZE=1G
 
-      function go_fio_1test() {
-        local cmd=$1
-        local disk=$2
-        local caption="$3"
-        pushd "$disk" >/dev/null
-        toilet -f term -F border "$caption ($(pwd))"
-        echo "Benchmark '$(pwd)' folder"
-        if [[ $cmd == "rand"* ]]; then
-           fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=$SIZE --readwrite=$cmd --runtime=30 --ramp_time=20
-        else
-           fio --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=1024k --size=$SIZE --readwrite=$cmd --runtime=30 --ramp_time=20
-        fi
-        popd >/dev/null
-        echo ""
-      }
-      
-      function go_fio_4tests() {
-        local disk=$1
-        local caption=$2
-        go_fio_1test read      $disk "${caption}: Sequential read"
-        go_fio_1test write     $disk "${caption}: Sequential write"
-        go_fio_1test randread  $disk "${caption}: Random read"
-        go_fio_1test randwrite $disk "${caption}: Random write"
-        rm -f $disk/fiotest
-      }
-      
-      sudo chown -R $(whoami) /mnt
-      
-      go_fio_4tests /mnt "sdb1 (default)"
-      go_fio_4tests .    "sda1"
-      
-      file=/dev/sdb1
-      path="/sdb1-accelerated"
-      echo "Accelerating $file as $path"
-      sudo mkdir -p "$path"
-      sudo umount /mnt
-      sudo mkfs.ext2 -L ext2-accelerated "$file"
-      sudo mount -t ext2 "$file" "$path" -o rw,noatime,nodiratime,errors=remount-ro
-      sudo chown -R $(whoami) "$path"
-      df -h -T
-      echo ""
-      
-      go_fio_4tests $path "sdb1 (Accelerated)"
-      sudo umount "$path"
 
-    displayName: 'DISK benchmark using "fio": sda1 (working) and sda2 (second)'
+#  - script: |
+#      SIZE=1G
+#
+#      function go_fio_1test() {
+#        local cmd=$1
+#        local disk=$2
+#        local caption="$3"
+#        pushd "$disk" >/dev/null
+#        toilet -f term -F border "$caption ($(pwd))"
+#        echo "Benchmark '$(pwd)' folder"
+#        if [[ $cmd == "rand"* ]]; then
+#           fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=$SIZE --readwrite=$cmd --runtime=30 --ramp_time=20
+#        else
+#           fio --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=1024k --size=$SIZE --readwrite=$cmd --runtime=30 --ramp_time=20
+#        fi
+#        popd >/dev/null
+#        echo ""
+#      }
+#      
+#      function go_fio_4tests() {
+#        local disk=$1
+#        local caption=$2
+#        go_fio_1test read      $disk "${caption}: Sequential read"
+#        go_fio_1test write     $disk "${caption}: Sequential write"
+#        go_fio_1test randread  $disk "${caption}: Random read"
+#        go_fio_1test randwrite $disk "${caption}: Random write"
+#        rm -f $disk/fiotest
+#      }
+#      
+#      sudo chown -R $(whoami) /mnt
+#      
+#      go_fio_4tests /mnt "sdb1 (default)"
+#      go_fio_4tests .    "sda1"
+#      
+#      file=/dev/sdb1
+#      path="/sdb1-accelerated"
+#      echo "Accelerating $file as $path"
+#      sudo mkdir -p "$path"
+#      sudo umount /mnt
+#      sudo mkfs.ext2 -L ext2-accelerated "$file"
+#      sudo mount -t ext2 "$file" "$path" -o rw,noatime,nodiratime,errors=remount-ro
+#      sudo chown -R $(whoami) "$path"
+#      df -h -T
+#      echo ""
+#      
+#      go_fio_4tests $path "sdb1 (Accelerated)"
+#      sudo umount "$path"
+#
+#    displayName: 'DISK benchmark using "fio": sda1 (working) and sda2 (second)'
 
   - script: 7z b
     displayName: 'CPU and MEMORY benchmark'
@@ -170,17 +172,17 @@ steps:
       sudo mkfs.btrfs -f -L a-disk "$file" -O ^extref,^skinny-metadata
       echo "MOUNTING $file as $path"
       # compress-force=zstd:13 does not work
-      sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force=zlib:8,commit=298
+      sudo mount -t btrfs "$file" "$path" -o defaults,noatime,nodiratime,compress-force=zlib:6,commit=298,nobarrier,space_cache
       sudo chown $(whoami) $path
       touch $path/hi
       df -T -h
 
     displayName: 'PREPARE /transient-builds as compressed 12G volume'
     
-  - script: |
-      SIZE=$((10*1024*1024))
-      time disk-benchmark --path=/transient-builds --size=$SIZE --block=4096 --time=30000 --flavour=random | cat
-    displayName: 'Benchmark AGAIN compressed sdb1'
+#  - script: |
+#      SIZE=$((10*1024*1024))
+#      time disk-benchmark --path=/transient-builds --size=$SIZE --block=4096 --time=30000 --flavour=random | cat
+#    displayName: 'Benchmark AGAIN compressed sdb1'
     
 
   - script: sudo lscpu
@@ -192,7 +194,7 @@ steps:
   - script: |
       sudo apt-get update -yqq
       command -v gem || (sudo apt-get install -y ruby-dev; sudo gem install dpl dpl-releases)
-    displayName: 'INSTALL DPL using sudo'
+    displayName: 'INSTALL DPL as sudo'
 
   - script: |
         sudo apt update -qq >/dev/null;
@@ -240,7 +242,7 @@ steps:
       pwd; 
       pushd deploy;
       needDeploy=$(echo "$BUILD_SOURCEVERSIONMESSAGE" | grep -i "the stable")
-      if [[ $needDeploy ]]; then
+      if true || [[ $needDeploy ]]; then
         sudo bash -c "BINTRAY_API_KEY=$(BINTRAY_API_KEY) pwsh deploy-to-bintray.ps1 -From $OUTPUT_FOLDER -Arch $ARCH -Image $IMAGE" | tee $BUILD_ARTIFACTSTAGINGDIRECTORY/deploy-to-bintray.log
       else
         echo 'Missing "the stable" keyword in commit message. Skip Deploy'
