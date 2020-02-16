@@ -5,7 +5,7 @@
 
 
 
-| OS    |  Debian 10.2 Buster **`arm64`** and **`arm32`** |
+| OS    |  Debian 10.3 Buster **`arm64`** and **`arm32`** |
 |-------|------------------------------------|
 | echo $ARCH |**`arm64`**|
 | nuget |**`NuGet Version: 5.2.0.6090`**|
