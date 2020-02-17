@@ -2,7 +2,7 @@
 sync
 sudo sync
 swapoff /tmp/swap || true
-for s in 'postgresql' 'redis-server' 'mariadb' 'docker' 'cron' 'unattended-upgrades' 'apt-daily-upgrade.timer' 'apt-daily.timer' 'logrotate.timer'; do
+for s in 'postgresql' 'redis-server' 'mariadb' 'mysql' 'docker' 'cron' 'unattended-upgrades' 'apt-daily-upgrade.timer' 'apt-daily.timer' 'logrotate.timer'; do
     Say "Stop and disable [$s]"
     systemctl stop $s
     systemctl disable $s
