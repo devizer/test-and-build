@@ -50,7 +50,7 @@ Say "Configured shared environment for .NET Core"
       export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
       # export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0
       url=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-dependencies.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash
-      [[ ! "$(Is-RedHat)" ]] && sudo apt clean
+      [[ ! "$(Is-RedHat)" ]] && sudo apt-get clean
       DOTNET_Url=https://dot.net/v1/dotnet-install.sh; 
       mkdir -p ~/.dotnet/tools;
       sudo mkdir -p /opt/dotnet;
