@@ -5,6 +5,8 @@
 # echo "[~/.bashrc]"
 # cat ~/.bashrc
 
+DOTNET_TARGET_DIR="${DOTNET_TARGET_DIR:-/usr/share/dotnet}"
+
 echo "I'm [$(whoami)]. Net Core Should be installed as ROOT. Arch is $ARCH"
 
 if [[ "$ARCH" == "i386" ]]; then
@@ -19,10 +21,10 @@ if [[ "$(uname -r)" != 2* ]]; then
 fi
 
 echo '#!/usr/bin/env bash
-if [[ -s "/opt/dotnet/dotnet" ]]; then 
-    DOTNET_ROOT=/opt/dotnet
+if [[ -s "'${DOTNET_TARGET_DIR}'/dotnet" ]]; then 
+    DOTNET_ROOT='${DOTNET_TARGET_DIR}'
     export DOTNET_ROOT 
-    PATH="/opt/dotnet:$PATH"
+    PATH="'${DOTNET_TARGET_DIR}':$PATH"
     if [[ -d "$HOME/.dotnet/tools" ]]; then
         PATH="$PATH:$HOME/.dotnet/tools"
     fi
@@ -53,34 +55,34 @@ Say "Configured shared environment for .NET Core"
       [[ ! "$(Is-RedHat)" ]] && sudo apt-get clean
       DOTNET_Url=https://dot.net/v1/dotnet-install.sh; 
       mkdir -p ~/.dotnet/tools;
-      sudo mkdir -p /opt/dotnet;
-      export PATH="/opt/dotnet:$HOME/.dotnet/tools:$PATH"
-      export DOTNET_ROOT="/opt/dotnet"
+      sudo mkdir -p ${DOTNET_TARGET_DIR};
+      export PATH="${DOTNET_TARGET_DIR}:$HOME/.dotnet/tools:$PATH"
+      export DOTNET_ROOT="${DOTNET_TARGET_DIR}"
       mkdir -p /etc/dotnet
-      echo '/opt/dotnet' > /etc/dotnet/install_location
+      echo ${DOTNET_TARGET_DIR} > /etc/dotnet/install_location
       # for arm it starts from 2.1
       try-and-retry curl -o /tmp/_dotnet-install.sh -ksSL $DOTNET_Url
       
       if false && [[ "$(uname -m)" == "x86_64" ]]; then
           # rzc fails if .NET Core SDK 2.0 installed
           Say "Installing .NET Core 1.0 SDK"
-          time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 1.0 -i /opt/dotnet
+          time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 1.0 -i ${DOTNET_TARGET_DIR}
           Say "Installing .NET Core 1.1 SDK"
-          time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 1.1 -i /opt/dotnet
+          time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 1.1 -i ${DOTNET_TARGET_DIR}
           Say "Installing .NET Core 2.0 SDK"
-          time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.0 -i /opt/dotnet
+          time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.0 -i ${DOTNET_TARGET_DIR}
       fi
       
       Say "Installing .NET Core 2.1 SDK"
-      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.1 -i /opt/dotnet
+      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.1 -i ${DOTNET_TARGET_DIR}
       Say "Installing .NET Core 2.2 SDK"
-      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.2 -i /opt/dotnet
+      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.2 -i ${DOTNET_TARGET_DIR}
       Say "Installing .NET Core 3.0 SDK"
-      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.0 -i /opt/dotnet
+      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.0 -i ${DOTNET_TARGET_DIR}
       Say "Installing BenchmarkDotNet.Tool (globally)"
       try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
       Say "Installing .NET Core 3.1 SDK"
-      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.1 -i /opt/dotnet
+      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.1 -i ${DOTNET_TARGET_DIR}
       dotnet benchmark --version >/dev/null 2>&1 || true
       Say ".NET Core benchmark tool version: [$(dotnet benchmark --version 2>&1)]"
 
