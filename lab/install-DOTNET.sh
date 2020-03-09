@@ -58,8 +58,8 @@ Say "Configured shared environment for .NET Core"
       sudo mkdir -p ${DOTNET_TARGET_DIR};
       export PATH="${DOTNET_TARGET_DIR}:$HOME/.dotnet/tools:$PATH"
       export DOTNET_ROOT="${DOTNET_TARGET_DIR}"
-      mkdir -p /etc/dotnet
-      echo ${DOTNET_TARGET_DIR} > /etc/dotnet/install_location
+      sudo mkdir -p /etc/dotnet
+      echo ${DOTNET_TARGET_DIR} > sudo tee /etc/dotnet/install_location
       # for arm it starts from 2.1
       try-and-retry curl -o /tmp/_dotnet-install.sh -ksSL $DOTNET_Url
       
