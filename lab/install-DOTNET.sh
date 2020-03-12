@@ -86,8 +86,8 @@ Say "Configured shared environment for .NET Core"
       Say "Installing .NET Core 3.1 SDK"
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.1 -i ${DOTNET_TARGET_DIR}
       # ! { Say ".NET Core benchmark tool version: [$(dotnet benchmark --version 2>&1 || true)]" }
-      dotnet benchmark --version 2>&1 || true;
-      Say ".NET Core benchmark tool version: [$(dotnet benchmark --version 2>&1 || true)]"
+      dotnet benchmark --version >/dev/null 2>&1 || true;
+      Say ".NET Core benchmark tool version: [$(dotnet benchmark --version 2>/dev/null || true)]"
 
 
 # todo: BenchmarkDotNet.Tool for root
