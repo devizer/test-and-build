@@ -80,11 +80,10 @@ Say "Configured shared environment for .NET Core"
       Say "Installing .NET Core 3.0 SDK"
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.0 -i ${DOTNET_TARGET_DIR}
       Say "Installing BenchmarkDotNet.Tool (globally)"
-      try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
+      ! { try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true }
       Say "Installing .NET Core 3.1 SDK"
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.1 -i ${DOTNET_TARGET_DIR}
-      dotnet benchmark --version >/dev/null 2>&1 || true
-      Say ".NET Core benchmark tool version: [$(dotnet benchmark --version 2>&1)]"
+      ! { Say ".NET Core benchmark tool version: [$(dotnet benchmark --version 2>&1)]" }
 
 
 # todo: BenchmarkDotNet.Tool for root

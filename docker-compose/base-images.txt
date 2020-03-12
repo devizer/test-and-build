@@ -1,0 +1,13 @@
+xenial: openssl: 1.0.2g, libc 2.23
+
+jessie (libc: 2.19):
+docker-compose version 1.21.2, build 0898c78
+docker-py version: 3.3.0
+CPython version: 3.6.9
+OpenSSL version: OpenSSL 1.0.1t  3 May 2016
+
+stretch (libc: 2.24):
+docker-compose version 1.21.2, build 0898c783
+docker-py version: 3.3.0
+CPython version: 3.6.10
+OpenSSL version: OpenSSL 1.1.0l  10 Sep 2019
