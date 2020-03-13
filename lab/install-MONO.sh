@@ -33,8 +33,8 @@ function Install_Mono_on_Debians() {
   apt purge "monodoc*" -y -qq || true 
   # sudo rm -f /etc/apt/sources.list.d/mono-official-stable.list; 
   # sudo apt update
-  systemctl stop mono-xsp4
-  systemctl disable mono-xsp4
+  systemctl stop mono-xsp4 || true
+  systemctl disable mono-xsp4 || true
 }
 
 if [[ "$(command -v mono)" == "" ]]; then
