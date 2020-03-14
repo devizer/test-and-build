@@ -65,25 +65,25 @@ Say "Configured shared environment for .NET Core"
       
       if false && [[ "$(uname -m)" == "x86_64" ]]; then
           # rzc fails if .NET Core SDK 2.0 installed
-          Say "Installing .NET Core 1.0 SDK"
+          Say "Installing .NET Core 1.0 SDK for $(uname -m)"
           time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 1.0 -i ${DOTNET_TARGET_DIR}
-          Say "Installing .NET Core 1.1 SDK"
+          Say "Installing .NET Core 1.1 SDK for $(uname -m)"
           time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 1.1 -i ${DOTNET_TARGET_DIR}
-          Say "Installing .NET Core 2.0 SDK"
+          Say "Installing .NET Core 2.0 SDK for $(uname -m)"
           time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.0 -i ${DOTNET_TARGET_DIR}
       fi
       
-      Say "Installing .NET Core 2.1 SDK"
+      Say "Installing .NET Core 2.1 SDK for $(uname -m)"
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.1 -i ${DOTNET_TARGET_DIR}
-      Say "Installing .NET Core 2.2 SDK"
+      Say "Installing .NET Core 2.2 SDK for $(uname -m)"
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.2 -i ${DOTNET_TARGET_DIR}
-      Say "Installing BenchmarkDotNet.Tool (globally)"
+      Say "Installing BenchmarkDotNet.Tool (globally) for $(uname -m)"
       Say "DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER is '${DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER}'"
       # ! { try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true }
       try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
-      Say "Installing .NET Core 3.0 SDK"
+      Say "Installing .NET Core 3.0 SDK for $(uname -m)"
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.0 -i ${DOTNET_TARGET_DIR}
-      Say "Installing .NET Core 3.1 SDK"
+      Say "Installing .NET Core 3.1 SDK for $(uname -m)"
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.1 -i ${DOTNET_TARGET_DIR}
       # ! { Say ".NET Core benchmark tool version: [$(dotnet benchmark --version 2>&1 || true)]" }
       dotnet benchmark --version >/dev/null 2>&1 || true;
