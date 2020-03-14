@@ -44,6 +44,9 @@ if [[ -s "'${DOTNET_TARGET_DIR}'/dotnet" ]]; then
 fi
 ' | sudo tee /etc/profile.d/dotnet-core.sh >/dev/null
 sudo -u user mkdir -p /home/user/.dotnet/tools
+printf "\n\n" >> /home/user/.bashrc
+sudo -u user cat /etc/profile.d/dotnet-core.sh >> /home/user/.bashrc
+sudo chown -R user /home/user
 mkdir -p ~/.dotnet/tools
 Say "Configured shared environment for .NET Core"
 . /etc/profile.d/dotnet-core.sh
