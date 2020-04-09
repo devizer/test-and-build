@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/Install-DOCKER.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 
 if [[ ! "$ARCH" == i386 ]]; then
   Say "Installing the latest docker from the official docker repo"
