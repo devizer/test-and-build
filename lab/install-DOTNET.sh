@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/install-DOTNET.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 
 # echo "[env]"
 # printenv | sort
@@ -65,6 +66,7 @@ Say "Configured shared environment for .NET Core"
       echo ${DOTNET_TARGET_DIR} | sudo tee /etc/dotnet/install_location
       # for arm it starts from 2.1
       try-and-retry curl -o /tmp/_dotnet-install.sh -ksSL $DOTNET_Url
+      export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
       
       if false && [[ "$(uname -m)" == "x86_64" ]]; then
           # rzc fails if .NET Core SDK 2.0 installed
