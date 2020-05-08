@@ -20,11 +20,14 @@ function Install_Mono_on_RedHat() {
 
 function Install_Mono_on_Debians() {
   try-and-retry lazy-apt-update 
-  try-and-retry sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A6A19B38D3D831EF
-#  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+  try-and-retry sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A6A19B38D3D831EF || try-and-retry sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
   source /etc/os-release
   def="deb https://download.mono-project.com/repo/$ID stable-$(lsb_release -s -c) main"
   if [[ "$ID" == "raspbian" ]]; then def="deb https://download.mono-project.com/repo/debian stable-raspbian$(lsb_release -cs) main"; fi
+  if [[ "$UBUNTU_CODENAME" == focal ]]; then
+    # for Ubuntu 20.04 just a preview is available
+    def="deb https://download.mono-project.com/repo/ubuntu preview-$UBUNTU_CODENAME main"; 
+  fi
   echo "$def" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
   time try-and-retry sudo apt-get --allow-unauthenticated update -qq 
   time smart-apt-install mono-complete nuget msbuild 
