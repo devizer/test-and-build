@@ -93,6 +93,7 @@ Say "Configured shared environment for .NET Core"
       # ! { Say ".NET Core benchmark tool version: [$(dotnet benchmark --version 2>&1 || true)]" }
       dotnet benchmark --version >/dev/null 2>&1 || true;
       Say ".NET Core benchmark tool version: [$(dotnet benchmark --version 2>/dev/null || true)]"
+      true
 
 
 # todo: BenchmarkDotNet.Tool for root
