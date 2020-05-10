@@ -83,7 +83,7 @@ if [[ "$Alternative" ]]; then
     # 3rd (1.7 ... 1.9)
     echo "deb https://packagecloud.io/Hypriot/Schatzkiste/debian/ jessie main" | sudo tee /etc/apt/sources.list.d/hypriot.list
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 37BBEE3F7AD95B3F
-    apt update
+    apt-get update
     apt-cache policy docker-compose
     
     # 4th

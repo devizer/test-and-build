@@ -14,7 +14,7 @@ function build_docker_compose() {
 }
 
 lazy-apt-update
-apt install python-pip git -y
+apt-get install python-pip git -y
 systemctl start docker || true
 command -v docker || (echo "Error. Install Docker first for this script"; exit 1)
  

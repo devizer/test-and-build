@@ -14,4 +14,5 @@ bash ~/${file}
 # same as NET-TEST-RUNNERS-build.sh
 target="${NET_TEST_RUNNERS_INSTALL_DIR:-$HOME/build/devizer/NET-TEST-RUNNERS}"
 pushd $target
+set -e
 bash link-unit-test-runners.sh

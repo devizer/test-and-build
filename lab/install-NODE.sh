@@ -17,7 +17,7 @@ if [[ "$ARCH" == i386 ]]; then
     Say "Installing build-essential"
     lazy-apt-update
     time sudo apt-get install build-essential libssl-dev -y
-    apt clean -qq
+    apt-get clean -qq
 fi
 
 echo '#!/usr/bin/env bash

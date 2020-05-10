@@ -2,8 +2,8 @@
 
 DOCKER_COMPOSE_VER=1.24.1
 cmd='
-apt update;
-apt install python-pip git docker.io -y;
+apt-get update;
+apt-get install python-pip git docker.io -y;
 work=/compose;
 mkdir -p $work;
 cd $work;

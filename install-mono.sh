@@ -26,7 +26,7 @@ if [[ "$(command -v mono)" == "" || "$(command -v msbuild)" == "" || "$(command 
   echo "$def" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list >/dev/null
   echo "Official mono repo: /etc/apt/sources.list.d/mono-official-stable.list"
   echo $def
-  sudo apt -qq update; time sudo apt -qq install mono-complete nuget msbuild -y
+  sudo apt-get -qq update; time sudo apt-get -qq install mono-complete nuget msbuild -y
   # --allow-unauthenticated ?
 fi
 set -e
