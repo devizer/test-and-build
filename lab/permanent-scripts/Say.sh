@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
+    function format2digits() {
+      if [[ $1 -gt 9 ]]; then echo $1; else echo 0$1; fi
+    }
+
     function print_header() {
-      # if [[ -e /tmp/
       SYSTEM="${SYSTEM:-$(uname -s)}"
       if [[ ${SYSTEM} != Darwin ]]; then
           uptime=$(</proc/uptime);                  # 42645.93 240538.58
@@ -9,6 +12,18 @@
           uptime="${uptime[0]}";                    # 42645.93
           uptime=$(printf "%.0f\n" "$uptime")       # 42645
           uptime=$(TZ=UTC date -d "@${uptime}" "+%H:%M:%S");
+      else 
+          # https://stackoverflow.com/questions/15329443/proc-uptime-in-mac-os-x
+          boottime=`sysctl -n kern.boottime | awk '{print $4}' | sed 's/,//g'`
+		  unixtime=`date +%s`
+		  timeAgo=$(($unixtime - $boottime))
+          seconds1=$((timeAgo % 86400));
+          seconds=$((seconds1 % 60));
+          minutes1=$((seconds1 / 60));
+          minutes=$((minutes1 % 60));
+          hours=$((minutes1 / 60));
+          # uptime=`awk -v time=$timeAgo 'BEGIN { seconds = time % 60; minutes = int(time / 60 % 60); hours = int(time / 60 / 60 % 24); days = int(time / 60 / 60 / 24); printf("%.0f days, %.0f hours, %.0f minutes, %.0f seconds", days, hours, minutes, seconds); exit }'`
+          uptime="$(format2digits $hours):$(format2digits $minutes):$(format2digits $seconds)"
       fi
       black_circle='\xE2\x97\x8f'
       white_circle='\xE2\x97\x8b'
