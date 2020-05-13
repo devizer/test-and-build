@@ -17,7 +17,8 @@ fi
 
 Say "Configuring shared environment for .NET Core"
 
-if [[ "$(uname -r)" != 2* ]]; then 
+if [[ "$(uname -r)" != 2* ]]; then
+    # centos/redhat 6 
     var_HTTP_SOCKET="DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0" 
 fi
 
@@ -82,10 +83,15 @@ Say "Configured shared environment for .NET Core"
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.1 -i ${DOTNET_TARGET_DIR}
       Say "Installing .NET Core 2.2 SDK for $(uname -m)"
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.2 -i ${DOTNET_TARGET_DIR}
-      Say "Installing BenchmarkDotNet.Tool (globally) for $(uname -m)"
-      Say "DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER is '${DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER}'"
-      # ! { try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true }
-      try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
+
+      if [[ "$(command -v dotnet-benchmark || true)" == "" ]]; then
+          Say "Installing BenchmarkDotNet.Tool (globally) for $(uname -m)"
+          Say "DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER is '${DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER}'"
+          try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
+      else
+          Say "BenchmarkDotNet.Tool already installed"
+      fi
+
       Say "Installing .NET Core 3.0 SDK for $(uname -m)"
       time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.0 -i ${DOTNET_TARGET_DIR}
       Say "Installing .NET Core 3.1 SDK for $(uname -m)"

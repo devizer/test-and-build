@@ -60,6 +60,7 @@ System CPU Usage ..................... $system_formatted
 Total CPU Usage ...................... $total_formatted
 Uptime ............................... $uptime_formatted"
 }
+
 function FormatBytes() {
     local bytes=$1
     if [[ "$bytes" -lt 9000 ]]; then bytes="$bytes bytes"; 
