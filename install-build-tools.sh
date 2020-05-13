@@ -13,7 +13,7 @@ for f in "Reset-Target-Framework" "Say" "Show-System-Stat" "try-and-retry" "smar
         remote_file_url="https://raw.githubusercontent.com/devizer/test-and-build/master/lab/permanent-scripts/${f}.sh"
         echo "Downloading $remote_file_url"
         cmd="curl -ksSL -o /usr/local/bin/${f} $remote_file_url || wget --no-check-certificate --quiet -O /usr/local/bin/${f} $remote_file_url"
-        exec_cmd "$cmd" || exec_cmd "$cmd" || exec_cmd "$cmd"
+        exec_cmd "$cmd" || exec_cmd "$cmd" || exec_cmd "$cmd" || exec_cmd "rm -f /usr/local/bin/${f} 2>/dev/null || true" && echo "Error downloading $f"
         # eval $cmd || eval $cmd || eval $cmd
     fi
     exec_cmd "chmod +x /usr/local/bin/${f}"
