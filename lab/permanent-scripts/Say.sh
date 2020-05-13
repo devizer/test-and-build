@@ -5,8 +5,8 @@
     }
 
     function print_header() {
-      SYSTEM="${SYSTEM:-$(uname -s)}"
-      if [[ ${SYSTEM} != Darwin ]]; then
+      theSYSTEM="${theSYSTEM:-$(uname -s)}"
+      if [[ ${theSYSTEM} != "Darwin" ]]; then
           uptime=$(</proc/uptime);                  # 42645.93 240538.58
           IFS=' ' read -ra uptime <<< "$uptime";    # 42645.93 240538.58
           uptime="${uptime[0]}";                    # 42645.93
