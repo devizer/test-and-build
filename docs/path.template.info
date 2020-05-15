@@ -1,0 +1,7 @@
+SYSTEM_TEAMPROJECT=debian-multiarch
+BUILD_BUILDID=76
+ENDPOINT_URL_SYSTEMVSSCONNECTION=https://devizer.visualstudio.com/
+
+
+https://devizer.visualstudio.com/debian-multiarch/_build/results?buildId=995
+${ENDPOINT_URL_SYSTEMVSSCONNECTION}${SYSTEM_TEAMPROJECT}/_build/results?buildId=${BUILD_BUILDID}
