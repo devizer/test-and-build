@@ -1,4 +1,4 @@
-$buffer=""
+$ErrorActionPreference = "Stop"
 function EscapeFile2Echo
 {
     param([System.String] $fileName)
