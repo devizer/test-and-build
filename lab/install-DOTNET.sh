@@ -17,7 +17,7 @@ fi
 
 Say "Configuring shared environment for .NET Core"
 
-if [[ "$(uname -r)" != 2* ]]; then
+if [[ "$(uname -r)" == 2* ]]; then
     # centos/redhat 6 
     var_HTTP_SOCKET="DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0"
     export DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER=0 
