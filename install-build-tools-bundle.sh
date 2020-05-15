@@ -3,9 +3,20 @@
 # script=https://raw.githubusercontent.com/devizer/test-and-build/master/install-build-tools-bundle.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 
 TARGET_DIR=${TARGET_DIR:-/usr/local/bin}
+function install_build_tools_bundle() {
+
 
 # File-IO-Benchmark
 echo -e "#!/usr/bin/env bash
+
+if [[ \"\$1\" == \"\" ]]; then
+echo \"Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
+here 1G - working set size
+     30 - test duration, in seconds
+     5 - ramp duration (for VM, raids and ssd 30 seconds is recommended
+\"
+exit 0;
+fi
 
  CAPTION=\$1
  DISK=\$2
@@ -63,6 +74,15 @@ fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest -
 
 " > ${TARGET_DIR}/File-IO-Benchmark 2>/dev/null ||
 echo -e "#!/usr/bin/env bash
+
+if [[ \"\$1\" == \"\" ]]; then
+echo \"Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
+here 1G - working set size
+     30 - test duration, in seconds
+     5 - ramp duration (for VM, raids and ssd 30 seconds is recommended
+\"
+exit 0;
+fi
 
  CAPTION=\$1
  DISK=\$2
@@ -1001,4 +1021,8 @@ if [[ -f ${TARGET_DIR}/try-and-retry ]]; then
     chmod +x ${TARGET_DIR}/try-and-retry >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/try-and-retry
 	echo "OK: ${TARGET_DIR}/try-and-retry"; 
 else "Error: Unable to extract ${TARGET_DIR}/try-and-retry"; fi
+
+
+}
+install_build_tools_bundle
 

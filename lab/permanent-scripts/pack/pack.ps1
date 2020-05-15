@@ -5,6 +5,8 @@ Write-Host '#!/usr/bin/env bash
 # script=https://raw.githubusercontent.com/devizer/test-and-build/master/install-build-tools-bundle.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 
 TARGET_DIR=${TARGET_DIR:-/usr/local/bin}
+function install_build_tools_bundle() {
+
 '
 
 function EscapeFile2Echo
@@ -66,3 +68,8 @@ Get-ChildItem -Path ../ -Filter *.sh -File | ForEach-Object {
 	$content=Get-Content "$_"
 	"$(WriteFile $_)"
 }
+
+"
+}
+install_build_tools_bundle
+"
