@@ -255,7 +255,7 @@ apt-cache --no-all-versions show \$packages |
   awk '
       \$1 == \"Package:\" { p = \$2; v=\"\" }
       \$1 == \"Version:\" { v = \$2 }
-      \$1 == \"Size:\"    { printf(\"%10d %s %s\\n\", \$2, p, v) }
+      \$1 == \"Size:\"    { printf(\"%10d %s %s\x5Cn\", \$2, p, v) }
   ' | sort -k1 -n
 
 " > ${TARGET_DIR}/list-packages 2>/dev/null ||
@@ -265,7 +265,7 @@ apt-cache --no-all-versions show \$packages |
   awk '
       \$1 == \"Package:\" { p = \$2; v=\"\" }
       \$1 == \"Version:\" { v = \$2 }
-      \$1 == \"Size:\"    { printf(\"%10d %s %s\\n\", \$2, p, v) }
+      \$1 == \"Size:\"    { printf(\"%10d %s %s\x5Cn\", \$2, p, v) }
   ' | sort -k1 -n
 
 " | sudo tee ${TARGET_DIR}/list-packages >/dev/null;
@@ -336,8 +336,8 @@ while [[ \$# -gt 0 ]]; do
 done
 
 if [[ -n \"\$HELP\" ]]; then echo 'Usage:
-Reset-Target-Framework \\
-    [-fw|--framework net40|net45|net451|net452|net46|net461|net452|net47|net471|net472|net48] \\
+Reset-Target-Framework \x5C
+    [-fw|--framework net40|net45|net451|net452|net46|net461|net452|net47|net471|net472|net48] \x5C
     [-l|--language 1|2|3|..|7.0|7.1|7.2|8.0|latest]
     [--dry-run]
 
@@ -360,7 +360,7 @@ fi
 
 if [[ -n \"\$REVERT\" ]]; then
     echo \"Reverting project files from backups (didn't try git reset --hard; git clean -fx)\" 
-    find . | grep -E \"\\.csproj\$\" | while read csproj; do
+    find . | grep -E \"\x5C.csproj\$\" | while read csproj; do
       # echo \"csproj: \$csproj\"
       if [[ -f \"\${csproj}.backup\" ]]; then 
         echo \"Reverting project File '\${csproj}'\"
@@ -386,7 +386,7 @@ else
     echo \"Keep <LangVersion> as is\"
 fi
 
-find . | grep -E \"\\.csproj\$\" | while read csproj; do
+find . | grep -E \"\x5C.csproj\$\" | while read csproj; do
   # echo \"csproj: \$csproj\"
   if [[ ! -f \"\${csproj}.backup\" ]]; then cp \"\${csproj}\" \"\${csproj}.backup\"; fi
   lines=\$(cat \"\${csproj}\" | grep -E \"<TargetFrameworks>\")
@@ -396,9 +396,9 @@ find . | grep -E \"\\.csproj\$\" | while read csproj; do
       # Check for <TargetFrameworks> 
       tfs_prev=\$(cat \"\${csproj}\" | grep -oP \"<TargetFrameworks>(.*)</TargetFrameworks>\"  | cut -d \">\" -f 2 | cut -d \"<\" -f 1)
       if [[ -n \"\$tfs_prev\" ]]; then
-        printf \"    TargetFrameworks: '\$tfs_prev' --> '\$TARGET_FRAMEWORK'\\n\"
-        sed_cmd='/<TargetFrameworks>/c\\<TargetFrameworks>'\$TARGET_FRAMEWORK'<\\/TargetFrameworks>'
-        # printf \"    sed cmd: [\$sed_cmd]\\n\"
+        printf \"    TargetFrameworks: '\$tfs_prev' --> '\$TARGET_FRAMEWORK'\x5Cn\"
+        sed_cmd='/<TargetFrameworks>/c\x5C<TargetFrameworks>'\$TARGET_FRAMEWORK'<\x5C/TargetFrameworks>'
+        # printf \"    sed cmd: [\$sed_cmd]\x5Cn\"
         sed -i \"\$sed_cmd\" \$csproj
       fi
       
@@ -406,7 +406,7 @@ find . | grep -E \"\\.csproj\$\" | while read csproj; do
       tf_prev=\$(cat \"\${csproj}\" | grep -oP \"<TargetFramework>(.*)</TargetFramework>\"  | cut -d \">\" -f 2 | cut -d \"<\" -f 1)
       if [[ -n \"\$tf_prev\" ]]; then
         echo \"    TargetFramework: '\$tf_prev' --> '\$TARGET_FRAMEWORK'\"
-        sed_cmd='/<TargetFramework>/c\\<TargetFramework>'\$TARGET_FRAMEWORK'<\\/TargetFramework>'
+        sed_cmd='/<TargetFramework>/c\x5C<TargetFramework>'\$TARGET_FRAMEWORK'<\x5C/TargetFramework>'
         # echo \"    sed cmd: [\$sed_cmd]\"
         sed -i \"\$sed_cmd\" \$csproj
       fi
@@ -415,7 +415,7 @@ find . | grep -E \"\\.csproj\$\" | while read csproj; do
       tfv_prev=\$(cat \"\${csproj}\" | grep -oP \"<TargetFrameworkVersion>(.*)</TargetFrameworkVersion>\"  | cut -d \">\" -f 2 | cut -d \"<\" -f 1)
       if [[ -n \"\$tfv_prev\" ]]; then
         echo \"    TargetFrameworkVersion: '\$tfv_prev' --> '\$LEGACY_TARGET_FRAMEWORK'\"
-        sed_cmd='/<TargetFrameworkVersion>/c\\<TargetFrameworkVersion>'\$LEGACY_TARGET_FRAMEWORK'<\\/TargetFrameworkVersion>'
+        sed_cmd='/<TargetFrameworkVersion>/c\x5C<TargetFrameworkVersion>'\$LEGACY_TARGET_FRAMEWORK'<\x5C/TargetFrameworkVersion>'
         # echo \"    sed cmd: [\$sed_cmd]\"
         sed -i \"\$sed_cmd\" \$csproj
       fi
@@ -430,9 +430,9 @@ find . | grep -E \"\\.csproj\$\" | while read csproj; do
       # Check for <LangVersion> 
       lang_prev=\$(cat \"\${csproj}\" | grep -oP \"<LangVersion>(.*)</LangVersion>\"  | cut -d \">\" -f 2 | cut -d \"<\" -f 1)
       if [[ -n \"\$lang_prev\" ]]; then
-        printf \"    <LangVersion>: '\$lang_prev' --> '\$LANGUAGE'\\n\"
-        sed_cmd='/<LangVersion>/c\\<LangVersion>'\$LANGUAGE'<\\/LangVersion>'
-        # printf \"    sed cmd: [\$sed_cmd]\\n\"
+        printf \"    <LangVersion>: '\$lang_prev' --> '\$LANGUAGE'\x5Cn\"
+        sed_cmd='/<LangVersion>/c\x5C<LangVersion>'\$LANGUAGE'<\x5C/LangVersion>'
+        # printf \"    sed cmd: [\$sed_cmd]\x5Cn\"
         sed -i \"\$sed_cmd\" \$csproj
       else
         echo \"    Warning! <LangVersion> not found, but language was specified as \$LANGUAGE\"
@@ -509,8 +509,8 @@ while [[ \$# -gt 0 ]]; do
 done
 
 if [[ -n \"\$HELP\" ]]; then echo 'Usage:
-Reset-Target-Framework \\
-    [-fw|--framework net40|net45|net451|net452|net46|net461|net452|net47|net471|net472|net48] \\
+Reset-Target-Framework \x5C
+    [-fw|--framework net40|net45|net451|net452|net46|net461|net452|net47|net471|net472|net48] \x5C
     [-l|--language 1|2|3|..|7.0|7.1|7.2|8.0|latest]
     [--dry-run]
 
@@ -533,7 +533,7 @@ fi
 
 if [[ -n \"\$REVERT\" ]]; then
     echo \"Reverting project files from backups (didn't try git reset --hard; git clean -fx)\" 
-    find . | grep -E \"\\.csproj\$\" | while read csproj; do
+    find . | grep -E \"\x5C.csproj\$\" | while read csproj; do
       # echo \"csproj: \$csproj\"
       if [[ -f \"\${csproj}.backup\" ]]; then 
         echo \"Reverting project File '\${csproj}'\"
@@ -559,7 +559,7 @@ else
     echo \"Keep <LangVersion> as is\"
 fi
 
-find . | grep -E \"\\.csproj\$\" | while read csproj; do
+find . | grep -E \"\x5C.csproj\$\" | while read csproj; do
   # echo \"csproj: \$csproj\"
   if [[ ! -f \"\${csproj}.backup\" ]]; then cp \"\${csproj}\" \"\${csproj}.backup\"; fi
   lines=\$(cat \"\${csproj}\" | grep -E \"<TargetFrameworks>\")
@@ -569,9 +569,9 @@ find . | grep -E \"\\.csproj\$\" | while read csproj; do
       # Check for <TargetFrameworks> 
       tfs_prev=\$(cat \"\${csproj}\" | grep -oP \"<TargetFrameworks>(.*)</TargetFrameworks>\"  | cut -d \">\" -f 2 | cut -d \"<\" -f 1)
       if [[ -n \"\$tfs_prev\" ]]; then
-        printf \"    TargetFrameworks: '\$tfs_prev' --> '\$TARGET_FRAMEWORK'\\n\"
-        sed_cmd='/<TargetFrameworks>/c\\<TargetFrameworks>'\$TARGET_FRAMEWORK'<\\/TargetFrameworks>'
-        # printf \"    sed cmd: [\$sed_cmd]\\n\"
+        printf \"    TargetFrameworks: '\$tfs_prev' --> '\$TARGET_FRAMEWORK'\x5Cn\"
+        sed_cmd='/<TargetFrameworks>/c\x5C<TargetFrameworks>'\$TARGET_FRAMEWORK'<\x5C/TargetFrameworks>'
+        # printf \"    sed cmd: [\$sed_cmd]\x5Cn\"
         sed -i \"\$sed_cmd\" \$csproj
       fi
       
@@ -579,7 +579,7 @@ find . | grep -E \"\\.csproj\$\" | while read csproj; do
       tf_prev=\$(cat \"\${csproj}\" | grep -oP \"<TargetFramework>(.*)</TargetFramework>\"  | cut -d \">\" -f 2 | cut -d \"<\" -f 1)
       if [[ -n \"\$tf_prev\" ]]; then
         echo \"    TargetFramework: '\$tf_prev' --> '\$TARGET_FRAMEWORK'\"
-        sed_cmd='/<TargetFramework>/c\\<TargetFramework>'\$TARGET_FRAMEWORK'<\\/TargetFramework>'
+        sed_cmd='/<TargetFramework>/c\x5C<TargetFramework>'\$TARGET_FRAMEWORK'<\x5C/TargetFramework>'
         # echo \"    sed cmd: [\$sed_cmd]\"
         sed -i \"\$sed_cmd\" \$csproj
       fi
@@ -588,7 +588,7 @@ find . | grep -E \"\\.csproj\$\" | while read csproj; do
       tfv_prev=\$(cat \"\${csproj}\" | grep -oP \"<TargetFrameworkVersion>(.*)</TargetFrameworkVersion>\"  | cut -d \">\" -f 2 | cut -d \"<\" -f 1)
       if [[ -n \"\$tfv_prev\" ]]; then
         echo \"    TargetFrameworkVersion: '\$tfv_prev' --> '\$LEGACY_TARGET_FRAMEWORK'\"
-        sed_cmd='/<TargetFrameworkVersion>/c\\<TargetFrameworkVersion>'\$LEGACY_TARGET_FRAMEWORK'<\\/TargetFrameworkVersion>'
+        sed_cmd='/<TargetFrameworkVersion>/c\x5C<TargetFrameworkVersion>'\$LEGACY_TARGET_FRAMEWORK'<\x5C/TargetFrameworkVersion>'
         # echo \"    sed cmd: [\$sed_cmd]\"
         sed -i \"\$sed_cmd\" \$csproj
       fi
@@ -603,9 +603,9 @@ find . | grep -E \"\\.csproj\$\" | while read csproj; do
       # Check for <LangVersion> 
       lang_prev=\$(cat \"\${csproj}\" | grep -oP \"<LangVersion>(.*)</LangVersion>\"  | cut -d \">\" -f 2 | cut -d \"<\" -f 1)
       if [[ -n \"\$lang_prev\" ]]; then
-        printf \"    <LangVersion>: '\$lang_prev' --> '\$LANGUAGE'\\n\"
-        sed_cmd='/<LangVersion>/c\\<LangVersion>'\$LANGUAGE'<\\/LangVersion>'
-        # printf \"    sed cmd: [\$sed_cmd]\\n\"
+        printf \"    <LangVersion>: '\$lang_prev' --> '\$LANGUAGE'\x5Cn\"
+        sed_cmd='/<LangVersion>/c\x5C<LangVersion>'\$LANGUAGE'<\x5C/LangVersion>'
+        # printf \"    sed cmd: [\$sed_cmd]\x5Cn\"
         sed -i \"\$sed_cmd\" \$csproj
       else
         echo \"    Warning! <LangVersion> not found, but language was specified as \$LANGUAGE\"
@@ -639,7 +639,7 @@ echo -e "#!/usr/bin/env bash
           uptime=\$(</proc/uptime);                  # 42645.93 240538.58
           IFS=' ' read -ra uptime <<< \"\$uptime\";    # 42645.93 240538.58
           uptime=\"\${uptime[0]}\";                    # 42645.93
-          uptime=\$(printf \"%.0f\\n\" \"\$uptime\")       # 42645
+          uptime=\$(printf \"%.0f\x5Cn\" \"\$uptime\")       # 42645
           uptime=\$(TZ=UTC date -d \"@\${uptime}\" \"+%H:%M:%S\");
       else 
           # https://stackoverflow.com/questions/15329443/proc-uptime-in-mac-os-x
@@ -654,14 +654,14 @@ echo -e "#!/usr/bin/env bash
           # uptime=\`awk -v time=\$timeAgo 'BEGIN { seconds = time % 60; minutes = int(time / 60 % 60); hours = int(time / 60 / 60 % 24); days = int(time / 60 / 60 / 24); printf(\"%.0f days, %.0f hours, %.0f minutes, %.0f seconds\", days, hours, minutes, seconds); exit }'\`
           uptime=\"\$(format2digits \$hours):\$(format2digits \$minutes):\$(format2digits \$seconds)\"
       fi
-      black_circle='\\xE2\\x97\\x8f'
-      white_circle='\\xE2\\x97\\x8b'
+      black_circle='\x5CxE2\x5Cx97\x5Cx8f'
+      white_circle='\x5CxE2\x5Cx97\x5Cx8b'
       # BUILD_DEFINITIONNAME
       # if [[ -z \"\$BUILD_DEFINITIONNAME\" ]]; then 
       if [[ -z \"\$SAY_COLORLESS\" ]]; then # skip colors for azure pipelines
-        Blue='\\033[1;34m'; Gray='\\033[1;37m'; LightGreen='\\033[1;32m'; Yellow='\\033[1;33m'; RED='\\033[0;31m'; NC='\\033[0m'; LightGray='\\033[1;2m';
+        Blue='\x5C033[1;34m'; Gray='\x5C033[1;37m'; LightGreen='\x5C033[1;32m'; Yellow='\x5C033[1;33m'; RED='\x5C033[0;31m'; NC='\x5C033[0m'; LightGray='\x5C033[1;2m';
       fi
-      printf \"\${Blue}\${black_circle} \$(hostname)\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\\n\";
+      printf \"\${Blue}\${black_circle} \$(hostname)\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\x5Cn\";
       echo \"\$(hostname) \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
     }
 
@@ -689,7 +689,7 @@ echo -e "#!/usr/bin/env bash
           uptime=\$(</proc/uptime);                  # 42645.93 240538.58
           IFS=' ' read -ra uptime <<< \"\$uptime\";    # 42645.93 240538.58
           uptime=\"\${uptime[0]}\";                    # 42645.93
-          uptime=\$(printf \"%.0f\\n\" \"\$uptime\")       # 42645
+          uptime=\$(printf \"%.0f\x5Cn\" \"\$uptime\")       # 42645
           uptime=\$(TZ=UTC date -d \"@\${uptime}\" \"+%H:%M:%S\");
       else 
           # https://stackoverflow.com/questions/15329443/proc-uptime-in-mac-os-x
@@ -704,14 +704,14 @@ echo -e "#!/usr/bin/env bash
           # uptime=\`awk -v time=\$timeAgo 'BEGIN { seconds = time % 60; minutes = int(time / 60 % 60); hours = int(time / 60 / 60 % 24); days = int(time / 60 / 60 / 24); printf(\"%.0f days, %.0f hours, %.0f minutes, %.0f seconds\", days, hours, minutes, seconds); exit }'\`
           uptime=\"\$(format2digits \$hours):\$(format2digits \$minutes):\$(format2digits \$seconds)\"
       fi
-      black_circle='\\xE2\\x97\\x8f'
-      white_circle='\\xE2\\x97\\x8b'
+      black_circle='\x5CxE2\x5Cx97\x5Cx8f'
+      white_circle='\x5CxE2\x5Cx97\x5Cx8b'
       # BUILD_DEFINITIONNAME
       # if [[ -z \"\$BUILD_DEFINITIONNAME\" ]]; then 
       if [[ -z \"\$SAY_COLORLESS\" ]]; then # skip colors for azure pipelines
-        Blue='\\033[1;34m'; Gray='\\033[1;37m'; LightGreen='\\033[1;32m'; Yellow='\\033[1;33m'; RED='\\033[0;31m'; NC='\\033[0m'; LightGray='\\033[1;2m';
+        Blue='\x5C033[1;34m'; Gray='\x5C033[1;37m'; LightGreen='\x5C033[1;32m'; Yellow='\x5C033[1;33m'; RED='\x5C033[0;31m'; NC='\x5C033[0m'; LightGray='\x5C033[1;2m';
       fi
-      printf \"\${Blue}\${black_circle} \$(hostname)\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\\n\";
+      printf \"\${Blue}\${black_circle} \$(hostname)\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\x5Cn\";
       echo \"\$(hostname) \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
     }
 
@@ -760,7 +760,7 @@ function GetUptimeInSeconds() {
    local uptime=\$(</proc/uptime);                  # 42645.93 240538.58
    IFS=' ' read -ra uptime <<< \"\$uptime\";    # 42645.93 240538.58
    uptime=\"\${uptime[0]}\";                    # 42645.93
-   uptime=\$(printf \"%.0f\\n\" \"\$uptime\")       # 42645
+   uptime=\$(printf \"%.0f\x5Cn\" \"\$uptime\")       # 42645
    echo \$uptime
 }
 
@@ -860,7 +860,7 @@ function GetUptimeInSeconds() {
    local uptime=\$(</proc/uptime);                  # 42645.93 240538.58
    IFS=' ' read -ra uptime <<< \"\$uptime\";    # 42645.93 240538.58
    uptime=\"\${uptime[0]}\";                    # 42645.93
-   uptime=\$(printf \"%.0f\\n\" \"\$uptime\")       # 42645
+   uptime=\$(printf \"%.0f\x5Cn\" \"\$uptime\")       # 42645
    echo \$uptime
 }
 
@@ -967,13 +967,13 @@ else "Error: Unable to extract ${TARGET_DIR}/smart-apt-install"; fi
 # try-and-retry
 echo -e "#!/usr/bin/env bash
 
-  ANSI_RED='\\033[0;31m'; 
-  ANSI_RESET='\\033[0m';
+  ANSI_RED='\x5C033[0;31m'; 
+  ANSI_RESET='\x5C033[0m';
   result=0
   count=1
   while [ \$count -le 3 ]; do
     [ \$result -ne 0 ] && {
-      echo -e \"\\n\${ANSI_RED}The command \\\"\$@\\\" failed. Retrying, \$count of 3.\${ANSI_RESET}\\n\" >&2
+      echo -e \"\x5Cn\${ANSI_RED}The command \x5C\"\$@\x5C\" failed. Retrying, \$count of 3.\${ANSI_RESET}\x5Cn\" >&2
     }
     # ! { } ignores set -e, see https://stackoverflow.com/a/4073372
     ! { \"\$@\"; result=\$?; }
@@ -983,7 +983,7 @@ echo -e "#!/usr/bin/env bash
   done
 
   [ \$count -gt 3 ] && {
-    echo -e \"\\n\${ANSI_RED}The command \\\"\$@\\\" failed 3 times.\${ANSI_RESET}\\n\" >&2
+    echo -e \"\x5Cn\${ANSI_RED}The command \x5C\"\$@\x5C\" failed 3 times.\${ANSI_RESET}\x5Cn\" >&2
   }
 
   exit \$result
@@ -993,13 +993,13 @@ echo -e "#!/usr/bin/env bash
 " > ${TARGET_DIR}/try-and-retry 2>/dev/null ||
 echo -e "#!/usr/bin/env bash
 
-  ANSI_RED='\\033[0;31m'; 
-  ANSI_RESET='\\033[0m';
+  ANSI_RED='\x5C033[0;31m'; 
+  ANSI_RESET='\x5C033[0m';
   result=0
   count=1
   while [ \$count -le 3 ]; do
     [ \$result -ne 0 ] && {
-      echo -e \"\\n\${ANSI_RED}The command \\\"\$@\\\" failed. Retrying, \$count of 3.\${ANSI_RESET}\\n\" >&2
+      echo -e \"\x5Cn\${ANSI_RED}The command \x5C\"\$@\x5C\" failed. Retrying, \$count of 3.\${ANSI_RESET}\x5Cn\" >&2
     }
     # ! { } ignores set -e, see https://stackoverflow.com/a/4073372
     ! { \"\$@\"; result=\$?; }
@@ -1009,7 +1009,7 @@ echo -e "#!/usr/bin/env bash
   done
 
   [ \$count -gt 3 ] && {
-    echo -e \"\\n\${ANSI_RED}The command \\\"\$@\\\" failed 3 times.\${ANSI_RESET}\\n\" >&2
+    echo -e \"\x5Cn\${ANSI_RED}The command \x5C\"\$@\x5C\" failed 3 times.\${ANSI_RESET}\x5Cn\" >&2
   }
 
   exit \$result

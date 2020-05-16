@@ -9,12 +9,36 @@ function install_build_tools_bundle() {
 
 '
 
+function ReadAllLines
+{
+    param([System.String] $fileName)
+
+    $ret = @();
+    $utf = new-object System.Text.UTF8Encoding($false)
+    $fs = new-object System.IO.FileStream($fileName, [System.IO.FileMode]::Open)
+    $rdr = new-object System.IO.StreamReader($fs, $utf)
+    while($true) {
+        $line=$rdr.ReadLine()
+        if (($line -eq $null))
+        {
+            $rdr.Dispose()
+            return $ret
+        }
+        $ret += $line
+    }
+}
+
+ 
+
+ 
+
 function EscapeFile2Echo
 {
     param([System.String] $fileName)
 
     $ret = ""
-    $lines = [System.IO.File]::ReadAllLines($fileName)
+    # $lines = [System.IO.File]::ReadAllLines($fileName)
+    $lines = ReadAllLines $fileName
    	$nameOnly=[System.IO.Path]::GetFileNameWithoutExtension($fileName)
 
     foreach ($line in $lines)
@@ -22,17 +46,17 @@ function EscapeFile2Echo
         foreach ($c in $line.ToCharArray())
         {
             $ic=[int]$c;
-            if ( $ic -eq 96 -or $ic -eq 34 -or $ic -eq 92 -or $ic -eq 36)
+            if ( $ic -eq 96 -or $ic -eq 34 -or $ic -eq 36)
             {
                 $ret = [System.String]::Concat(@($ret, "\", $c.ToString()))
             }
-            elseif ($ic -ge 32)
+            elseif ($ic -eq 92 -or $ic -lt 32)
             {
-                $ret = [System.String]::Concat(@($ret, $c.ToString()))
+                $ret = [System.String]::Concat(@($ret, "\x", [string]::Format("{0:X2}", [int]$c)))
             }
             else
             {
-                $ret = [System.String]::Concat(@($ret, "\x", [string]::Format("{0:X2}", [int]$c)))
+                $ret = [System.String]::Concat(@($ret, $c.ToString()))
             }
         }
         $ret = [System.String]::Concat(@($ret, [Environment]::NewLine))
