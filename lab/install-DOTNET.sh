@@ -11,6 +11,19 @@ script=https://raw.githubusercontent.com/devizer/test-and-build/master/install-b
 
 DOTNET_TARGET_DIR="${DOTNET_TARGET_DIR:-/usr/share/dotnet}"
 
+# crazy fix 
+if [[ -f /etc/os-release ]]; then
+    source /etc/os-release
+    if [[ "$VERSION_CODENAME" == "buster" ]]; then
+        Say "Installing actual CA Bundle for Buster $(uname -m)"
+        file=/usr/local/share/ssl/cacert.pem
+        url=https://curl.haxx.se/ca/cacert.pem
+        sudo mkdir -p $(basename $file)
+        sudo wget -q -nv --no-check-certificate -O $file $url 2>/dev/null || sudo curl -ksSL $url -o $url
+        test -s $file && export CURL_CA_BUNDLE="$file"
+    fi
+fi 
+
 
 echo "I'm [$(whoami)]. Net Core Should be installed as ROOT. Arch is $ARCH"
 
