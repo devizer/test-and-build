@@ -6,8 +6,10 @@ TARGET_DIR=${TARGET_DIR:-/usr/local/bin}
 function install_build_tools_bundle() {
 
 
+
 # File-IO-Benchmark
-echo -e "#!/usr/bin/env bash
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
 
 if [[ \"\$1\" == \"\" ]]; then
 echo \"Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
@@ -73,7 +75,7 @@ fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest -
 
 
 " 2>/dev/null >${TARGET_DIR}/File-IO-Benchmark ||
-echo -e "#!/usr/bin/env bash
+  echo -e "#!/usr/bin/env bash
 
 if [[ \"\$1\" == \"\" ]]; then
 echo \"Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
@@ -139,13 +141,18 @@ fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest -
 
 
 " | sudo tee ${TARGET_DIR}/File-IO-Benchmark >/dev/null;
-if [[ -f ${TARGET_DIR}/File-IO-Benchmark ]]; then 
-    chmod +x ${TARGET_DIR}/File-IO-Benchmark >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/File-IO-Benchmark
-	echo "OK: ${TARGET_DIR}/File-IO-Benchmark"; 
-else "Error: Unable to extract ${TARGET_DIR}/File-IO-Benchmark"; fi
+  if [[ -f ${TARGET_DIR}/File-IO-Benchmark ]]; then 
+      chmod +x ${TARGET_DIR}/File-IO-Benchmark >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/File-IO-Benchmark
+  	echo "OK: ${TARGET_DIR}/File-IO-Benchmark"; 
+  else "Error: Unable to extract ${TARGET_DIR}/File-IO-Benchmark"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/File-IO-Benchmark: directory does not exists"
+fi
+
 
 # Is-RedHat
-echo -e "#!/usr/bin/env bash
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
 # Usage 1: if [[ \"\$(Is-RedHat 6)\" ]]; then ... 
 # Usage 2: if [[ \"\$(Is-RedHat 8)\" ]]; then ... 
 # Usage 3: if [[ \"\$(Is-RedHat)\" ]]; then ...
@@ -181,7 +188,7 @@ else
 fi
 
 " 2>/dev/null >${TARGET_DIR}/Is-RedHat ||
-echo -e "#!/usr/bin/env bash
+  echo -e "#!/usr/bin/env bash
 # Usage 1: if [[ \"\$(Is-RedHat 6)\" ]]; then ... 
 # Usage 2: if [[ \"\$(Is-RedHat 8)\" ]]; then ... 
 # Usage 3: if [[ \"\$(Is-RedHat)\" ]]; then ...
@@ -217,13 +224,18 @@ else
 fi
 
 " | sudo tee ${TARGET_DIR}/Is-RedHat >/dev/null;
-if [[ -f ${TARGET_DIR}/Is-RedHat ]]; then 
-    chmod +x ${TARGET_DIR}/Is-RedHat >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Is-RedHat
-	echo "OK: ${TARGET_DIR}/Is-RedHat"; 
-else "Error: Unable to extract ${TARGET_DIR}/Is-RedHat"; fi
+  if [[ -f ${TARGET_DIR}/Is-RedHat ]]; then 
+      chmod +x ${TARGET_DIR}/Is-RedHat >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Is-RedHat
+  	echo "OK: ${TARGET_DIR}/Is-RedHat"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Is-RedHat"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Is-RedHat: directory does not exists"
+fi
+
 
 # lazy-apt-update
-echo -e "#!/usr/bin/env bash
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
 # SMART lazy-apt-update - only for built-in Debian repos
 # try-and-retry is NOT for here
 ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || ls -1 /var/lib/apt/lists/lock >/dev/null 2>&1 || {
@@ -233,7 +245,7 @@ ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || ls -1 /var/lib/apt/lists/lock >
 
 
 " 2>/dev/null >${TARGET_DIR}/lazy-apt-update ||
-echo -e "#!/usr/bin/env bash
+  echo -e "#!/usr/bin/env bash
 # SMART lazy-apt-update - only for built-in Debian repos
 # try-and-retry is NOT for here
 ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || ls -1 /var/lib/apt/lists/lock >/dev/null 2>&1 || {
@@ -243,13 +255,18 @@ ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || ls -1 /var/lib/apt/lists/lock >
 
 
 " | sudo tee ${TARGET_DIR}/lazy-apt-update >/dev/null;
-if [[ -f ${TARGET_DIR}/lazy-apt-update ]]; then 
-    chmod +x ${TARGET_DIR}/lazy-apt-update >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/lazy-apt-update
-	echo "OK: ${TARGET_DIR}/lazy-apt-update"; 
-else "Error: Unable to extract ${TARGET_DIR}/lazy-apt-update"; fi
+  if [[ -f ${TARGET_DIR}/lazy-apt-update ]]; then 
+      chmod +x ${TARGET_DIR}/lazy-apt-update >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/lazy-apt-update
+  	echo "OK: ${TARGET_DIR}/lazy-apt-update"; 
+  else "Error: Unable to extract ${TARGET_DIR}/lazy-apt-update"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/lazy-apt-update: directory does not exists"
+fi
+
 
 # list-packages
-echo -e "#!/usr/bin/env bash
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
 packages=\$(dpkg --get-selections | grep -v deinstall | awk \"{print \$1}\")
 apt-cache --no-all-versions show \$packages |
   awk '
@@ -259,7 +276,7 @@ apt-cache --no-all-versions show \$packages |
   ' | sort -k1 -n
 
 " 2>/dev/null >${TARGET_DIR}/list-packages ||
-echo -e "#!/usr/bin/env bash
+  echo -e "#!/usr/bin/env bash
 packages=\$(dpkg --get-selections | grep -v deinstall | awk \"{print \$1}\")
 apt-cache --no-all-versions show \$packages |
   awk '
@@ -269,13 +286,18 @@ apt-cache --no-all-versions show \$packages |
   ' | sort -k1 -n
 
 " | sudo tee ${TARGET_DIR}/list-packages >/dev/null;
-if [[ -f ${TARGET_DIR}/list-packages ]]; then 
-    chmod +x ${TARGET_DIR}/list-packages >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/list-packages
-	echo "OK: ${TARGET_DIR}/list-packages"; 
-else "Error: Unable to extract ${TARGET_DIR}/list-packages"; fi
+  if [[ -f ${TARGET_DIR}/list-packages ]]; then 
+      chmod +x ${TARGET_DIR}/list-packages >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/list-packages
+  	echo "OK: ${TARGET_DIR}/list-packages"; 
+  else "Error: Unable to extract ${TARGET_DIR}/list-packages"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/list-packages: directory does not exists"
+fi
+
 
 # Reset-Target-Framework
-echo -e "#!/usr/bin/env bash
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
 
 function get_legacy_framework_version() {
   local fw=\"\$1\";
@@ -448,7 +470,7 @@ find . | grep -E \"\x5C.csproj\$\" | while read csproj; do
 done
 
 " 2>/dev/null >${TARGET_DIR}/Reset-Target-Framework ||
-echo -e "#!/usr/bin/env bash
+  echo -e "#!/usr/bin/env bash
 
 function get_legacy_framework_version() {
   local fw=\"\$1\";
@@ -621,13 +643,18 @@ find . | grep -E \"\x5C.csproj\$\" | while read csproj; do
 done
 
 " | sudo tee ${TARGET_DIR}/Reset-Target-Framework >/dev/null;
-if [[ -f ${TARGET_DIR}/Reset-Target-Framework ]]; then 
-    chmod +x ${TARGET_DIR}/Reset-Target-Framework >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Reset-Target-Framework
-	echo "OK: ${TARGET_DIR}/Reset-Target-Framework"; 
-else "Error: Unable to extract ${TARGET_DIR}/Reset-Target-Framework"; fi
+  if [[ -f ${TARGET_DIR}/Reset-Target-Framework ]]; then 
+      chmod +x ${TARGET_DIR}/Reset-Target-Framework >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Reset-Target-Framework
+  	echo "OK: ${TARGET_DIR}/Reset-Target-Framework"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Reset-Target-Framework"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Reset-Target-Framework: directory does not exists"
+fi
+
 
 # Say
-echo -e "#!/usr/bin/env bash
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
 
     function format2digits() {
       if [[ \$1 -gt 9 ]]; then echo \$1; else echo 0\$1; fi
@@ -677,7 +704,7 @@ echo -e "#!/usr/bin/env bash
 SayIt \"\$@\"
 
 " 2>/dev/null >${TARGET_DIR}/Say ||
-echo -e "#!/usr/bin/env bash
+  echo -e "#!/usr/bin/env bash
 
     function format2digits() {
       if [[ \$1 -gt 9 ]]; then echo \$1; else echo 0\$1; fi
@@ -727,13 +754,18 @@ echo -e "#!/usr/bin/env bash
 SayIt \"\$@\"
 
 " | sudo tee ${TARGET_DIR}/Say >/dev/null;
-if [[ -f ${TARGET_DIR}/Say ]]; then 
-    chmod +x ${TARGET_DIR}/Say >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Say
-	echo "OK: ${TARGET_DIR}/Say"; 
-else "Error: Unable to extract ${TARGET_DIR}/Say"; fi
+  if [[ -f ${TARGET_DIR}/Say ]]; then 
+      chmod +x ${TARGET_DIR}/Say >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Say
+  	echo "OK: ${TARGET_DIR}/Say"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Say"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Say: directory does not exists"
+fi
+
 
 # Show-System-Stat
-echo -e "#!/usr/bin/env bash
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
 function uname_system() {
   cached_uname_system=\${cached_uname_system:-\$(uname -s)}
   echo \$cached_uname_system
@@ -833,7 +865,7 @@ ShowSystemStat
 ShowNetStat
 
 " 2>/dev/null >${TARGET_DIR}/Show-System-Stat ||
-echo -e "#!/usr/bin/env bash
+  echo -e "#!/usr/bin/env bash
 function uname_system() {
   cached_uname_system=\${cached_uname_system:-\$(uname -s)}
   echo \$cached_uname_system
@@ -933,13 +965,18 @@ ShowSystemStat
 ShowNetStat
 
 " | sudo tee ${TARGET_DIR}/Show-System-Stat >/dev/null;
-if [[ -f ${TARGET_DIR}/Show-System-Stat ]]; then 
-    chmod +x ${TARGET_DIR}/Show-System-Stat >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Show-System-Stat
-	echo "OK: ${TARGET_DIR}/Show-System-Stat"; 
-else "Error: Unable to extract ${TARGET_DIR}/Show-System-Stat"; fi
+  if [[ -f ${TARGET_DIR}/Show-System-Stat ]]; then 
+      chmod +x ${TARGET_DIR}/Show-System-Stat >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Show-System-Stat
+  	echo "OK: ${TARGET_DIR}/Show-System-Stat"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Show-System-Stat"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Show-System-Stat: directory does not exists"
+fi
+
 
 # smart-apt-install
-echo -e "#!/usr/bin/env bash
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
 
     try-and-retry lazy-apt-update
     Say \"Downloading deb-package(s): \$*\"
@@ -949,7 +986,7 @@ echo -e "#!/usr/bin/env bash
     sudo DEBIAN_FRONTEND=noninteractive apt-get clean
 
 " 2>/dev/null >${TARGET_DIR}/smart-apt-install ||
-echo -e "#!/usr/bin/env bash
+  echo -e "#!/usr/bin/env bash
 
     try-and-retry lazy-apt-update
     Say \"Downloading deb-package(s): \$*\"
@@ -959,13 +996,18 @@ echo -e "#!/usr/bin/env bash
     sudo DEBIAN_FRONTEND=noninteractive apt-get clean
 
 " | sudo tee ${TARGET_DIR}/smart-apt-install >/dev/null;
-if [[ -f ${TARGET_DIR}/smart-apt-install ]]; then 
-    chmod +x ${TARGET_DIR}/smart-apt-install >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/smart-apt-install
-	echo "OK: ${TARGET_DIR}/smart-apt-install"; 
-else "Error: Unable to extract ${TARGET_DIR}/smart-apt-install"; fi
+  if [[ -f ${TARGET_DIR}/smart-apt-install ]]; then 
+      chmod +x ${TARGET_DIR}/smart-apt-install >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/smart-apt-install
+  	echo "OK: ${TARGET_DIR}/smart-apt-install"; 
+  else "Error: Unable to extract ${TARGET_DIR}/smart-apt-install"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/smart-apt-install: directory does not exists"
+fi
+
 
 # try-and-retry
-echo -e "#!/usr/bin/env bash
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
 
   ANSI_RED='\x5C033[0;31m'; 
   ANSI_RESET='\x5C033[0m';
@@ -991,7 +1033,7 @@ echo -e "#!/usr/bin/env bash
 
 
 " 2>/dev/null >${TARGET_DIR}/try-and-retry ||
-echo -e "#!/usr/bin/env bash
+  echo -e "#!/usr/bin/env bash
 
   ANSI_RED='\x5C033[0;31m'; 
   ANSI_RESET='\x5C033[0m';
@@ -1017,10 +1059,13 @@ echo -e "#!/usr/bin/env bash
 
 
 " | sudo tee ${TARGET_DIR}/try-and-retry >/dev/null;
-if [[ -f ${TARGET_DIR}/try-and-retry ]]; then 
-    chmod +x ${TARGET_DIR}/try-and-retry >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/try-and-retry
-	echo "OK: ${TARGET_DIR}/try-and-retry"; 
-else "Error: Unable to extract ${TARGET_DIR}/try-and-retry"; fi
+  if [[ -f ${TARGET_DIR}/try-and-retry ]]; then 
+      chmod +x ${TARGET_DIR}/try-and-retry >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/try-and-retry
+  	echo "OK: ${TARGET_DIR}/try-and-retry"; 
+  else "Error: Unable to extract ${TARGET_DIR}/try-and-retry"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/try-and-retry: directory does not exists"
+fi
 
 
 }

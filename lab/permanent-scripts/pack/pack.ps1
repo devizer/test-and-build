@@ -72,13 +72,18 @@ function WriteFile
     $escaped = EscapeFile2Echo $fileName
     $nl=[Environment]::NewLine
     $escaped_and_Queted="`"$($escaped)$($nl)`""
-    $ret = "# $($nameOnly)
-echo -e $($escaped_and_Queted) 2>/dev/null >`${TARGET_DIR}/$($nameOnly) ||
-echo -e $($escaped_and_Queted) | sudo tee `${TARGET_DIR}/$($nameOnly) >/dev/null;
-if [[ -f `${TARGET_DIR}/$($nameOnly) ]]; then 
-    chmod +x `${TARGET_DIR}/$($nameOnly) >/dev/null 2>&1 || sudo chmod +x `${TARGET_DIR}/$($nameOnly)
-	echo `"OK: `${TARGET_DIR}/$($nameOnly)`"; 
-else `"Error: Unable to extract `${TARGET_DIR}/$($nameOnly)`"; fi
+    $ret = "
+# $($nameOnly)
+if [[ -d `${TARGET_DIR} ]]; then
+  echo -e $($escaped_and_Queted) 2>/dev/null >`${TARGET_DIR}/$($nameOnly) ||
+  echo -e $($escaped_and_Queted) | sudo tee `${TARGET_DIR}/$($nameOnly) >/dev/null;
+  if [[ -f `${TARGET_DIR}/$($nameOnly) ]]; then 
+      chmod +x `${TARGET_DIR}/$($nameOnly) >/dev/null 2>&1 || sudo chmod +x `${TARGET_DIR}/$($nameOnly)
+  	echo `"OK: `${TARGET_DIR}/$($nameOnly)`"; 
+  else `"Error: Unable to extract `${TARGET_DIR}/$($nameOnly)`"; fi
+else 
+  echo `"Skipping `${TARGET_DIR}/$($nameOnly): directory does not exists`"
+fi
 "
 
 	return $ret
