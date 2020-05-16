@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 # script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/install-DOTNET.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 
+script=https://raw.githubusercontent.com/devizer/test-and-build/master/install-build-tools-bundle.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
+
+
 # echo "[env]"
 # printenv | sort
 # echo "[~/.bashrc]"
 # cat ~/.bashrc
 
 DOTNET_TARGET_DIR="${DOTNET_TARGET_DIR:-/usr/share/dotnet}"
+
 
 echo "I'm [$(whoami)]. Net Core Should be installed as ROOT. Arch is $ARCH"
 
@@ -15,7 +19,7 @@ if [[ "$ARCH" == "i386" ]]; then
     exit 0; 
 fi
 
-Say "Configuring shared environment for .NET Core"
+Say "Configuring shared environment for .NET Core. Install Dir: ${DOTNET_TARGET_DIR}"
 
 if [[ "$(uname -r)" == 2* ]]; then
     # centos/redhat 6 
