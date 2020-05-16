@@ -72,7 +72,7 @@ fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest -
  go_fio_4tests \"\$DISK\" \"\$CAPTION\"
 
 
-" > ${TARGET_DIR}/File-IO-Benchmark 2>/dev/null ||
+" 2>/dev/null >${TARGET_DIR}/File-IO-Benchmark ||
 echo -e "#!/usr/bin/env bash
 
 if [[ \"\$1\" == \"\" ]]; then
@@ -180,7 +180,7 @@ else
     exit 1
 fi
 
-" > ${TARGET_DIR}/Is-RedHat 2>/dev/null ||
+" 2>/dev/null >${TARGET_DIR}/Is-RedHat ||
 echo -e "#!/usr/bin/env bash
 # Usage 1: if [[ \"\$(Is-RedHat 6)\" ]]; then ... 
 # Usage 2: if [[ \"\$(Is-RedHat 8)\" ]]; then ... 
@@ -232,7 +232,7 @@ ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || ls -1 /var/lib/apt/lists/lock >
 }
 
 
-" > ${TARGET_DIR}/lazy-apt-update 2>/dev/null ||
+" 2>/dev/null >${TARGET_DIR}/lazy-apt-update ||
 echo -e "#!/usr/bin/env bash
 # SMART lazy-apt-update - only for built-in Debian repos
 # try-and-retry is NOT for here
@@ -258,7 +258,7 @@ apt-cache --no-all-versions show \$packages |
       \$1 == \"Size:\"    { printf(\"%10d %s %s\x5Cn\", \$2, p, v) }
   ' | sort -k1 -n
 
-" > ${TARGET_DIR}/list-packages 2>/dev/null ||
+" 2>/dev/null >${TARGET_DIR}/list-packages ||
 echo -e "#!/usr/bin/env bash
 packages=\$(dpkg --get-selections | grep -v deinstall | awk \"{print \$1}\")
 apt-cache --no-all-versions show \$packages |
@@ -447,7 +447,7 @@ find . | grep -E \"\x5C.csproj\$\" | while read csproj; do
   echo \"\"
 done
 
-" > ${TARGET_DIR}/Reset-Target-Framework 2>/dev/null ||
+" 2>/dev/null >${TARGET_DIR}/Reset-Target-Framework ||
 echo -e "#!/usr/bin/env bash
 
 function get_legacy_framework_version() {
@@ -676,7 +676,7 @@ echo -e "#!/usr/bin/env bash
 
 SayIt \"\$@\"
 
-" > ${TARGET_DIR}/Say 2>/dev/null ||
+" 2>/dev/null >${TARGET_DIR}/Say ||
 echo -e "#!/usr/bin/env bash
 
     function format2digits() {
@@ -832,7 +832,7 @@ function ShowNetStat() {
 ShowSystemStat
 ShowNetStat
 
-" > ${TARGET_DIR}/Show-System-Stat 2>/dev/null ||
+" 2>/dev/null >${TARGET_DIR}/Show-System-Stat ||
 echo -e "#!/usr/bin/env bash
 function uname_system() {
   cached_uname_system=\${cached_uname_system:-\$(uname -s)}
@@ -948,7 +948,7 @@ echo -e "#!/usr/bin/env bash
     sudo DEBIAN_FRONTEND=noninteractive apt-get --allow-unauthenticated install \"\$@\" -y -q
     sudo DEBIAN_FRONTEND=noninteractive apt-get clean
 
-" > ${TARGET_DIR}/smart-apt-install 2>/dev/null ||
+" 2>/dev/null >${TARGET_DIR}/smart-apt-install ||
 echo -e "#!/usr/bin/env bash
 
     try-and-retry lazy-apt-update
@@ -990,7 +990,7 @@ echo -e "#!/usr/bin/env bash
 
 
 
-" > ${TARGET_DIR}/try-and-retry 2>/dev/null ||
+" 2>/dev/null >${TARGET_DIR}/try-and-retry ||
 echo -e "#!/usr/bin/env bash
 
   ANSI_RED='\x5C033[0;31m'; 
