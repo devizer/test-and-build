@@ -8,7 +8,6 @@ script=https://raw.githubusercontent.com/devizer/test-and-build/master/install-b
 
 GO_TARGET_DIR="${GO_TARGET_DIR:-/usr/local}"
 
-
 machine="$(uname -m)"
 if [[ "$machine" == i?86 ]]; then
 	dl=https://dl.google.com/go/go1.14.3.linux-386.tar.gz

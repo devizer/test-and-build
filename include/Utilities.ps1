@@ -341,8 +341,19 @@ function Wait-For-Process
 {
     param($process, $name)
     Say "Waiting for shutdown of [$name]"
-    $process.WaitForExit()
-    Say "[$name] VM gracefully powered off"
+    if ($process.WaitForExit(5*1000*60)) {
+        Say "[$name] VM gracefully powered off"
+    } else {
+        Say "[$name] VM stuck";
+        try { 
+            $process.Kill();
+            Say "[$name] VM had forced to be killed";
+        }
+        catch{
+            Say "[$name] VM was not killed successfully";
+        }
+    }
+    
 }
 
 function Final-Compact
