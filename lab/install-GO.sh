@@ -36,7 +36,7 @@ rm -f _go.tgz
 test -d $GO_TARGET_DIR/go && sudo rm -rf $GO_TARGET_DIR/go || true
 sudo mv go $GO_TARGET_DIR
 export GOROOT=$GO_TARGET_DIR/go
-export GOPATH=$HOME/Projects/Proj1
+# export GOPATH=$HOME/Projects/Proj1
 export PATH=$GOROOT/bin:$PATH # $GOPATH/bin
 go version
 go env
