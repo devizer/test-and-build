@@ -234,7 +234,7 @@ function Build
     popd
 
     Say "Zeroing free space of [$image::$key]"
-    Remote-Command-Raw "cd /; bash /tmp/build/TearDown.sh; apt clean; before-compact" "localhost" $startParams.Port "root" "$($definition.UsersPassword)" $false $true
+    Remote-Command-Raw "cd /; bash /tmp/build/TearDown.sh; apt-get clean; before-compact" "localhost" $startParams.Port "root" "$($definition.UsersPassword)" $false $true
 
     # Say "Dismounting guest's share of [$key]"
     # & umount -f $mapto # NOOOO shutdown?????
