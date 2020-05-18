@@ -163,7 +163,7 @@ steps:
       
       if [ true ]; then
           sudo umount /mnt
-          file=/dev/sda1
+          file=/dev/sdb1
       else
           file="/mnt/BTRFS.disk"
           sudo dd if=/dev/zero of="/$file" bs=1 seek=12800M count=1

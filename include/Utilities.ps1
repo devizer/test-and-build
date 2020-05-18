@@ -258,8 +258,9 @@ function Remote-Command-Raw
     }
     $rnd = "cmd-" + [System.Guid]::NewGuid().ToString("N")
     $tmpCmdLocalFullName = "$mapto/tmp/$rnd"
-    # Azlue Pipelines blocks/elemenate colors in terminal
-    $cmd_Colorless = IIF ($ENV:BUILD_DEFINITIONNAME) -Then "export SAY_COLORLESS=true" -Else ""  
+    # Early Azlue Pipelines blocks/elemenate colors in terminal
+    # new azure pipeline supports colors very well
+    # $cmd_Colorless = IIF ($ENV:BUILD_DEFINITIONNAME) -Then "export SAY_COLORLESS=true" -Else ""
     $remoteCmd = "#!/usr/bin/env bash`n$cmd_Colorless`n" + @"
 unset PS1
 if [[ -d /etc/profile.d ]]; then

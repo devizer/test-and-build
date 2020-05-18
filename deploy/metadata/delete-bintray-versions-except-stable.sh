@@ -15,7 +15,6 @@ function delete_version() {
   echo ""
 }
 
-
 url="$base_url -X GET ${API}/packages/${BINTRAY_USER}/${BINTRAY_REPO}/${PCK_NAME}"
 jsonPackage=`eval $url`
 printf "\n\nPACKAGE\n${jsonPackage}\n"
