@@ -29,6 +29,13 @@ function create_launcher() {
 pushd "$(dirname $0)" >/dev/null; ScriptDir="$(pwd)"; popd >/dev/null
 # paket.exe: ${ScriptDir}/paket.exe
 
+echo '#!/usr/bin/env bash
+set -e
+mono ${ScriptDir}/paket.exe "$@"
+' | sudo tee /usr/local/bin/paket >/dev/null
+cp -f /usr/local/bin/paket /usr/local/bin/paket.exe
+
+
 pushd "${ScriptDir}" >/dev/null
 
 create_launcher "nunit3-console" "packages/NUnit.ConsoleRunner*/tools" "nunit3-console.exe"
