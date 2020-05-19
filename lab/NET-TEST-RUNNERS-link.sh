@@ -33,6 +33,7 @@ echo '#!/usr/bin/env bash
 set -e
 mono ${ScriptDir}/paket.exe "$@"
 ' | sudo tee /usr/local/bin/paket >/dev/null
+sudo chmod +x /usr/local/bin/paket
 cp -f /usr/local/bin/paket /usr/local/bin/paket.exe
 
 
