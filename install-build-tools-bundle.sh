@@ -420,21 +420,31 @@ function delete_container() {
     fi
 }
 
-function get_mysql_image_name() {
-    local image
-    if [[ \"\$(get_docker_arch)\" == arm ]]; then
-        # https://github.com/beercan1989/docker-arm-mysql
-        image=\"beercan1989/arm-mysql:latest\"
-    else 
-        image=\"mysql/mysql-server:\${MYSQL_VERSION}\"
-    fi
-    echo \$image
-}
-
 function delete_image() {
     local image=\$1
     Say \"Deleting the \$image image\" 
     docker rmi -f \"\$image\"
+}
+
+# MySQL Specific Functions
+function get_mysql_image_name() {
+    local image arch=\"\$(get_docker_arch)\"
+    if [[ \"\$arch\" == arm ]]; then
+        # https://github.com/beercan1989/docker-arm-mysql
+        image=\"beercan1989/arm-mysql:latest\"
+    elif [[ \"\$arch\" == arm64 && \"\$MYSQL_VERSION\" == \"5.7\" ]]; then
+        # https://hub.docker.com/r/ebspace/aarch64-mysql/
+        image=\"ebspace/aarch64-mysql:latest\"
+    elif [[ \"\$arch\" == arm64 && \"\$MYSQL_VERSION\" == \"8.0\" ]]; then
+        # https://hub.docker.com/r/ebspace/aarch64-mysql/
+        image=\"mysql/mysql-server:\${MYSQL_VERSION}\"
+    elif [[ \"\$arch\" == amd64 ]]; then
+        image=\"mysql/mysql-server:\${MYSQL_VERSION}\"
+    else 
+        Say \"ERROR. MySQL Version \${MYSQL_VERSION} is not supported for [\$arch] architecture\"
+        exit 1;
+    fi
+    echo \$image
 }
 
 function start_mysql_container() {
@@ -485,7 +495,6 @@ function wait_for_mysql() {
         printf \", Ver is \$ver\x5Cn\"
     fi
 }
-
 
 while [ \$# -ne 0 ]; do
     param=\"\$1\"
@@ -566,21 +575,31 @@ function delete_container() {
     fi
 }
 
-function get_mysql_image_name() {
-    local image
-    if [[ \"\$(get_docker_arch)\" == arm ]]; then
-        # https://github.com/beercan1989/docker-arm-mysql
-        image=\"beercan1989/arm-mysql:latest\"
-    else 
-        image=\"mysql/mysql-server:\${MYSQL_VERSION}\"
-    fi
-    echo \$image
-}
-
 function delete_image() {
     local image=\$1
     Say \"Deleting the \$image image\" 
     docker rmi -f \"\$image\"
+}
+
+# MySQL Specific Functions
+function get_mysql_image_name() {
+    local image arch=\"\$(get_docker_arch)\"
+    if [[ \"\$arch\" == arm ]]; then
+        # https://github.com/beercan1989/docker-arm-mysql
+        image=\"beercan1989/arm-mysql:latest\"
+    elif [[ \"\$arch\" == arm64 && \"\$MYSQL_VERSION\" == \"5.7\" ]]; then
+        # https://hub.docker.com/r/ebspace/aarch64-mysql/
+        image=\"ebspace/aarch64-mysql:latest\"
+    elif [[ \"\$arch\" == arm64 && \"\$MYSQL_VERSION\" == \"8.0\" ]]; then
+        # https://hub.docker.com/r/ebspace/aarch64-mysql/
+        image=\"mysql/mysql-server:\${MYSQL_VERSION}\"
+    elif [[ \"\$arch\" == amd64 ]]; then
+        image=\"mysql/mysql-server:\${MYSQL_VERSION}\"
+    else 
+        Say \"ERROR. MySQL Version \${MYSQL_VERSION} is not supported for [\$arch] architecture\"
+        exit 1;
+    fi
+    echo \$image
 }
 
 function start_mysql_container() {
@@ -631,7 +650,6 @@ function wait_for_mysql() {
         printf \", Ver is \$ver\x5Cn\"
     fi
 }
-
 
 while [ \$# -ne 0 ]; do
     param=\"\$1\"
