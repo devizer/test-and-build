@@ -372,7 +372,6 @@ MYSQL_CONTAINER_NAME=\"\${MYSQL_CONTAINER_NAME:-mysql-\$MYSQL_VERSION-for-azure-
  # time MYSQL_PWD=pass mysql --protocol=TCP -h localhost -u root -P 3306 -B -N -e \"SHOW VARIABLES LIKE 'version';\" | cat
  
  
- 
 # arm|arm64|amd64
 function get_docker_arch() {
     local dockerArch=\$(sudo docker version --format '{{.Server.Arch}}') 
@@ -394,6 +393,18 @@ function is_container_running() {
         isRunning=true
     fi
     echo \$isRunning
+}
+
+function stop_container() {
+    local name=\$1
+    if [[ \"\$(is_container_running \${name})\" != true ]]; then
+        Say \"Container \$name is not running\"
+    elif [[ \"\$(is_container_exists \${name})\" == true ]]; then
+        Say \"Container \$name is absent\"
+    else
+        Say \"Stopping container \$name\"
+        sudo docker stop \"\$name\"
+    fi
 }
 
 function delete_container() {
@@ -421,16 +432,6 @@ function delete_image() {
     local image=\$1
     Say \"Deleting the \$image image\" 
     docker rmi -f \"\$image\"
-}
-
-function stop_container() {
-    local name=\$1
-    if [[ \"\$(is_container_exists \${name})\" == true ]]; then
-        Say \"Deleting existing container \$name\"
-        sudo docker rm -f \"\$name\"
-    else
-        Say \"Skip deleting container \$name. It does not exists\"
-    fi
 }
 
 function start_mysql_container() {
@@ -497,7 +498,6 @@ MYSQL_CONTAINER_NAME=\"\${MYSQL_CONTAINER_NAME:-mysql-\$MYSQL_VERSION-for-azure-
  # time MYSQL_PWD=pass mysql --protocol=TCP -h localhost -u root -P 3306 -B -N -e \"SHOW VARIABLES LIKE 'version';\" | cat
  
  
- 
 # arm|arm64|amd64
 function get_docker_arch() {
     local dockerArch=\$(sudo docker version --format '{{.Server.Arch}}') 
@@ -519,6 +519,18 @@ function is_container_running() {
         isRunning=true
     fi
     echo \$isRunning
+}
+
+function stop_container() {
+    local name=\$1
+    if [[ \"\$(is_container_running \${name})\" != true ]]; then
+        Say \"Container \$name is not running\"
+    elif [[ \"\$(is_container_exists \${name})\" == true ]]; then
+        Say \"Container \$name is absent\"
+    else
+        Say \"Stopping container \$name\"
+        sudo docker stop \"\$name\"
+    fi
 }
 
 function delete_container() {
@@ -546,16 +558,6 @@ function delete_image() {
     local image=\$1
     Say \"Deleting the \$image image\" 
     docker rmi -f \"\$image\"
-}
-
-function stop_container() {
-    local name=\$1
-    if [[ \"\$(is_container_exists \${name})\" == true ]]; then
-        Say \"Deleting existing container \$name\"
-        sudo docker rm -f \"\$name\"
-    else
-        Say \"Skip deleting container \$name. It does not exists\"
-    fi
 }
 
 function start_mysql_container() {
