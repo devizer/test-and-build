@@ -150,6 +150,66 @@ else
 fi
 
 
+# Get-Local-Docker-Ip
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+if [[ Is-Docker-Container ]]; then
+    ip r | grep -E '^default via ' | awk '{print \$3}'
+else
+    echo \"127.0.0.1\"
+fi
+
+" 2>/dev/null >${TARGET_DIR}/Get-Local-Docker-Ip ||
+  echo -e "#!/usr/bin/env bash
+if [[ Is-Docker-Container ]]; then
+    ip r | grep -E '^default via ' | awk '{print \$3}'
+else
+    echo \"127.0.0.1\"
+fi
+
+" | sudo tee ${TARGET_DIR}/Get-Local-Docker-Ip >/dev/null;
+  if [[ -f ${TARGET_DIR}/Get-Local-Docker-Ip ]]; then 
+      chmod +x ${TARGET_DIR}/Get-Local-Docker-Ip >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-Local-Docker-Ip
+  	echo "OK: ${TARGET_DIR}/Get-Local-Docker-Ip"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Get-Local-Docker-Ip"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Get-Local-Docker-Ip: directory does not exists"
+fi
+
+
+# Is-Docker-Container
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+
+if [[ \"\${container:-}\" == \"docker\" || \"\$(grep 'docker' /proc/1/cgroup 2>/dev/null || true)\" != \"\" ]]; then
+  if [[ \"\$1\" == \"-v\" ]]; then echo \"true\"; fi
+  exit 0;
+else
+  if [[ \"\$1\" == \"-v\" ]]; then echo \"false\"; fi
+  exit 1;
+fi
+
+" 2>/dev/null >${TARGET_DIR}/Is-Docker-Container ||
+  echo -e "#!/usr/bin/env bash
+
+if [[ \"\${container:-}\" == \"docker\" || \"\$(grep 'docker' /proc/1/cgroup 2>/dev/null || true)\" != \"\" ]]; then
+  if [[ \"\$1\" == \"-v\" ]]; then echo \"true\"; fi
+  exit 0;
+else
+  if [[ \"\$1\" == \"-v\" ]]; then echo \"false\"; fi
+  exit 1;
+fi
+
+" | sudo tee ${TARGET_DIR}/Is-Docker-Container >/dev/null;
+  if [[ -f ${TARGET_DIR}/Is-Docker-Container ]]; then 
+      chmod +x ${TARGET_DIR}/Is-Docker-Container >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Is-Docker-Container
+  	echo "OK: ${TARGET_DIR}/Is-Docker-Container"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Is-Docker-Container"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Is-Docker-Container: directory does not exists"
+fi
+
+
 # Is-RedHat
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
@@ -292,6 +352,235 @@ apt-cache --no-all-versions show \$packages |
   else "Error: Unable to extract ${TARGET_DIR}/list-packages"; fi
 else 
   echo "Skipping ${TARGET_DIR}/list-packages: directory does not exists"
+fi
+
+
+# MySQL-Container
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+MYSQL_CONTAINER_NAME=\"\${MYSQL_CONTAINER_NAME:-mysql-5.7-for-azure-pipelines-agent}\"
+MYSQL_CONTAINER_PORT=\${MYSQL_CONTAINER_PORT:-3306}
+MYSQL_ROOT_PASSWORD=\"\${MYSQL_ROOT_PASSWORD:-pass}\"
+MYSQL_DATABASE=\"\${MYSQL_DATABASE:-app}\"
+MYSQL_USER=\"\${MYSQL_USER:-user}\"
+MYSQL_PASSWORD=\"\${MYSQL_PASSWORD:-pass}\"
+MYSQL_VERSION=\"\${MYSQL_VERSION:-5.7}\"
+
+# arm|arm64|amd64
+function get_docker_arch() {
+    local dockerArch=\$(sudo docker version --format '{{.Server.Arch}}') 
+    echo \"\${dockerArch:-unknown}\"
+}
+
+function is_container_exists() {
+    local name=\$1
+    local exists=\"true\"; 
+    sudo docker logs \"\$name\" >/dev/null 2>&1 || exists=false
+    echo \"\$exists\"
+}
+
+function is_container_running() {
+    local name=\$1
+    local isRunning=\"false\"
+    # TODO: filter by names only
+    if [[ -n \"\$(docker ps | grep \$name || true)\" ]]; then
+        isRunning=true
+    fi
+    echo \$isRunning
+}
+
+function delete_container() {
+    local name=\$1
+    if [[ \"\$(is_container_exists \${name})\" == true ]]; then
+        Say \"Deleting existing container \$name\"
+        sudo docker rm -f \"\$name\"
+    else
+        Say \"Skip deleting container \$name. It does not exists\"
+    fi
+}
+
+function get_mysql_image_name() {
+    local image
+    if [[ \"\$(get_docker_arch)\" == arm ]]; then
+        # https://github.com/beercan1989/docker-arm-mysql
+        image=\"beercan1989/arm-mysql:latest\"
+    else 
+        image=\"mysql/mysql-server:\${MYSQL_VERSION}\"
+    fi
+    echo \$image
+}
+
+function delete_image() {
+    local image=\$1
+    Say \"Deleting the \$image image\" 
+    docker rmi -f \"\$image\"
+}
+
+function stop_container() {
+    local name=\$1
+    if [[ \"\$(is_container_exists \${name})\" == true ]]; then
+        Say \"Deleting existing container \$name\"
+        sudo docker rm -f \"\$name\"
+    else
+        Say \"Skip deleting container \$name. It does not exists\"
+    fi
+}
+
+function start_mysql_container() {
+    local image=\$(get_mysql_image_name)
+    
+    if [[ \"\$(is_container_exists \$MYSQL_CONTAINER_NAME)\" != true ]]; then
+        # container is absent
+        Say \"Pulling the \$image image if required\"
+        sudo docker pull \"\$image\"
+        
+        Say \"Creating \$MYSQL_CONTAINER_NAME container\"
+        docker run -it \x5C
+          -e \"MYSQL_ROOT_HOST=%\" \x5C
+          -e \"MYSQL_ROOT_PASSWORD=\${MYSQL_ROOT_PASSWORD}\" \x5C
+          -e \"MYSQL_DATABASE=\${MYSQL_DATABASE}\" \x5C
+          -e \"MYSQL_USER=\${MYSQL_USER}\" \x5C
+          -e \"MYSQL_PASSWORD=\${MYSQL_PASSWORD}}\" \x5C
+          -p \"\${MYSQL_CONTAINER_PORT}:3306\" \x5C
+          --name \$MYSQL_CONTAINER_NAME \x5C
+          \"\$image\"
+    elif [[ \"\$(is_container_running \$MYSQL_CONTAINER_NAME)\" == false ]]; then
+        # container exists but stopped
+        Say \"Starting existing \$MYSQL_CONTAINER_NAME container\"
+        docker start \$MYSQL_CONTAINER_NAME
+    else 
+        Say \"Container \$MYSQL_CONTAINER_NAME already running\"
+    fi
+}
+
+while [ \$# -ne 0 ]; do
+    param=\"\$1\"
+    case \"\$param\" in
+        start) start_mysql_container ;;
+        reset) delete_container \$MYSQL_CONTAINER_NAME; start_mysql_container ;;
+        stop) stop_container \$MYSQL_CONTAINER_NAME ;;
+        delete) delete_container \$MYSQL_CONTAINER_NAME ;;
+        \"delete-image\") delete_image \$(get_mysql_image_name) ;;
+    esac
+    shift
+done
+
+" 2>/dev/null >${TARGET_DIR}/MySQL-Container ||
+  echo -e "#!/usr/bin/env bash
+MYSQL_CONTAINER_NAME=\"\${MYSQL_CONTAINER_NAME:-mysql-5.7-for-azure-pipelines-agent}\"
+MYSQL_CONTAINER_PORT=\${MYSQL_CONTAINER_PORT:-3306}
+MYSQL_ROOT_PASSWORD=\"\${MYSQL_ROOT_PASSWORD:-pass}\"
+MYSQL_DATABASE=\"\${MYSQL_DATABASE:-app}\"
+MYSQL_USER=\"\${MYSQL_USER:-user}\"
+MYSQL_PASSWORD=\"\${MYSQL_PASSWORD:-pass}\"
+MYSQL_VERSION=\"\${MYSQL_VERSION:-5.7}\"
+
+# arm|arm64|amd64
+function get_docker_arch() {
+    local dockerArch=\$(sudo docker version --format '{{.Server.Arch}}') 
+    echo \"\${dockerArch:-unknown}\"
+}
+
+function is_container_exists() {
+    local name=\$1
+    local exists=\"true\"; 
+    sudo docker logs \"\$name\" >/dev/null 2>&1 || exists=false
+    echo \"\$exists\"
+}
+
+function is_container_running() {
+    local name=\$1
+    local isRunning=\"false\"
+    # TODO: filter by names only
+    if [[ -n \"\$(docker ps | grep \$name || true)\" ]]; then
+        isRunning=true
+    fi
+    echo \$isRunning
+}
+
+function delete_container() {
+    local name=\$1
+    if [[ \"\$(is_container_exists \${name})\" == true ]]; then
+        Say \"Deleting existing container \$name\"
+        sudo docker rm -f \"\$name\"
+    else
+        Say \"Skip deleting container \$name. It does not exists\"
+    fi
+}
+
+function get_mysql_image_name() {
+    local image
+    if [[ \"\$(get_docker_arch)\" == arm ]]; then
+        # https://github.com/beercan1989/docker-arm-mysql
+        image=\"beercan1989/arm-mysql:latest\"
+    else 
+        image=\"mysql/mysql-server:\${MYSQL_VERSION}\"
+    fi
+    echo \$image
+}
+
+function delete_image() {
+    local image=\$1
+    Say \"Deleting the \$image image\" 
+    docker rmi -f \"\$image\"
+}
+
+function stop_container() {
+    local name=\$1
+    if [[ \"\$(is_container_exists \${name})\" == true ]]; then
+        Say \"Deleting existing container \$name\"
+        sudo docker rm -f \"\$name\"
+    else
+        Say \"Skip deleting container \$name. It does not exists\"
+    fi
+}
+
+function start_mysql_container() {
+    local image=\$(get_mysql_image_name)
+    
+    if [[ \"\$(is_container_exists \$MYSQL_CONTAINER_NAME)\" != true ]]; then
+        # container is absent
+        Say \"Pulling the \$image image if required\"
+        sudo docker pull \"\$image\"
+        
+        Say \"Creating \$MYSQL_CONTAINER_NAME container\"
+        docker run -it \x5C
+          -e \"MYSQL_ROOT_HOST=%\" \x5C
+          -e \"MYSQL_ROOT_PASSWORD=\${MYSQL_ROOT_PASSWORD}\" \x5C
+          -e \"MYSQL_DATABASE=\${MYSQL_DATABASE}\" \x5C
+          -e \"MYSQL_USER=\${MYSQL_USER}\" \x5C
+          -e \"MYSQL_PASSWORD=\${MYSQL_PASSWORD}}\" \x5C
+          -p \"\${MYSQL_CONTAINER_PORT}:3306\" \x5C
+          --name \$MYSQL_CONTAINER_NAME \x5C
+          \"\$image\"
+    elif [[ \"\$(is_container_running \$MYSQL_CONTAINER_NAME)\" == false ]]; then
+        # container exists but stopped
+        Say \"Starting existing \$MYSQL_CONTAINER_NAME container\"
+        docker start \$MYSQL_CONTAINER_NAME
+    else 
+        Say \"Container \$MYSQL_CONTAINER_NAME already running\"
+    fi
+}
+
+while [ \$# -ne 0 ]; do
+    param=\"\$1\"
+    case \"\$param\" in
+        start) start_mysql_container ;;
+        reset) delete_container \$MYSQL_CONTAINER_NAME; start_mysql_container ;;
+        stop) stop_container \$MYSQL_CONTAINER_NAME ;;
+        delete) delete_container \$MYSQL_CONTAINER_NAME ;;
+        \"delete-image\") delete_image \$(get_mysql_image_name) ;;
+    esac
+    shift
+done
+
+" | sudo tee ${TARGET_DIR}/MySQL-Container >/dev/null;
+  if [[ -f ${TARGET_DIR}/MySQL-Container ]]; then 
+      chmod +x ${TARGET_DIR}/MySQL-Container >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/MySQL-Container
+  	echo "OK: ${TARGET_DIR}/MySQL-Container"; 
+  else "Error: Unable to extract ${TARGET_DIR}/MySQL-Container"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/MySQL-Container: directory does not exists"
 fi
 
 
