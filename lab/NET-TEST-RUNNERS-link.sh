@@ -31,7 +31,7 @@ pushd "$(dirname $0)" >/dev/null; ScriptDir="$(pwd)"; popd >/dev/null
 
 echo '#!/usr/bin/env bash
 set -e
-mono '${ScriptDir}'/paket.exe "$@"
+mono '${pwd}'/paket.exe "$@"
 ' | sudo tee /usr/local/bin/paket >/dev/null
 sudo chmod +x /usr/local/bin/paket
 cp -f /usr/local/bin/paket /usr/local/bin/paket.exe
