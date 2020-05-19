@@ -11,7 +11,7 @@ function create_launcher() {
     if [[ -f "$search_the" ]]; then 
         # echo "[$search_in] found: [$(pwd)]"
         full_path="$(pwd)/$search_the"
-        body="#!/usr/bin/env bash\n\nmono $full_path \"\$@\""
+        body="#!/usr/bin/env bash\nset -e\nmono $full_path \"\$@\""
         # echo "Creating link to $full_path as $name[.exe]"
         echo -e $body | sudo tee  /usr/local/bin/${name} >/dev/null
         sudo chmod +x /usr/local/bin/${name}
