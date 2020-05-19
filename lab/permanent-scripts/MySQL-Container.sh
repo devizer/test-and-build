@@ -7,8 +7,12 @@ MYSQL_PASSWORD="${MYSQL_PASSWORD:-pass}"
 MYSQL_VERSION="${MYSQL_VERSION:-5.7}"
 MYSQL_CONTAINER_NAME="${MYSQL_CONTAINER_NAME:-mysql-$MYSQL_VERSION-for-azure-pipelines-agent}"
 
- # example for default parameter
+ # MySQL-Container start; MySQL-Container exec "SHOW VARIABLES LIKE 'version';" 
+ 
+ # raw example for default parameter
  # time MYSQL_PWD=pass mysql --protocol=TCP -h localhost -u root -P 3306 -B -N -e "SHOW VARIABLES LIKE 'version';" | cat
+ 
+ 
  
 # arm|arm64|amd64
 function get_docker_arch() {
