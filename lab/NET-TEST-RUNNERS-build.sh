@@ -51,8 +51,9 @@ mono .paket/paket.exe install
 cd packages
 rm -rf System* 
 rm -f **/*.nupkg
-mv .paket/paket.exe .
+cd ..
 
+mv .paket/paket.exe ./paket.exe
 popd >/dev/null
 
 Header  "Downloading: link-unit-test-runners.sh"
