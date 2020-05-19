@@ -83,7 +83,7 @@ function start_mysql_container() {
         sudo docker pull "$image"
         
         Say "Creating $MYSQL_CONTAINER_NAME container"
-        docker run -it \
+        docker run -d \
           -e "MYSQL_ROOT_HOST=%" \
           -e "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}" \
           -e "MYSQL_DATABASE=${MYSQL_DATABASE}" \
@@ -99,6 +99,8 @@ function start_mysql_container() {
     else 
         Say "Container $MYSQL_CONTAINER_NAME already running"
     fi
+    
+    # TODO: wait for connection
 }
 
 function exec_statement(){
@@ -114,7 +116,8 @@ while [ $# -ne 0 ]; do
         stop) stop_container $MYSQL_CONTAINER_NAME ;;
         delete) delete_container $MYSQL_CONTAINER_NAME ;;
         "delete-image") delete_image $(get_mysql_image_name) ;;
-        exec) cmd="$2"; shift; exec_statement "$cmd" ;; 
+        exec) cmd="$2"; shift; exec_statement "$cmd" ;;
+        "wait-for") echo "'wait-for' NOT IMPLEMENTED" ;; 
     esac
     shift
 done
