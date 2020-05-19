@@ -496,6 +496,14 @@ function wait_for_mysql() {
     fi
 }
 
+function list_supported_versions() {
+    local arch=\"\$(get_docker_arch)\"
+    if [[   \"\$arch\" == arm   ]]; then echo \"5.7\"; 
+    elif [[ \"\$arch\" == arm64 ]]; then echo \"5.7 8.0\"; 
+    elif [[ \"\$arch\" == arm   ]]; then echo \"5.5 5.6 5.7 8.0\";
+    else echo \"\"; fi 
+}
+
 while [ \$# -ne 0 ]; do
     param=\"\$1\"
     case \"\$param\" in
@@ -505,11 +513,12 @@ while [ \$# -ne 0 ]; do
         delete) delete_container \$MYSQL_CONTAINER_NAME ;;
         \"delete-image\") delete_image \$(get_mysql_image_name) ;;
         exec) cmd=\"\$2\"; shift; exec_statement \"\$cmd\" ;;
-        \"wait-for\") wait_for_mysql \"\$MYSQL_CONTAINER_NAME\" \$MYSQL_CONTAINER_PORT ;; 
+        \"wait-for\") wait_for_mysql \"\$MYSQL_CONTAINER_NAME\" \$MYSQL_CONTAINER_PORT ;;
+        \"list-supported-versions\") list_supported_versions ;;  
     esac
     shift
 done
-# 1:15
+# 1:22
 
 " 2>/dev/null >${TARGET_DIR}/MySQL-Container ||
   echo -e "#!/usr/bin/env bash
@@ -651,6 +660,14 @@ function wait_for_mysql() {
     fi
 }
 
+function list_supported_versions() {
+    local arch=\"\$(get_docker_arch)\"
+    if [[   \"\$arch\" == arm   ]]; then echo \"5.7\"; 
+    elif [[ \"\$arch\" == arm64 ]]; then echo \"5.7 8.0\"; 
+    elif [[ \"\$arch\" == arm   ]]; then echo \"5.5 5.6 5.7 8.0\";
+    else echo \"\"; fi 
+}
+
 while [ \$# -ne 0 ]; do
     param=\"\$1\"
     case \"\$param\" in
@@ -660,11 +677,12 @@ while [ \$# -ne 0 ]; do
         delete) delete_container \$MYSQL_CONTAINER_NAME ;;
         \"delete-image\") delete_image \$(get_mysql_image_name) ;;
         exec) cmd=\"\$2\"; shift; exec_statement \"\$cmd\" ;;
-        \"wait-for\") wait_for_mysql \"\$MYSQL_CONTAINER_NAME\" \$MYSQL_CONTAINER_PORT ;; 
+        \"wait-for\") wait_for_mysql \"\$MYSQL_CONTAINER_NAME\" \$MYSQL_CONTAINER_PORT ;;
+        \"list-supported-versions\") list_supported_versions ;;  
     esac
     shift
 done
-# 1:15
+# 1:22
 
 " | sudo tee ${TARGET_DIR}/MySQL-Container >/dev/null;
   if [[ -f ${TARGET_DIR}/MySQL-Container ]]; then 
