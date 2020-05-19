@@ -65,7 +65,7 @@ eval $cmd || eval $cmd || eval $cmd
 chmod +x "$copy"
 
 mkdir -p ${target}
-cp -a ${target_tmp}/* ${target} && rm -rf ${target_tmp}
+cp -f -a ${target_tmp}/* ${target} && rm -rf ${target_tmp}
 
 pushd "${target}" >/dev/null
 bash link-unit-test-runners.sh
