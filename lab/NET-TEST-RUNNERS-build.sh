@@ -51,12 +51,17 @@ mono .paket/paket.exe install
 cd packages
 rm -rf System* 
 rm -f **/*.nupkg
+mv ./paket/paket.exe ./paket.exe
 
 popd >/dev/null
 
 Header  "Downloading: link-unit-test-runners.sh"
-curl -ksSL -o ${target_tmp}/link-unit-test-runners.sh https://raw.githubusercontent.com/devizer/test-and-build/master/lab/NET-TEST-RUNNERS-link.sh
-chmod +x ${target_tmp}/link-unit-test-runners.sh
+copy="${target_tmp}/link-unit-test-runners.sh"
+url="https://raw.githubusercontent.com/devizer/test-and-build/master/lab/NET-TEST-RUNNERS-link.sh"
+cmd="wget --no-check-certificate -O \"$copy\" \"$url\"  || curl -kfSL -o \"$copy\" \"$url\""
+eval $cmd || eval $cmd || eval $cmd
+# curl -ksSL -o ${target_tmp}/link-unit-test-runners.sh https://raw.githubusercontent.com/devizer/test-and-build/master/lab/NET-TEST-RUNNERS-link.sh
+chmod +x "$copy"
 
 mkdir -p ${target}
 cp -a ${target_tmp}/* ${target} && rm -rf ${target_tmp}
