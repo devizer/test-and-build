@@ -366,7 +366,7 @@ MYSQL_DATABASE=\"\${MYSQL_DATABASE:-app}\"
 MYSQL_USER=\"\${MYSQL_USER:-user}\"
 MYSQL_PASSWORD=\"\${MYSQL_PASSWORD:-pass}\"
 MYSQL_VERSION=\"\${MYSQL_VERSION:-5.7}\"
-MYSQL_CONTAINER_NAME=\"\${MYSQL_CONTAINER_NAME:-mysql-\$MYSQL_VERSION-for-azure-pipelines-agent}\"
+MYSQL_CONTAINER_NAME=\"\${MYSQL_CONTAINER_NAME:-mysql-\$MYSQL_VERSION-for-integration-tests}\"
 WAIT_TIMEOUT=\"\${WAIT_TIMEOUT:-42}\"
 
  # MySQL-Container start wait-for exec \"SHOW VARIABLES LIKE 'version';\" 
@@ -500,7 +500,7 @@ while [ \$# -ne 0 ]; do
     esac
     shift
 done
-# 12:48
+# 12:55
 
 " 2>/dev/null >${TARGET_DIR}/MySQL-Container ||
   echo -e "#!/usr/bin/env bash
@@ -512,7 +512,7 @@ MYSQL_DATABASE=\"\${MYSQL_DATABASE:-app}\"
 MYSQL_USER=\"\${MYSQL_USER:-user}\"
 MYSQL_PASSWORD=\"\${MYSQL_PASSWORD:-pass}\"
 MYSQL_VERSION=\"\${MYSQL_VERSION:-5.7}\"
-MYSQL_CONTAINER_NAME=\"\${MYSQL_CONTAINER_NAME:-mysql-\$MYSQL_VERSION-for-azure-pipelines-agent}\"
+MYSQL_CONTAINER_NAME=\"\${MYSQL_CONTAINER_NAME:-mysql-\$MYSQL_VERSION-for-integration-tests}\"
 WAIT_TIMEOUT=\"\${WAIT_TIMEOUT:-42}\"
 
  # MySQL-Container start wait-for exec \"SHOW VARIABLES LIKE 'version';\" 
@@ -646,7 +646,7 @@ while [ \$# -ne 0 ]; do
     esac
     shift
 done
-# 12:48
+# 12:55
 
 " | sudo tee ${TARGET_DIR}/MySQL-Container >/dev/null;
   if [[ -f ${TARGET_DIR}/MySQL-Container ]]; then 
