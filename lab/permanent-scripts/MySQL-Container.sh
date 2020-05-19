@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
-MYSQL_CONTAINER_NAME="${MYSQL_CONTAINER_NAME:-mysql-5.7-for-azure-pipelines-agent}"
 MYSQL_CONTAINER_PORT=${MYSQL_CONTAINER_PORT:-3306}
 MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:-pass}"
 MYSQL_DATABASE="${MYSQL_DATABASE:-app}"
 MYSQL_USER="${MYSQL_USER:-user}"
 MYSQL_PASSWORD="${MYSQL_PASSWORD:-pass}"
 MYSQL_VERSION="${MYSQL_VERSION:-5.7}"
+MYSQL_CONTAINER_NAME="${MYSQL_CONTAINER_NAME:-mysql-$MYSQL_VERSION-for-azure-pipelines-agent}"
 
+ # example for default parameter
+ # time MYSQL_PWD=pass mysql --protocol=TCP -h localhost -u root -P 3306 -B -N -e "SHOW VARIABLES LIKE 'version';" | cat
+ 
 # arm|arm64|amd64
 function get_docker_arch() {
     local dockerArch=$(sudo docker version --format '{{.Server.Arch}}') 
@@ -94,6 +97,11 @@ function start_mysql_container() {
     fi
 }
 
+function exec_statement(){
+    local cmd=$1
+    MYSQL_PWD="${MYSQL_PASSWORD}" mysql --protocol=TCP -h $(Get-Local-Docker-Ip) -u root -P ${MYSQL_CONTAINER_PORT} -B -N -e "$cmd" | cat
+}
+
 while [ $# -ne 0 ]; do
     param="$1"
     case "$param" in
@@ -102,6 +110,7 @@ while [ $# -ne 0 ]; do
         stop) stop_container $MYSQL_CONTAINER_NAME ;;
         delete) delete_container $MYSQL_CONTAINER_NAME ;;
         "delete-image") delete_image $(get_mysql_image_name) ;;
+        exec) cmd="$2"; shift; exec_statement "$cmd" ;; 
     esac
     shift
 done

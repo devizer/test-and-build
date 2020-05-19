@@ -4,7 +4,7 @@ if [[ "$1" == "" ]]; then
 echo "Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
 here 1G - working set size
      30 - test duration, in seconds
-     5 - ramp duration (for VM, raids and ssd 30 seconds is recommended
+     5  - ramp duration (for VM, raids and ssd 30 seconds is recommended)
 "
 exit 0;
 fi
