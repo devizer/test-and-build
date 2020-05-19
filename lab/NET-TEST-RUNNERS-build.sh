@@ -44,9 +44,9 @@ nuget xunit.runner.reporters
 ' > paket.dependencies 
 
 Header "Downloading: paket.exe"
-mono .paket/paket.bootstrapper.exe
+mono .paket/paket.bootstrapper.exe || mono .paket/paket.bootstrapper.exe || mono .paket/paket.bootstrapper.exe
 Header "Downloading: unit test runners for NUnit and xUnit"
-mono .paket/paket.exe install
+mono .paket/paket.exe install || mono .paket/paket.exe install || mono .paket/paket.exe install
 
 cd packages
 rm -rf System* 
