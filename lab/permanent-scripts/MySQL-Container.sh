@@ -6,6 +6,7 @@ MYSQL_USER="${MYSQL_USER:-user}"
 MYSQL_PASSWORD="${MYSQL_PASSWORD:-pass}"
 MYSQL_VERSION="${MYSQL_VERSION:-5.7}"
 MYSQL_CONTAINER_NAME="${MYSQL_CONTAINER_NAME:-mysql-$MYSQL_VERSION-for-azure-pipelines-agent}"
+WAIT_TIMEOUT="${WAIT_TIMEOUT:-42}"
 
  # MySQL-Container start wait-for exec "SHOW VARIABLES LIKE 'version';" 
  
@@ -109,6 +110,22 @@ function exec_statement(){
     MYSQL_PWD="${MYSQL_PASSWORD}" mysql --protocol=TCP -h $(Get-Local-Docker-Ip) -u root -P ${MYSQL_CONTAINER_PORT} -B -N -e "$cmd" | cat
 }
 
+function wait_for_mysql() {
+    local name=$1 port=$2 counter=0 total=$WAIT_TIMEOUT started=""
+    Say "Waiting for $name on port $port"
+    while [ $counter -lt $total ]; do
+        counter=$((counter+1));
+        # mysql --protocol=TCP -h localhost -u root -p"${MYSQL_ROOT_PASSWORD}" -P $p -e "Select 1;" 2>/dev/null 1>&2 && started="yes" || true
+        docker exec -t $name mysql --protocol=TCP -h localhost -u root -p"${MYSQL_ROOT_PASSWORD}" -P 3306 -e "Select 1;" 2>/dev/null 1>&2 && started="yes" || true
+        if [ -n "$started" ]; then printf " OK"; break; else (sleep 1; printf "${counter}."); fi
+    done
+    if [ -z "$started" ]; then printf " Fail\n"; else
+        ver=$(docker exec -t $name sh -c "MYSQL_PWD=\"$MYSQL_ROOT_PASSWORD\" mysql -s -N --protocol=TCP -h localhost -u root -P 3306 -e 'Select version();' 2>&1")
+        printf ", Ver is $ver\n"
+    fi
+}
+
+
 while [ $# -ne 0 ]; do
     param="$1"
     case "$param" in
@@ -118,7 +135,7 @@ while [ $# -ne 0 ]; do
         delete) delete_container $MYSQL_CONTAINER_NAME ;;
         "delete-image") delete_image $(get_mysql_image_name) ;;
         exec) cmd="$2"; shift; exec_statement "$cmd" ;;
-        "wait-for") echo "'wait-for' NOT IMPLEMENTED" ;; 
+        "wait-for") wait_for_mysql "$MYSQL_CONTAINER_NAME" $MYSQL_CONTAINER_PORT ;; 
     esac
     shift
 done
