@@ -53,6 +53,10 @@ xunit.console > /tmp/xunit.console.version.tmp
 cat /tmp/xunit.console.version.tmp | head -1
 rm -f /tmp/xunit.console.version.tmp
 
+printf "Check paket version ............ "
+paket --version
+
+
 set +e
 
 
