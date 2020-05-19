@@ -358,6 +358,8 @@ fi
 # MySQL-Container
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
+set -e
+set -u
 MYSQL_CONTAINER_PORT=\${MYSQL_CONTAINER_PORT:-3306}
 MYSQL_ROOT_PASSWORD=\"\${MYSQL_ROOT_PASSWORD:-pass}\"
 MYSQL_DATABASE=\"\${MYSQL_DATABASE:-app}\"
@@ -498,10 +500,12 @@ while [ \$# -ne 0 ]; do
     esac
     shift
 done
-# 12:43
+# 12:48
 
 " 2>/dev/null >${TARGET_DIR}/MySQL-Container ||
   echo -e "#!/usr/bin/env bash
+set -e
+set -u
 MYSQL_CONTAINER_PORT=\${MYSQL_CONTAINER_PORT:-3306}
 MYSQL_ROOT_PASSWORD=\"\${MYSQL_ROOT_PASSWORD:-pass}\"
 MYSQL_DATABASE=\"\${MYSQL_DATABASE:-app}\"
@@ -642,7 +646,7 @@ while [ \$# -ne 0 ]; do
     esac
     shift
 done
-# 12:43
+# 12:48
 
 " | sudo tee ${TARGET_DIR}/MySQL-Container >/dev/null;
   if [[ -f ${TARGET_DIR}/MySQL-Container ]]; then 
