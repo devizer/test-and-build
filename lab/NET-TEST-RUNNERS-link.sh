@@ -36,7 +36,6 @@ mono '$(pwd)'/paket.exe "$@"
 sudo chmod +x /usr/local/bin/paket
 cp -f -a /usr/local/bin/paket /usr/local/bin/paket.exe
 
-
 pushd "${ScriptDir}" >/dev/null
 
 create_launcher "nunit3-console" "packages/NUnit.ConsoleRunner*/tools" "nunit3-console.exe"
