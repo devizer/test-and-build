@@ -27,6 +27,7 @@ function create_launcher() {
 }
 
 pushd "$(dirname $0)" >/dev/null; ScriptDir="$(pwd)"; popd >/dev/null
+# paket.exe: ${ScriptDir}/paket.exe
 
 pushd "${ScriptDir}" >/dev/null
 
