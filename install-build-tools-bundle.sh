@@ -15,7 +15,7 @@ if [[ \"\$1\" == \"\" ]]; then
 echo \"Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
 here 1G - working set size
      30 - test duration, in seconds
-     5 - ramp duration (for VM, raids and ssd 30 seconds is recommended
+     5  - ramp duration (for VM, raids and ssd 30 seconds is recommended)
 \"
 exit 0;
 fi
@@ -81,7 +81,7 @@ if [[ \"\$1\" == \"\" ]]; then
 echo \"Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
 here 1G - working set size
      30 - test duration, in seconds
-     5 - ramp duration (for VM, raids and ssd 30 seconds is recommended
+     5  - ramp duration (for VM, raids and ssd 30 seconds is recommended)
 \"
 exit 0;
 fi
@@ -358,14 +358,21 @@ fi
 # MySQL-Container
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
-MYSQL_CONTAINER_NAME=\"\${MYSQL_CONTAINER_NAME:-mysql-5.7-for-azure-pipelines-agent}\"
 MYSQL_CONTAINER_PORT=\${MYSQL_CONTAINER_PORT:-3306}
 MYSQL_ROOT_PASSWORD=\"\${MYSQL_ROOT_PASSWORD:-pass}\"
 MYSQL_DATABASE=\"\${MYSQL_DATABASE:-app}\"
 MYSQL_USER=\"\${MYSQL_USER:-user}\"
 MYSQL_PASSWORD=\"\${MYSQL_PASSWORD:-pass}\"
 MYSQL_VERSION=\"\${MYSQL_VERSION:-5.7}\"
+MYSQL_CONTAINER_NAME=\"\${MYSQL_CONTAINER_NAME:-mysql-\$MYSQL_VERSION-for-azure-pipelines-agent}\"
 
+ # MySQL-Container start; MySQL-Container exec \"SHOW VARIABLES LIKE 'version';\" 
+ 
+ # raw example for default parameter
+ # time MYSQL_PWD=pass mysql --protocol=TCP -h localhost -u root -P 3306 -B -N -e \"SHOW VARIABLES LIKE 'version';\" | cat
+ 
+ 
+ 
 # arm|arm64|amd64
 function get_docker_arch() {
     local dockerArch=\$(sudo docker version --format '{{.Server.Arch}}') 
@@ -435,7 +442,7 @@ function start_mysql_container() {
         sudo docker pull \"\$image\"
         
         Say \"Creating \$MYSQL_CONTAINER_NAME container\"
-        docker run -it \x5C
+        docker run -d \x5C
           -e \"MYSQL_ROOT_HOST=%\" \x5C
           -e \"MYSQL_ROOT_PASSWORD=\${MYSQL_ROOT_PASSWORD}\" \x5C
           -e \"MYSQL_DATABASE=\${MYSQL_DATABASE}\" \x5C
@@ -451,6 +458,13 @@ function start_mysql_container() {
     else 
         Say \"Container \$MYSQL_CONTAINER_NAME already running\"
     fi
+    
+    # TODO: wait for connection
+}
+
+function exec_statement(){
+    local cmd=\$1
+    MYSQL_PWD=\"\${MYSQL_PASSWORD}\" mysql --protocol=TCP -h \$(Get-Local-Docker-Ip) -u root -P \${MYSQL_CONTAINER_PORT} -B -N -e \"\$cmd\" | cat
 }
 
 while [ \$# -ne 0 ]; do
@@ -461,20 +475,29 @@ while [ \$# -ne 0 ]; do
         stop) stop_container \$MYSQL_CONTAINER_NAME ;;
         delete) delete_container \$MYSQL_CONTAINER_NAME ;;
         \"delete-image\") delete_image \$(get_mysql_image_name) ;;
+        exec) cmd=\"\$2\"; shift; exec_statement \"\$cmd\" ;;
+        \"wait-for\") echo \"'wait-for' NOT IMPLEMENTED\" ;; 
     esac
     shift
 done
 
 " 2>/dev/null >${TARGET_DIR}/MySQL-Container ||
   echo -e "#!/usr/bin/env bash
-MYSQL_CONTAINER_NAME=\"\${MYSQL_CONTAINER_NAME:-mysql-5.7-for-azure-pipelines-agent}\"
 MYSQL_CONTAINER_PORT=\${MYSQL_CONTAINER_PORT:-3306}
 MYSQL_ROOT_PASSWORD=\"\${MYSQL_ROOT_PASSWORD:-pass}\"
 MYSQL_DATABASE=\"\${MYSQL_DATABASE:-app}\"
 MYSQL_USER=\"\${MYSQL_USER:-user}\"
 MYSQL_PASSWORD=\"\${MYSQL_PASSWORD:-pass}\"
 MYSQL_VERSION=\"\${MYSQL_VERSION:-5.7}\"
+MYSQL_CONTAINER_NAME=\"\${MYSQL_CONTAINER_NAME:-mysql-\$MYSQL_VERSION-for-azure-pipelines-agent}\"
 
+ # MySQL-Container start; MySQL-Container exec \"SHOW VARIABLES LIKE 'version';\" 
+ 
+ # raw example for default parameter
+ # time MYSQL_PWD=pass mysql --protocol=TCP -h localhost -u root -P 3306 -B -N -e \"SHOW VARIABLES LIKE 'version';\" | cat
+ 
+ 
+ 
 # arm|arm64|amd64
 function get_docker_arch() {
     local dockerArch=\$(sudo docker version --format '{{.Server.Arch}}') 
@@ -544,7 +567,7 @@ function start_mysql_container() {
         sudo docker pull \"\$image\"
         
         Say \"Creating \$MYSQL_CONTAINER_NAME container\"
-        docker run -it \x5C
+        docker run -d \x5C
           -e \"MYSQL_ROOT_HOST=%\" \x5C
           -e \"MYSQL_ROOT_PASSWORD=\${MYSQL_ROOT_PASSWORD}\" \x5C
           -e \"MYSQL_DATABASE=\${MYSQL_DATABASE}\" \x5C
@@ -560,6 +583,13 @@ function start_mysql_container() {
     else 
         Say \"Container \$MYSQL_CONTAINER_NAME already running\"
     fi
+    
+    # TODO: wait for connection
+}
+
+function exec_statement(){
+    local cmd=\$1
+    MYSQL_PWD=\"\${MYSQL_PASSWORD}\" mysql --protocol=TCP -h \$(Get-Local-Docker-Ip) -u root -P \${MYSQL_CONTAINER_PORT} -B -N -e \"\$cmd\" | cat
 }
 
 while [ \$# -ne 0 ]; do
@@ -570,6 +600,8 @@ while [ \$# -ne 0 ]; do
         stop) stop_container \$MYSQL_CONTAINER_NAME ;;
         delete) delete_container \$MYSQL_CONTAINER_NAME ;;
         \"delete-image\") delete_image \$(get_mysql_image_name) ;;
+        exec) cmd=\"\$2\"; shift; exec_statement \"\$cmd\" ;;
+        \"wait-for\") echo \"'wait-for' NOT IMPLEMENTED\" ;; 
     esac
     shift
 done
