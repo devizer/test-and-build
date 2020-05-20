@@ -1,0 +1,35 @@
+root@rpi4-64bit ~ $ docker logs mysql-8.0-for-integration-tests
+[Entrypoint] MySQL Docker Image 8.0.20-1.1.16
+[Entrypoint] Initializing database
+2020-05-19T22:32:48.497393Z 0 [System] [MY-013169] [Server] /usr/sbin/mysqld (mysqld 8.0.20) initializing of server in progress as process 26
+2020-05-19T22:32:48.545651Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2020-05-19T22:33:26.505931Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2020-05-19T22:37:04.933706Z 6 [Warning] [MY-010453] [Server] root@localhost is created with an empty password ! Please consider switching off the --initialize-insecure option.
+[Entrypoint] Database initialized
+2020-05-19T22:40:50.740519Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.20) starting as process 797
+2020-05-19T22:40:50.802087Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2020-05-19T22:40:52.173202Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2020-05-19T22:40:53.311314Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: '/var/run/mysqld/mysqlx.sock'
+2020-05-19T22:40:55.785885Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2020-05-19T22:40:55.904893Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.0.20'  socket: '/var/lib/mysql/mysql.sock'  port: 0  MySQL Community Server - GPL.
+Warning: Unable to load '/usr/share/zoneinfo/iso3166.tab' as time zone. Skipping it.
+Warning: Unable to load '/usr/share/zoneinfo/leapseconds' as time zone. Skipping it.
+Warning: Unable to load '/usr/share/zoneinfo/tzdata.zi' as time zone. Skipping it.
+Warning: Unable to load '/usr/share/zoneinfo/zone.tab' as time zone. Skipping it.
+Warning: Unable to load '/usr/share/zoneinfo/zone1970.tab' as time zone. Skipping it.
+
+[Entrypoint] ignoring /docker-entrypoint-initdb.d/*
+
+2020-05-19T22:41:31.681363Z 13 [System] [MY-013172] [Server] Received SHUTDOWN from user root. Shutting down mysqld (Version: 8.0.20).
+2020-05-19T22:42:45.704006Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.0.20)  MySQL Community Server - GPL.
+[Entrypoint] Server shut down
+
+[Entrypoint] MySQL init process done. Ready for start up.
+
+[Entrypoint] Starting MySQL 8.0.20-1.1.16
+2020-05-19T22:42:47.233304Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.20) starting as process 1
+2020-05-19T22:42:47.298279Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2020-05-19T22:42:48.735072Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2020-05-19T22:42:51.186424Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: '/var/run/mysqld/mysqlx.sock' bind-address: '::' port: 33060
+2020-05-19T22:42:53.520183Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2020-05-19T22:42:53.613372Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.0.20'  socket: '/var/lib/mysql/mysql.sock'  port: 3306  MySQL Community Server - GPL.

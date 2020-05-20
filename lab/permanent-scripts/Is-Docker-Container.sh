@@ -2,8 +2,8 @@
 
 if [[ "${container:-}" == "docker" || "$(grep 'docker' /proc/1/cgroup 2>/dev/null || true)" != "" ]]; then
   if [[ "$1" == "-v" ]]; then echo "true"; fi
-  exit 0;
+  exit 1;
 else
   if [[ "$1" == "-v" ]]; then echo "false"; fi
-  exit 1;
+  exit 0;
 fi
