@@ -153,7 +153,8 @@ fi
 # Get-Local-Docker-Ip
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
-if Is-Docker-Container; then
+# if Is-Docker-Container; then
+if [[ \"\$(Is-Docker-Container -v)\" == true ]]; then
     ip r | grep -E '^default via ' | awk '{print \$3}'
 else
     echo \"127.0.0.1\"
@@ -161,7 +162,8 @@ fi
 
 " 2>/dev/null >${TARGET_DIR}/Get-Local-Docker-Ip ||
   echo -e "#!/usr/bin/env bash
-if Is-Docker-Container; then
+# if Is-Docker-Container; then
+if [[ \"\$(Is-Docker-Container -v)\" == true ]]; then
     ip r | grep -E '^default via ' | awk '{print \$3}'
 else
     echo \"127.0.0.1\"
