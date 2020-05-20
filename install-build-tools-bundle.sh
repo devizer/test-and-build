@@ -1250,7 +1250,6 @@ function ShowNetStat() {
     local line
     cat /proc/net/dev | sed -n '3,\$p' | sort | while read line; do
         local name=\$(echo \$line | awk '{print \$1}')
-        # echo \"NET [\$name]\"
         if [[ \"\$name\" == *\":\" ]]; then
             local recv=\$(echo \$line | awk '{print \$2}')
             local sent=\$(echo \$line | awk '{print \$10}')
@@ -1287,7 +1286,7 @@ function parseStat() {
 }
 
 function ShowBlockStat() {
-    blockDirs=\$(ls -1 /sys/block 2>/dev/null);
+    local blockDirs=\$(ls -1 /sys/block 2>/dev/null);
     for blockDirName in \$blockDirs; do
         local blockDir=/sys/block/\$blockDirName
         if [[ -d \$blockDir ]]; then
@@ -1401,7 +1400,6 @@ function ShowNetStat() {
     local line
     cat /proc/net/dev | sed -n '3,\$p' | sort | while read line; do
         local name=\$(echo \$line | awk '{print \$1}')
-        # echo \"NET [\$name]\"
         if [[ \"\$name\" == *\":\" ]]; then
             local recv=\$(echo \$line | awk '{print \$2}')
             local sent=\$(echo \$line | awk '{print \$10}')
@@ -1438,7 +1436,7 @@ function parseStat() {
 }
 
 function ShowBlockStat() {
-    blockDirs=\$(ls -1 /sys/block 2>/dev/null);
+    local blockDirs=\$(ls -1 /sys/block 2>/dev/null);
     for blockDirName in \$blockDirs; do
         local blockDir=/sys/block/\$blockDirName
         if [[ -d \$blockDir ]]; then
