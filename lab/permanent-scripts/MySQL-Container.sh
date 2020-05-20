@@ -124,7 +124,7 @@ function exec_statement(){
 
 function wait_for_mysql() {
     local name=$1 port=$2 counter=0 total=$WAIT_TIMEOUT started=""
-    Say "Waiting for $name on port $port"
+    Say "Waiting for $name on $(Get-Local-Docker-Ip):${port}"
     while [ $counter -lt $total ]; do
         counter=$((counter+1));
         # mysql --protocol=TCP -h localhost -u root -p"${MYSQL_ROOT_PASSWORD}" -P $p -e "Select 1;" 2>/dev/null 1>&2 && started="yes" || true
