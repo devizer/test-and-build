@@ -7,6 +7,41 @@ function install_build_tools_bundle() {
 
 
 
+# Drop-FS-Cache
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+usystem=\"\$(uname -s)\"
+if [[ \"\$usystem\" == \"Linux\" ]]; then
+  sync; sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null
+elif [[ \"\$usystem\" == \"Darwin\" ]]; then
+  sync; sudo sync; sudo purge
+else 
+  echo 'Drop-FS-Cache: Only Linux and macOS are currently supported'
+fi
+
+
+" 2>/dev/null >${TARGET_DIR}/Drop-FS-Cache ||
+  echo -e "#!/usr/bin/env bash
+usystem=\"\$(uname -s)\"
+if [[ \"\$usystem\" == \"Linux\" ]]; then
+  sync; sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null
+elif [[ \"\$usystem\" == \"Darwin\" ]]; then
+  sync; sudo sync; sudo purge
+else 
+  echo 'Drop-FS-Cache: Only Linux and macOS are currently supported'
+fi
+
+
+" | sudo tee ${TARGET_DIR}/Drop-FS-Cache >/dev/null;
+  if [[ -f ${TARGET_DIR}/Drop-FS-Cache ]]; then 
+      chmod +x ${TARGET_DIR}/Drop-FS-Cache >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Drop-FS-Cache
+  	echo "OK: ${TARGET_DIR}/Drop-FS-Cache"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Drop-FS-Cache"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Drop-FS-Cache: directory does not exists"
+fi
+
+
 # File-IO-Benchmark
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
