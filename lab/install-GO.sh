@@ -29,7 +29,7 @@ Say "Downloading $dl"
 work=$HOME/build/go-dl
 mkdir -p $work
 pushd $work >/dev/null
-cmd="wget --no-check-certificate -O _go.tgz $dl  || curl -kfSL -o _go.tgz $dl"
+cmd="wget --no-check-certificate -O _go.tgz $dl || curl -kfSL -o _go.tgz $dl"
 try-and-retry eval "$cmd"
 tar xzf _go.tgz
 rm -f _go.tgz
@@ -38,8 +38,7 @@ rm -f _go.tgz
 test -d $GO_TARGET_DIR/go && sudo rm -rf $GO_TARGET_DIR/go || true
 sudo mv go $GO_TARGET_DIR
 export GOROOT=$GO_TARGET_DIR/go
-# export GOPATH=$HOME/Projects/Proj1
-export PATH=$GOROOT/bin:$PATH # $GOPATH/bin
+export PATH=$GOROOT/bin:$PATH 
 go version
 go env
 sudo ln -f -s $GOROOT/bin/go /usr/local/bin/go || true
