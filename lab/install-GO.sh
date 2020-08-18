@@ -7,16 +7,18 @@ set -e
 script=https://raw.githubusercontent.com/devizer/test-and-build/master/install-build-tools-bundle.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 
 GO_TARGET_DIR="${GO_TARGET_DIR:-/usr/local}"
+# GO_VER="${GO_VER:-1.14.3}"
+GO_VER="${GO_VER:-1.15}"
 
 machine="$(uname -m)"
 if [[ "$machine" == i?86 ]]; then
-	dl=https://dl.google.com/go/go1.14.3.linux-386.tar.gz
+	dl=https://dl.google.com/go/go${GO_VER}.linux-386.tar.gz
 elif [[ "$machine" == x86_64 ]]; then
-	dl=https://dl.google.com/go/go1.14.3.linux-amd64.tar.gz
+	dl=https://dl.google.com/go/go${GO_VER}.linux-amd64.tar.gz
 elif [[ "$machine" == aarch64 ]]; then
-	dl=https://dl.google.com/go/go1.14.3.linux-arm64.tar.gz
+	dl=https://dl.google.com/go/go${GO_VER}.linux-arm64.tar.gz
 elif [[ "$machine" == armv6* || "$machine" == armv7* ]]; then
-	dl=https://dl.google.com/go/go1.14.3.linux-armv6l.tar.gz
+	dl=https://dl.google.com/go/go${GO_VER}.linux-armv6l.tar.gz
 else
   echo unsupported arch: $machine
 fi
