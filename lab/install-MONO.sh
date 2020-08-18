@@ -25,8 +25,9 @@ function Install_Mono_on_Debians() {
   def="deb https://download.mono-project.com/repo/$ID stable-$(lsb_release -s -c) main"
   if [[ "$ID" == "raspbian" ]]; then def="deb https://download.mono-project.com/repo/debian stable-raspbian$(lsb_release -cs) main"; fi
   if [[ "$UBUNTU_CODENAME" == focal ]]; then
-    # for Ubuntu 20.04 just a preview is available
-    def="deb https://download.mono-project.com/repo/ubuntu preview-$UBUNTU_CODENAME main"; 
+    # for Ubuntu 20.04 just a preview WAS available
+    # def="deb https://download.mono-project.com/repo/ubuntu preview-$UBUNTU_CODENAME main";
+    true 
   fi
   echo "$def" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
   time try-and-retry sudo apt-get --allow-unauthenticated update -qq 
