@@ -135,7 +135,7 @@ Say "Configured shared environment for .NET Core"
         time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.0 -i ${DOTNET_TARGET_DIR}
       fi
       
-      if [[ "$DOTNET_VERSIONS2" == *" 3.0 "* ]]; then
+      if [[ "$DOTNET_VERSIONS2" == *" 3.1 "* ]]; then
         Say "Installing .NET Core 3.1 SDK for $(uname -m)"
         time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.1 -i ${DOTNET_TARGET_DIR}
       fi
