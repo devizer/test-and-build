@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/install-DOTNET.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 
+DOTNET_VERSIONS="${DOTNET_VERSIONS:-2.1 2.2 3.0 3.1}"
+DOTNET_VERSIONS2=" ${DOTNET_VERSIONS} "
 script=https://raw.githubusercontent.com/devizer/test-and-build/master/install-build-tools-bundle.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 
 
@@ -104,23 +106,45 @@ Say "Configured shared environment for .NET Core"
           time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.0 -i ${DOTNET_TARGET_DIR}
       fi
       
-      Say "Installing .NET Core 2.1 SDK for $(uname -m)"
-      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.1 -i ${DOTNET_TARGET_DIR}
-      Say "Installing .NET Core 2.2 SDK for $(uname -m)"
-      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.2 -i ${DOTNET_TARGET_DIR}
+      
+      if [[ "$DOTNET_VERSIONS2" == *" 2.1 "* ]]; then
+          Say "Installing .NET Core 2.1 SDK for $(uname -m)"
+          time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.1 -i ${DOTNET_TARGET_DIR}
+      fi
+      
+      if [[ "$DOTNET_VERSIONS2" == *" 2.2 "* ]]; then
+        Say "Installing .NET Core 2.2 SDK for $(uname -m)"
+        time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.2 -i ${DOTNET_TARGET_DIR}
+      fi
 
-      if [[ "$(command -v dotnet-benchmark || true)" == "" ]]; then
+      
+      if [[ "$(command -v dotnet || true)" == "" ]]; then
+          BenchmarkDotNet_Installed=false        
+      elif [[ "$(command -v dotnet-benchmark || true)" == "" ]]; then
           Say "Installing BenchmarkDotNet.Tool (globally) for $(uname -m)"
           Say "DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER is '${DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER}'"
           try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
+          BenchmarkDotNet_Installed=true
       else
           Say "BenchmarkDotNet.Tool already installed"
+          BenchmarkDotNet_Installed=true
       fi
 
-      Say "Installing .NET Core 3.0 SDK for $(uname -m)"
-      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.0 -i ${DOTNET_TARGET_DIR}
-      Say "Installing .NET Core 3.1 SDK for $(uname -m)"
-      time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.1 -i ${DOTNET_TARGET_DIR}
+      if [[ "$DOTNET_VERSIONS2" == *" 3.0 "* ]]; then
+        Say "Installing .NET Core 3.0 SDK for $(uname -m)"
+        time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.0 -i ${DOTNET_TARGET_DIR}
+      fi
+      
+      if [[ "$DOTNET_VERSIONS2" == *" 3.0 "* ]]; then
+        Say "Installing .NET Core 3.1 SDK for $(uname -m)"
+        time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.1 -i ${DOTNET_TARGET_DIR}
+      fi
+      
+      if [[ "$BenchmarkDotNet_Installed" == "false" ]]; then
+          Say "Installing BenchmarkDotNet.Tool (globally) for $(uname -m)"
+          try-and-retry dotnet tool install -g BenchmarkDotNet.Tool || true
+      fi
+      
       # ! { Say ".NET Core benchmark tool version: [$(dotnet benchmark --version 2>&1 || true)]" }
       dotnet benchmark --version >/dev/null 2>&1 || true;
       Say ".NET Core benchmark tool version: [$(dotnet benchmark --version 2>/dev/null || true)]"
