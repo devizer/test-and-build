@@ -113,7 +113,7 @@ Say "Configured shared environment for .NET Core"
       fi
       
       if [[ "$DOTNET_VERSIONS2" == *" 2.2 "* ]]; then
-        sleep 1
+        sleep 6
         Say "Installing .NET Core 2.2 SDK for $(uname -m)"
         time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 2.2 -i ${DOTNET_TARGET_DIR}
       fi
