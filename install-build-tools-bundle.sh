@@ -384,22 +384,10 @@ if [[ -d ${TARGET_DIR} ]]; then
 # Usage 2: if [[ \"\$(Is-RedHat 8)\" ]]; then ... 
 # Usage 3: if [[ \"\$(Is-RedHat)\" ]]; then ...
  
-if [ -e /etc/redhat-release ]; then
-  redhatRelease=\$(</etc/redhat-release)
-  case \$redhatRelease in 
-    \"CentOS release 6.\"*)                           ret=6 ;;
-    \"Red Hat Enterprise Linux Server release 6.\"*)  ret=6 ;;
-  esac
-fi
-
 if [ -e /etc/os-release ]; then
   . /etc/os-release
-  if [ \"\${ID:-}\" = \"rhel\" ] || [ \"\${ID:-}\" = \"centos\" ]; then
-    case \"\${VERSION_ID:-}\" in
-        \"7\"*)   ret=7 ;;
-        \"8\"*)   ret=8 ;;
-        \"9\"*)   ret=9 ;;
-    esac
+  if [[ \"\${ID:-}\" == \"fedora\"* ]]; then
+  \x09ret=\"\${VERSION_ID:-}\"
   fi
 fi
 
@@ -420,22 +408,10 @@ fi
 # Usage 2: if [[ \"\$(Is-RedHat 8)\" ]]; then ... 
 # Usage 3: if [[ \"\$(Is-RedHat)\" ]]; then ...
  
-if [ -e /etc/redhat-release ]; then
-  redhatRelease=\$(</etc/redhat-release)
-  case \$redhatRelease in 
-    \"CentOS release 6.\"*)                           ret=6 ;;
-    \"Red Hat Enterprise Linux Server release 6.\"*)  ret=6 ;;
-  esac
-fi
-
 if [ -e /etc/os-release ]; then
   . /etc/os-release
-  if [ \"\${ID:-}\" = \"rhel\" ] || [ \"\${ID:-}\" = \"centos\" ]; then
-    case \"\${VERSION_ID:-}\" in
-        \"7\"*)   ret=7 ;;
-        \"8\"*)   ret=8 ;;
-        \"9\"*)   ret=9 ;;
-    esac
+  if [[ \"\${ID:-}\" == \"fedora\"* ]]; then
+  \x09ret=\"\${VERSION_ID:-}\"
   fi
 fi
 
