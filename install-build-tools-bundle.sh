@@ -185,6 +185,136 @@ else
 fi
 
 
+# Get-GitHub-Latest-Release
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+# https://developer.github.com/v3/repos/releases/
+
+# output the TAG of the latest release of null 
+function get_github_latest_release() {
+    local owner=\"\$1\";
+    local repo=\"\$2\";
+    local query=\"https://api.github.com/repos/\$owner/\$repo/releases/latest\"
+    local json=\$(wget -q -nv --no-check-certificate -O - \$query 2>/dev/null || curl -ksSL \$query)
+    local tag=\$(echo \"\$json\" | jq -r \".tag_name\" )
+    if [[ -n \"\${tag:-}\" && \"\$tag\" != \"null\" ]]; then 
+        echo \"\${tag:-}\" 
+    fi;
+}
+
+if [[ \"\$1\" == \"\" ]]; then
+    echo \"Usage Get-GitHub-Latest-Release microsoft azure-pipelines-agent\"
+    exit 0; 
+fi
+
+owner=\"\$1\"; owner=\${owner:-microsoft}
+repo=\"\$2\"; repo=\${repo:-azure-pipelines-agent}
+
+get_github_latest_release \"\${owner:-}\" \"\${repo:-}\"
+
+" 2>/dev/null >${TARGET_DIR}/Get-GitHub-Latest-Release ||
+  echo -e "#!/usr/bin/env bash
+# https://developer.github.com/v3/repos/releases/
+
+# output the TAG of the latest release of null 
+function get_github_latest_release() {
+    local owner=\"\$1\";
+    local repo=\"\$2\";
+    local query=\"https://api.github.com/repos/\$owner/\$repo/releases/latest\"
+    local json=\$(wget -q -nv --no-check-certificate -O - \$query 2>/dev/null || curl -ksSL \$query)
+    local tag=\$(echo \"\$json\" | jq -r \".tag_name\" )
+    if [[ -n \"\${tag:-}\" && \"\$tag\" != \"null\" ]]; then 
+        echo \"\${tag:-}\" 
+    fi;
+}
+
+if [[ \"\$1\" == \"\" ]]; then
+    echo \"Usage Get-GitHub-Latest-Release microsoft azure-pipelines-agent\"
+    exit 0; 
+fi
+
+owner=\"\$1\"; owner=\${owner:-microsoft}
+repo=\"\$2\"; repo=\${repo:-azure-pipelines-agent}
+
+get_github_latest_release \"\${owner:-}\" \"\${repo:-}\"
+
+" | sudo tee ${TARGET_DIR}/Get-GitHub-Latest-Release >/dev/null;
+  if [[ -f ${TARGET_DIR}/Get-GitHub-Latest-Release ]]; then 
+      chmod +x ${TARGET_DIR}/Get-GitHub-Latest-Release >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-GitHub-Latest-Release
+  	echo "OK: ${TARGET_DIR}/Get-GitHub-Latest-Release"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Get-GitHub-Latest-Release"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Get-GitHub-Latest-Release: directory does not exists"
+fi
+
+
+# Get-Git-Tags
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+
+# git ls-remote --tags https://github.com/git/git | awk '{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n); if (n ~ /^v?[0-9.]*\$/) { print n } }' | sort -V
+
+# output tags ordered as versions
+function get_git_tags() {
+  local repo=\"\$1\"; repo=\"\${repo:-https://github.com/nodejs/node}\"
+  local need_pre_release=\"\$2\"; 
+  if [[ \"\$need_pre_release\" == \"pre\"* || \"\$need_pre_release\" == \"--pre\"* ]]; then 
+    need_pre_release=true; else need_pre_release=false; 
+  fi
+  
+  cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
+  if [[ \$need_pre_release == false ]]; then
+    cmd=\"\$cmd if (n ~ /^v?[0-9.]*\$/)\"
+  fi
+  cmd=\"\$cmd { print n } }' | sort -V\"
+  eval \"\$cmd\"
+}
+
+if [[ \"\$1\" == \"\" ]]; then
+    echo \"Usage Get-Git-Tags https://github.com/nodejs/node [--pre-release|--pre]\"
+    exit 0; 
+fi
+
+get_git_tags \$1 \$2
+
+" 2>/dev/null >${TARGET_DIR}/Get-Git-Tags ||
+  echo -e "#!/usr/bin/env bash
+
+# git ls-remote --tags https://github.com/git/git | awk '{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n); if (n ~ /^v?[0-9.]*\$/) { print n } }' | sort -V
+
+# output tags ordered as versions
+function get_git_tags() {
+  local repo=\"\$1\"; repo=\"\${repo:-https://github.com/nodejs/node}\"
+  local need_pre_release=\"\$2\"; 
+  if [[ \"\$need_pre_release\" == \"pre\"* || \"\$need_pre_release\" == \"--pre\"* ]]; then 
+    need_pre_release=true; else need_pre_release=false; 
+  fi
+  
+  cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
+  if [[ \$need_pre_release == false ]]; then
+    cmd=\"\$cmd if (n ~ /^v?[0-9.]*\$/)\"
+  fi
+  cmd=\"\$cmd { print n } }' | sort -V\"
+  eval \"\$cmd\"
+}
+
+if [[ \"\$1\" == \"\" ]]; then
+    echo \"Usage Get-Git-Tags https://github.com/nodejs/node [--pre-release|--pre]\"
+    exit 0; 
+fi
+
+get_git_tags \$1 \$2
+
+" | sudo tee ${TARGET_DIR}/Get-Git-Tags >/dev/null;
+  if [[ -f ${TARGET_DIR}/Get-Git-Tags ]]; then 
+      chmod +x ${TARGET_DIR}/Get-Git-Tags >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-Git-Tags
+  	echo "OK: ${TARGET_DIR}/Get-Git-Tags"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Get-Git-Tags"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Get-Git-Tags: directory does not exists"
+fi
+
+
 # Get-Local-Docker-Ip
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
@@ -244,6 +374,89 @@ fi
   else "Error: Unable to extract ${TARGET_DIR}/Is-Docker-Container"; fi
 else 
   echo "Skipping ${TARGET_DIR}/Is-Docker-Container: directory does not exists"
+fi
+
+
+# Is-Fedora
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+# Usage 1: if [[ \"\$(Is-RedHat 6)\" ]]; then ... 
+# Usage 2: if [[ \"\$(Is-RedHat 8)\" ]]; then ... 
+# Usage 3: if [[ \"\$(Is-RedHat)\" ]]; then ...
+ 
+if [ -e /etc/redhat-release ]; then
+  redhatRelease=\$(</etc/redhat-release)
+  case \$redhatRelease in 
+    \"CentOS release 6.\"*)                           ret=6 ;;
+    \"Red Hat Enterprise Linux Server release 6.\"*)  ret=6 ;;
+  esac
+fi
+
+if [ -e /etc/os-release ]; then
+  . /etc/os-release
+  if [ \"\${ID:-}\" = \"rhel\" ] || [ \"\${ID:-}\" = \"centos\" ]; then
+    case \"\${VERSION_ID:-}\" in
+        \"7\"*)   ret=7 ;;
+        \"8\"*)   ret=8 ;;
+        \"9\"*)   ret=9 ;;
+    esac
+  fi
+fi
+
+arg=\"\$1\"
+if [ \"\$arg\" = \"\" ]; then
+    echo \"\$ret\"
+    exit 0
+elif [ \"\$arg\" = \"\$ret\" ]; then
+    echo \"\$ret\"
+    exit 0
+else
+    exit 1
+fi
+
+" 2>/dev/null >${TARGET_DIR}/Is-Fedora ||
+  echo -e "#!/usr/bin/env bash
+# Usage 1: if [[ \"\$(Is-RedHat 6)\" ]]; then ... 
+# Usage 2: if [[ \"\$(Is-RedHat 8)\" ]]; then ... 
+# Usage 3: if [[ \"\$(Is-RedHat)\" ]]; then ...
+ 
+if [ -e /etc/redhat-release ]; then
+  redhatRelease=\$(</etc/redhat-release)
+  case \$redhatRelease in 
+    \"CentOS release 6.\"*)                           ret=6 ;;
+    \"Red Hat Enterprise Linux Server release 6.\"*)  ret=6 ;;
+  esac
+fi
+
+if [ -e /etc/os-release ]; then
+  . /etc/os-release
+  if [ \"\${ID:-}\" = \"rhel\" ] || [ \"\${ID:-}\" = \"centos\" ]; then
+    case \"\${VERSION_ID:-}\" in
+        \"7\"*)   ret=7 ;;
+        \"8\"*)   ret=8 ;;
+        \"9\"*)   ret=9 ;;
+    esac
+  fi
+fi
+
+arg=\"\$1\"
+if [ \"\$arg\" = \"\" ]; then
+    echo \"\$ret\"
+    exit 0
+elif [ \"\$arg\" = \"\$ret\" ]; then
+    echo \"\$ret\"
+    exit 0
+else
+    exit 1
+fi
+
+" | sudo tee ${TARGET_DIR}/Is-Fedora >/dev/null;
+  if [[ -f ${TARGET_DIR}/Is-Fedora ]]; then 
+      chmod +x ${TARGET_DIR}/Is-Fedora >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Is-Fedora
+  	echo "OK: ${TARGET_DIR}/Is-Fedora"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Is-Fedora"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Is-Fedora: directory does not exists"
 fi
 
 

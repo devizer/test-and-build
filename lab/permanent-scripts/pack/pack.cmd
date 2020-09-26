@@ -1,1 +1,1 @@
-pwsh pack.ps1 > install-bundle.tmp.sh && copy install-bundle.tmp.sh ..\..\..\install-build-tools-bundle.sh 
+pwsh pack.ps1 > install-bundle.tmp.sh && copy install-bundle.tmp.sh ..\..\..\install-build-tools-bundle.sh
