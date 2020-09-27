@@ -248,11 +248,98 @@ else
 fi
 
 
+# Get-GitHub-Releases
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+# https://developer.github.com/v3/repos/releases/#list-releases
+
+function get_github_releases() {
+    local owner=\"\$1\";
+    local repo=\"\$2\";
+    local need_pre_release=\"\$3\"; 
+    if [[ \"\$need_pre_release\" == \"pre\"* || \"\$need_pre_release\" == \"--pre\"* ]]; then 
+        need_pre_release=true; else need_pre_release=false; 
+    fi
+    
+    local query=\"https://api.github.com/repos/\$owner/\$repo/releases\"
+    local jqFilter;
+    if [[ \$need_pre_release == \"true\" ]]; then 
+        jqFilter=\"\";
+    else
+        jqFilter='map(select(.prerelease == false))' # array
+    fi;
+    local jsonFull=\$(wget -q -nv --no-check-certificate -O - \$query 2>/dev/null || curl -ksSL \$query)
+    local json=\$(echo \$jsonFull | jq \"\$jqFilter\")
+    # jq \".[] | select(.prerelease == false)\"
+    echo \$json
+}
+
+if [[ \"\$1\" == \"\" ]]; then
+    echo \"Usage: Get-GitHub-Releases PowerShell PowerShell [--pre-release]\"
+    exit 0; 
+fi
+
+owner=\"\$1\"; owner=\${owner:-PowerShell}
+repo=\"\$2\"; repo=\${repo:-PowerShell}
+need_pre_release=\"\$3\"
+
+get_github_releases \"\${owner:-}\" \"\${repo:-}\" \"\${need_pre_release:-}\"
+
+" 2>/dev/null >${TARGET_DIR}/Get-GitHub-Releases ||
+  echo -e "#!/usr/bin/env bash
+# https://developer.github.com/v3/repos/releases/#list-releases
+
+function get_github_releases() {
+    local owner=\"\$1\";
+    local repo=\"\$2\";
+    local need_pre_release=\"\$3\"; 
+    if [[ \"\$need_pre_release\" == \"pre\"* || \"\$need_pre_release\" == \"--pre\"* ]]; then 
+        need_pre_release=true; else need_pre_release=false; 
+    fi
+    
+    local query=\"https://api.github.com/repos/\$owner/\$repo/releases\"
+    local jqFilter;
+    if [[ \$need_pre_release == \"true\" ]]; then 
+        jqFilter=\"\";
+    else
+        jqFilter='map(select(.prerelease == false))' # array
+    fi;
+    local jsonFull=\$(wget -q -nv --no-check-certificate -O - \$query 2>/dev/null || curl -ksSL \$query)
+    local json=\$(echo \$jsonFull | jq \"\$jqFilter\")
+    # jq \".[] | select(.prerelease == false)\"
+    echo \$json
+}
+
+if [[ \"\$1\" == \"\" ]]; then
+    echo \"Usage: Get-GitHub-Releases PowerShell PowerShell [--pre-release]\"
+    exit 0; 
+fi
+
+owner=\"\$1\"; owner=\${owner:-PowerShell}
+repo=\"\$2\"; repo=\${repo:-PowerShell}
+need_pre_release=\"\$3\"
+
+get_github_releases \"\${owner:-}\" \"\${repo:-}\" \"\${need_pre_release:-}\"
+
+" | sudo tee ${TARGET_DIR}/Get-GitHub-Releases >/dev/null;
+  if [[ -f ${TARGET_DIR}/Get-GitHub-Releases ]]; then 
+      chmod +x ${TARGET_DIR}/Get-GitHub-Releases >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-GitHub-Releases
+  	echo "OK: ${TARGET_DIR}/Get-GitHub-Releases"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Get-GitHub-Releases"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Get-GitHub-Releases: directory does not exists"
+fi
+
+
 # Get-Git-Tags
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
 
 # git ls-remote --tags https://github.com/git/git | awk '{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n); if (n ~ /^v?[0-9.]*\$/) { print n } }' | sort -V
+
+# ^{}: https://stackoverflow.com/questions/15472107/when-listing-git-ls-remote-why-theres-after-the-tag-name/15472310
+# remove ^{}
+# Get-Git-Tags https://github.com/PowerShell/PowerShell --pre | awk '{ n=\$1; if (! (n ~ /\x5C^\x5C{\x5C}\$/) ) { print \$n } }'
 
 # output tags ordered as versions
 function get_git_tags() {
@@ -264,7 +351,9 @@ function get_git_tags() {
   
   cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
   if [[ \$need_pre_release == false ]]; then
-    cmd=\"\$cmd if (n ~ /^v?[0-9.]*\$/)\"
+    cmd=\"\$cmd if (n ~ /^v?[0-9.]*\$/ && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
+  else 
+    cmd=\"\$cmd if (! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
   fi
   cmd=\"\$cmd { print n } }' | sort -V\"
   eval \"\$cmd\"
@@ -282,6 +371,10 @@ get_git_tags \$1 \$2
 
 # git ls-remote --tags https://github.com/git/git | awk '{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n); if (n ~ /^v?[0-9.]*\$/) { print n } }' | sort -V
 
+# ^{}: https://stackoverflow.com/questions/15472107/when-listing-git-ls-remote-why-theres-after-the-tag-name/15472310
+# remove ^{}
+# Get-Git-Tags https://github.com/PowerShell/PowerShell --pre | awk '{ n=\$1; if (! (n ~ /\x5C^\x5C{\x5C}\$/) ) { print \$n } }'
+
 # output tags ordered as versions
 function get_git_tags() {
   local repo=\"\$1\"; repo=\"\${repo:-https://github.com/nodejs/node}\"
@@ -292,7 +385,9 @@ function get_git_tags() {
   
   cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
   if [[ \$need_pre_release == false ]]; then
-    cmd=\"\$cmd if (n ~ /^v?[0-9.]*\$/)\"
+    cmd=\"\$cmd if (n ~ /^v?[0-9.]*\$/ && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
+  else 
+    cmd=\"\$cmd if (! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
   fi
   cmd=\"\$cmd { print n } }' | sort -V\"
   eval \"\$cmd\"
