@@ -351,7 +351,8 @@ function get_git_tags() {
   
   cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
   if [[ \$need_pre_release == false ]]; then
-    cmd=\"\$cmd if (n ~ /^v?[0-9.]*\$/ && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
+    GIT_RELEASE_TAG_FILTER=\${GIT_RELEASE_TAG_FILTER:-/^v?[0-9.]*\$/}
+    cmd=\"\$cmd if (n ~ \$GIT_RELEASE_TAG_FILTER && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
   else 
     cmd=\"\$cmd if (! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
   fi
@@ -361,6 +362,7 @@ function get_git_tags() {
 
 if [[ \"\$1\" == \"\" ]]; then
     echo \"Usage Get-Git-Tags https://github.com/nodejs/node [--pre-release|--pre]\"
+    echo \"Default filter for tags is /^v?[0-9.]*\$/ It can be overriden by GIT_RELEASE_TAG_FILTER var\"
     exit 0; 
 fi
 
@@ -385,7 +387,8 @@ function get_git_tags() {
   
   cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
   if [[ \$need_pre_release == false ]]; then
-    cmd=\"\$cmd if (n ~ /^v?[0-9.]*\$/ && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
+    GIT_RELEASE_TAG_FILTER=\${GIT_RELEASE_TAG_FILTER:-/^v?[0-9.]*\$/}
+    cmd=\"\$cmd if (n ~ \$GIT_RELEASE_TAG_FILTER && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
   else 
     cmd=\"\$cmd if (! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
   fi
@@ -395,6 +398,7 @@ function get_git_tags() {
 
 if [[ \"\$1\" == \"\" ]]; then
     echo \"Usage Get-Git-Tags https://github.com/nodejs/node [--pre-release|--pre]\"
+    echo \"Default filter for tags is /^v?[0-9.]*\$/ It can be overriden by GIT_RELEASE_TAG_FILTER var\"
     exit 0; 
 fi
 
