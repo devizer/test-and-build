@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/install-DOTNET.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 
-DOTNET_VERSIONS="${DOTNET_VERSIONS:-2.1 2.2 3.0 3.1}"
+DOTNET_VERSIONS="${DOTNET_VERSIONS:-2.1 2.2 3.0 3.1 5.0}"
 DOTNET_VERSIONS2=" ${DOTNET_VERSIONS} "
 script=https://raw.githubusercontent.com/devizer/test-and-build/master/install-build-tools-bundle.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
 
@@ -139,6 +139,11 @@ Say "Configured shared environment for .NET Core"
       if [[ "$DOTNET_VERSIONS2" == *" 3.1 "* ]]; then
         Say "Installing .NET Core 3.1 SDK for $(uname -m)"
         time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 3.1 -i ${DOTNET_TARGET_DIR}
+      fi
+      
+      if [[ "$DOTNET_VERSIONS2" == *" 5.0 "* ]]; then
+        Say "Installing .NET Core 5.0 SDK for $(uname -m)"
+        time try-and-retry timeout 666 sudo -E bash /tmp/_dotnet-install.sh -c 5.0 -i ${DOTNET_TARGET_DIR}
       fi
       
       if [[ "$BenchmarkDotNet_Installed" == "false" ]]; then
