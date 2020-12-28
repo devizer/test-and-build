@@ -20,19 +20,12 @@ target_tmp=${target}.$(basename "$(mktemp)")
 mkdir -p ${target_tmp}
 pushd ${target_tmp} >/dev/null
 
-url_bootstrapper=https://github.com/fsprojects/Paket/releases/download/5.241.2/paket.bootstrapper.exe
-url_packet=https://github.com/fsprojects/Paket/releases/download/6.0.0-beta8/paket.exe
-for url in $url_bootstrapper $url_packet; do
-  Header "Downloading: $(basename $url)"
-  mkdir -p .paket
-  copy=".paket/$(basename $url)"
-  cmd="wget --no-check-certificate -O \"$copy\" \"$url\"  || curl -kfSL -o \"$copy\" \"$url\""
-  eval $cmd || eval $cmd || eval $cmd
-done
-
-# Header "Downloading: paket.exe"
-# mono .paket/paket.bootstrapper.exe || mono .paket/paket.bootstrapper.exe || mono .paket/paket.bootstrapper.exe
-
+url=https://github.com/fsprojects/Paket/releases/download/5.241.2/paket.bootstrapper.exe
+Header "Downloading: $(basename $url)"
+mkdir -p .paket
+copy=".paket/paket.bootstrapper.exe"
+cmd="wget --no-check-certificate -O \"$copy\" \"$url\"  || curl -kfSL -o \"$copy\" \"$url\""
+eval $cmd || eval $cmd || eval $cmd
 
 echo '
 # framework: auto-detect
@@ -50,6 +43,8 @@ nuget xunit.runner.console
 nuget xunit.runner.reporters
 ' > paket.dependencies 
 
+Header "Downloading: paket.exe"
+mono .paket/paket.bootstrapper.exe || mono .paket/paket.bootstrapper.exe || mono .paket/paket.bootstrapper.exe
 Header "Downloading: unit test runners for NUnit and xUnit"
 mono .paket/paket.exe install || mono .paket/paket.exe install || mono .paket/paket.exe install
 
@@ -76,4 +71,4 @@ pushd "${target}" >/dev/null
 bash link-unit-test-runners.sh
 popd >/dev/null
 
-echo "DONE. try nunit3-console, xunit.runner and paket commands"
+echo "DONE. try nunit3-console and xunit.runner commands"
