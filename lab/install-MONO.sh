@@ -28,6 +28,8 @@ function Install_Mono_on_Debians() {
     # for Ubuntu 20.04 just a preview WAS available
     # def="deb https://download.mono-project.com/repo/ubuntu preview-$UBUNTU_CODENAME main";
     true 
+  elif [[ "$PRETTY_NAME" == *"bullseye/sid"* ]]; then
+    def="deb https://download.mono-project.com/repo/debian stable-buster main"
   fi
   echo "$def" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
   time try-and-retry sudo apt-get --allow-unauthenticated update -qq 
