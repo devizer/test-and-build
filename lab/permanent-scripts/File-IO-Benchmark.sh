@@ -41,6 +41,7 @@ fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest -
    toilet -f term -F border "$caption ($(pwd))"
    echo "Benchmark '$(pwd)' folder using '$cmd' test during $DURATION seconds and heating $RAMP secs, size is $SIZE"
    [ -n "$OS_X_VER" ] && [ "$OS_X_VER" -gt 0 ] && ioengine=posixaio || ioengine=libaio
+   if [[ "$(uname -r)" == *"Microsoft" ]]; then ioengine=sync; fi
    if [[ $cmd == "rand"* ]]; then
       fio --name=RUN_$cmd --randrepeat=1 --ioengine=$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=$SIZE --runtime=$DURATION --ramp_time=$RAMP --readwrite=$cmd
    else

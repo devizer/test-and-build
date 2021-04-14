@@ -7,8 +7,9 @@ if (Test-Path "V:\" -PathType Container)
     $Global:Qemu_PowerMan_DownloadImageLocation = "V:\Qemu_PowerMan_DownloadImageLocation"
 }
 
+$ok3 = Qemu-PowerMan-DownloadImage "Debian-10-arm"
+exit;
 $ok1 = Qemu-PowerMan-DownloadImage "CentOS-6-AMD64"
 $ok2 = Qemu-PowerMan-DownloadImage "Debian-10-arm64"
-$ok3 = Qemu-PowerMan-DownloadImage "Debian-10-arm"
 $ok4 = Qemu-PowerMan-DownloadImage "Debian-10-AMD64"
 
