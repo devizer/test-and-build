@@ -70,8 +70,10 @@ fi
  OS_X_VER=\$(sw_vers 2>/dev/null | grep BuildVer | awk '{print \$2}' | cut -c1-2 || true); OS_X_VER=\$((OS_X_VER-4)); [ \"\$OS_X_VER\" -gt 0 ] || unset OS_X_VER
 
  if [[ \"\$(command -v fio 2>/dev/null)\" == \"\" || \"\$(command -v toilet 2>/dev/null)\" == \"\" ]]; then
-   echo \"Installing fio and toilet\"
-   sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
+   if [[ \"\$(command -v apt-get 2>/dev/null)\" != \"\" ]]; then
+     echo \"Installing fio and toilet using apt-get\"
+     sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
+   fi
  fi
 
 echo '
@@ -79,12 +81,20 @@ fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest -
 fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=1G --readwrite=randwrite
 ' > /dev/null
 
+function Header() {
+  local txt=\$1
+  local length=\${#txt}
+  local border=\"---\"; while [[ \$length -gt 0 ]]; do border=\"-\${border}\"; length=\$((length-1)); done
+  if [[ \"\${NEXT_HEADER:-}\" == \"\" ]]; then NEXT_HEADER=true; else echo \"\"; fi
+  echo \"> \${txt}\"; echo \$border
+}
+
  function go_fio_1test() {
    local cmd=\$1
    local disk=\$2
    local caption=\"\$3\"
    pushd \"\$disk\" >/dev/null
-   toilet -f term -F border \"\$caption (\$(pwd))\"
+   toilet -f term -F border \"\$caption (\$(pwd))\" || Header \"\$caption (\$(pwd))\"
    echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
    [ -n \"\$OS_X_VER\" ] && [ \"\$OS_X_VER\" -gt 0 ] && ioengine=posixaio || ioengine=libaio
    if [[ \"\$(uname -r)\" == *\"Microsoft\" ]]; then ioengine=sync; fi
@@ -137,8 +147,10 @@ fi
  OS_X_VER=\$(sw_vers 2>/dev/null | grep BuildVer | awk '{print \$2}' | cut -c1-2 || true); OS_X_VER=\$((OS_X_VER-4)); [ \"\$OS_X_VER\" -gt 0 ] || unset OS_X_VER
 
  if [[ \"\$(command -v fio 2>/dev/null)\" == \"\" || \"\$(command -v toilet 2>/dev/null)\" == \"\" ]]; then
-   echo \"Installing fio and toilet\"
-   sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
+   if [[ \"\$(command -v apt-get 2>/dev/null)\" != \"\" ]]; then
+     echo \"Installing fio and toilet using apt-get\"
+     sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
+   fi
  fi
 
 echo '
@@ -146,12 +158,20 @@ fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest -
 fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=1G --readwrite=randwrite
 ' > /dev/null
 
+function Header() {
+  local txt=\$1
+  local length=\${#txt}
+  local border=\"---\"; while [[ \$length -gt 0 ]]; do border=\"-\${border}\"; length=\$((length-1)); done
+  if [[ \"\${NEXT_HEADER:-}\" == \"\" ]]; then NEXT_HEADER=true; else echo \"\"; fi
+  echo \"> \${txt}\"; echo \$border
+}
+
  function go_fio_1test() {
    local cmd=\$1
    local disk=\$2
    local caption=\"\$3\"
    pushd \"\$disk\" >/dev/null
-   toilet -f term -F border \"\$caption (\$(pwd))\"
+   toilet -f term -F border \"\$caption (\$(pwd))\" || Header \"\$caption (\$(pwd))\"
    echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
    [ -n \"\$OS_X_VER\" ] && [ \"\$OS_X_VER\" -gt 0 ] && ioengine=posixaio || ioengine=libaio
    if [[ \"\$(uname -r)\" == *\"Microsoft\" ]]; then ioengine=sync; fi
