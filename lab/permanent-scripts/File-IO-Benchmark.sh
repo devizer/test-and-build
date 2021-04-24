@@ -48,7 +48,7 @@ function Header() {
    local disk=$2
    local caption="$3"
    pushd "$disk" >/dev/null
-   toilet -f term -F border "$caption ($(pwd))" || Header "$caption ($(pwd))"
+   toilet -f term -F border "$caption ($(pwd))" 2>/dev/null || Header "$caption ($(pwd))"
    echo "Benchmark '$(pwd)' folder using '$cmd' test during $DURATION seconds and heating $RAMP secs, size is $SIZE"
    [ -n "$OS_X_VER" ] && [ "$OS_X_VER" -gt 0 ] && ioengine=posixaio || ioengine=libaio
    if [[ "$(uname -r)" == *"Microsoft" ]]; then ioengine=sync; fi
