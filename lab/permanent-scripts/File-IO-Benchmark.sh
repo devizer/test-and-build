@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [[ "$1" == "" ]]; then
+if [[ "$1" == "" || "$1" == "--help" ]]; then
 echo "Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
 here 1G - working set size
      30 - test duration, in seconds
@@ -21,8 +21,11 @@ fi
  DURATION=${DURATION:-30}
  RAMP=${RAMP:-5}
 
- export SYSTEM_VERSION_COMPAT=1
+ export SYSTEM_VERSION_COMPAT=${SYSTEM_VERSION_COMPAT:-1}
  OS_X_VER=$(sw_vers 2>/dev/null | grep BuildVer | awk '{print $2}' | cut -c1-2 || true); OS_X_VER=$((OS_X_VER-4)); [ "$OS_X_VER" -gt 0 ] || unset OS_X_VER
+
+if [[ -n "$OS_X_VER" ]] && [[ "$OS_X_VER" -gt 0 ]]; then ioengine=posixaio; else ioengine=libaio; fi
+if [[ "$(uname -r)" == *"Microsoft" ]] || [[ "$(uname -s)" == "MINGW"* ]]; then ioengine=sync; fi
 
  if [[ "$(command -v fio 2>/dev/null)" == "" || "$(command -v toilet 2>/dev/null)" == "" ]]; then
    if [[ "$(command -v apt-get 2>/dev/null)" != "" ]]; then
@@ -44,6 +47,16 @@ function Header() {
   echo "> ${txt}"; echo $border
 }
 
+# check DIRECT IO
+pushd "$disk" >/dev/null
+direct=0; direct_info="Direct IO: Absent"
+fio --name=RUN_CHECK_DIRECT_IO --ioengine=$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --ramp_time=1 --readwrite=read \
+  && direct=1 && direct_info="Direct IO: Absent"
+popd >/dev/null
+
+info="INFO> IO Engine: $(ioengine). $direct_info"
+Header $info
+
  function go_fio_1test() {
    local cmd=$1
    local disk=$2
@@ -51,12 +64,10 @@ function Header() {
    pushd "$disk" >/dev/null
    toilet -f term -F border "$caption ($(pwd))" 2>/dev/null || Header "$caption ($(pwd))"
    echo "Benchmark '$(pwd)' folder using '$cmd' test during $DURATION seconds and heating $RAMP secs, size is $SIZE"
-   [ -n "$OS_X_VER" ] && [ "$OS_X_VER" -gt 0 ] && ioengine=posixaio || ioengine=libaio
-   if [[ "$(uname -r)" == *"Microsoft" ]]; then ioengine=sync; fi
    if [[ $cmd == "rand"* ]]; then
-      fio --name=RUN_$cmd --randrepeat=1 --ioengine=$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=$SIZE --runtime=$DURATION --ramp_time=$RAMP --readwrite=$cmd
+      fio --name=RUN_$cmd --randrepeat=1 --ioengine=$ioengine --direct=$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=$SIZE --runtime=$DURATION --ramp_time=$RAMP --readwrite=$cmd
    else
-      fio --name=RUN_$cmd --ioengine=$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=$SIZE --runtime=$DURATION --ramp_time=$RAMP --readwrite=$cmd
+      fio --name=RUN_$cmd --ioengine=$ioengine --direct=$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=$SIZE --runtime=$DURATION --ramp_time=$RAMP --readwrite=$cmd
    fi
    popd >/dev/null
    echo ""
@@ -69,8 +80,7 @@ function Header() {
    go_fio_1test write     $disk "${caption}: Sequential write"
    go_fio_1test randread  $disk "${caption}: Random read"
    go_fio_1test randwrite $disk "${caption}: Random write"
-   rm -f $disk/fiotest.tmp
+   if [[ -f $disk/fiotest.tmp ]]; then rm -f $disk/fiotest.tmp; fi
  }
  
  go_fio_4tests "$DISK" "$CAPTION"
-
