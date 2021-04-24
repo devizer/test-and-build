@@ -96,12 +96,13 @@ function Header() {
 # check DIRECT IO
 pushd \"\$disk\" >/dev/null
 direct=0; direct_info=\"Direct IO: Absent\"
-fio --name=RUN_CHECK_DIRECT_IO --ioengine=\$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --ramp_time=1 --readwrite=read \x5C
+fio --name=RUN_CHECK_DIRECT_IO --ioengine=\$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --ramp_time=1 --readwrite=read >/dev/null 2>&1 \x5C
   && direct=1 && direct_info=\"Direct IO: Absent\"
+if [[ -f \$disk/fiotest.tmp ]]; then rm -f \$disk/fiotest.tmp; fi
 popd >/dev/null
 
 info=\"INFO> IO Engine: \$(ioengine). \$direct_info\"
-Header \$info
+Header \"\$info\"
 
  function go_fio_1test() {
    local cmd=\$1
@@ -184,12 +185,13 @@ function Header() {
 # check DIRECT IO
 pushd \"\$disk\" >/dev/null
 direct=0; direct_info=\"Direct IO: Absent\"
-fio --name=RUN_CHECK_DIRECT_IO --ioengine=\$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --ramp_time=1 --readwrite=read \x5C
+fio --name=RUN_CHECK_DIRECT_IO --ioengine=\$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --ramp_time=1 --readwrite=read >/dev/null 2>&1 \x5C
   && direct=1 && direct_info=\"Direct IO: Absent\"
+if [[ -f \$disk/fiotest.tmp ]]; then rm -f \$disk/fiotest.tmp; fi
 popd >/dev/null
 
 info=\"INFO> IO Engine: \$(ioengine). \$direct_info\"
-Header \$info
+Header \"\$info\"
 
  function go_fio_1test() {
    local cmd=\$1
