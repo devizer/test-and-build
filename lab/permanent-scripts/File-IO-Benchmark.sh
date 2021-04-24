@@ -55,7 +55,7 @@ fio --name=RUN_CHECK_DIRECT_IO --ioengine=$ioengine --direct=1 --gtod_reduce=1 -
 if [[ -f $disk/fiotest.tmp ]]; then rm -f $disk/fiotest.tmp; fi
 popd >/dev/null
 
-info="INFO> IO Engine: $(ioengine). $direct_info"
+info="INFO> IO Engine: ${ioengine}. $direct_info"
 Header "$info"
 
  function go_fio_1test() {
