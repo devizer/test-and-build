@@ -96,7 +96,7 @@ function Header() {
 # check DIRECT IO
 pushd \"\$disk\" >/dev/null
 direct=0; direct_info=\"Direct IO: Absent\"
-if fio --name=RUN_CHECK_DIRECT_IO --ioengine=\$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --ramp_time=1 --readwrite=read; then
+if fio --name=RUN_CHECK_DIRECT_IO --ioengine=\$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread; then
   direct=1; direct_info=\"Direct IO: Present\"
 fi
 if [[ -f \$disk/fiotest.tmp ]]; then rm -f \$disk/fiotest.tmp; fi
@@ -186,7 +186,7 @@ function Header() {
 # check DIRECT IO
 pushd \"\$disk\" >/dev/null
 direct=0; direct_info=\"Direct IO: Absent\"
-if fio --name=RUN_CHECK_DIRECT_IO --ioengine=\$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --ramp_time=1 --readwrite=read; then
+if fio --name=RUN_CHECK_DIRECT_IO --ioengine=\$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread; then
   direct=1; direct_info=\"Direct IO: Present\"
 fi
 if [[ -f \$disk/fiotest.tmp ]]; then rm -f \$disk/fiotest.tmp; fi
