@@ -9,17 +9,17 @@ here 1G - working set size
 exit 0;
 fi
 
- CAPTION=$1
- DISK=$2
- SIZE=$3
- DURATION=$4
- RAMP=$5
+CAPTION=$1
+DISK=$2
+SIZE=$3
+DURATION=$4
+RAMP=$5
 
- CAPTION=${CAPTION:-Current Folder}
- DISK=${DISK:-$(pwd)}
- SIZE=${SIZE:-1G}
- DURATION=${DURATION:-30}
- RAMP=${RAMP:-5}
+CAPTION=${CAPTION:-Current Folder}
+DISK=${DISK:-$(pwd)}
+SIZE=${SIZE:-1G}
+DURATION=${DURATION:-30}
+RAMP=${RAMP:-5}
 
  export SYSTEM_VERSION_COMPAT=${SYSTEM_VERSION_COMPAT:-1}
  OS_X_VER=$(sw_vers 2>/dev/null | grep BuildVer | awk '{print $2}' | cut -c1-2 || true); OS_X_VER=$((OS_X_VER-4)); [ "$OS_X_VER" -gt 0 ] || unset OS_X_VER
@@ -48,12 +48,13 @@ function Header() {
 }
 
 # check DIRECT IO
-pushd "$disk" >/dev/null
+# echo checking direct io on [$DISK]
+pushd "$DISK" >/dev/null
 direct=0; direct_info="Direct IO: Absent"
-if fio --name=RUN_CHECK_DIRECT_IO --ioengine=$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread; then
+if fio --name=CHECK_DIRECT_IO --ioengine=$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread >/dev/null 2>&1; then
   direct=1; direct_info="Direct IO: Present"
 fi
-if [[ -f $disk/fiotest.tmp ]]; then rm -f $disk/fiotest.tmp; fi
+if [[ -f fiotest.tmp ]]; then rm -f fiotest.tmp; fi
 popd >/dev/null
 
 info="INFO> IO Engine: ${ioengine}. $direct_info"
