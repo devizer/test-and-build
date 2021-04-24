@@ -21,6 +21,7 @@ fi
  DURATION=${DURATION:-30}
  RAMP=${RAMP:-5}
 
+ export SYSTEM_VERSION_COMPAT=1
  OS_X_VER=$(sw_vers 2>/dev/null | grep BuildVer | awk '{print $2}' | cut -c1-2 || true); OS_X_VER=$((OS_X_VER-4)); [ "$OS_X_VER" -gt 0 ] || unset OS_X_VER
 
  if [[ "$(command -v fio 2>/dev/null)" == "" || "$(command -v toilet 2>/dev/null)" == "" ]]; then
