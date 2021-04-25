@@ -46,6 +46,8 @@ fi
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
 
+# Possible \$FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
+
 if [[ \"\$1\" == \"\" || \"\$1\" == \"--help\" ]]; then
 echo \"Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
 here 1G - working set size
@@ -114,9 +116,9 @@ Header \"\$info\"
    toilet -f term -F border \"\$caption (\$(pwd))\" 2>/dev/null || Header \"\$caption (\$(pwd))\"
    echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
    if [[ \$cmd == \"rand\"* ]]; then
-      fio --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
+      fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
    else
-      fio --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
+      fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
    fi
    popd >/dev/null
    echo \"\"
@@ -137,6 +139,8 @@ Header \"\$info\"
 " 2>/dev/null >${TARGET_DIR}/File-IO-Benchmark ||
   echo -e "#!/usr/bin/env bash
 
+# Possible \$FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
+
 if [[ \"\$1\" == \"\" || \"\$1\" == \"--help\" ]]; then
 echo \"Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
 here 1G - working set size
@@ -205,9 +209,9 @@ Header \"\$info\"
    toilet -f term -F border \"\$caption (\$(pwd))\" 2>/dev/null || Header \"\$caption (\$(pwd))\"
    echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
    if [[ \$cmd == \"rand\"* ]]; then
-      fio --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
+      fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
    else
-      fio --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
+      fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
    fi
    popd >/dev/null
    echo \"\"
