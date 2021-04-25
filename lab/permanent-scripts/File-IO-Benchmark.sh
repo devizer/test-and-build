@@ -7,6 +7,7 @@ echo "Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
 here 1G - working set size
      30 - test duration, in seconds
      5  - ramp duration (for VM, raids and ssd 30 seconds is recommended)
+Possible \$FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
 "
 exit 0;
 fi
