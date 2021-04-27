@@ -80,6 +80,9 @@ if [[ \"\$(uname -r)\" == *\"Microsoft\" ]] || [[ \"\$(uname -s)\" == \"MINGW\"*
    if [[ \"\$(command -v apt-get 2>/dev/null)\" != \"\" ]]; then
      echo \"Installing fio and toilet using apt-get\"
      sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
+   elif [[ \"\$(command -v yum 2>/dev/null)\" != \"\" ]]; then
+     echo \"Installing fio and toilet using yum\"
+     sudo yum install -y fio toilet >/tmp/fio-install.log 2>&1 || sudo yum install -y fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
    fi
  fi
 
@@ -109,6 +112,8 @@ popd >/dev/null
 info=\"INFO > IO Engine: [\${ioengine}]. \$direct_info\"
 Header \"\$info\"
 
+errorCode=1; exitCode=0;
+
  function go_fio_1test() {
    local cmd=\$1
    local disk=\$2
@@ -118,9 +123,12 @@ Header \"\$info\"
    echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
    if [[ \$cmd == \"rand\"* ]]; then
       fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
+      if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
    else
       fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
+      if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
    fi
+   exitCode=\$((isError*errorCode + exitCode)); errorCode=\$((errorCode*2))
    popd >/dev/null
    echo \"\"
  }
@@ -136,6 +144,7 @@ Header \"\$info\"
  }
  
  go_fio_4tests \"\$DISK\" \"\$CAPTION\"
+ exit \$exitCode
 
 " 2>/dev/null >${TARGET_DIR}/File-IO-Benchmark ||
   echo -e "#!/usr/bin/env bash
@@ -174,6 +183,9 @@ if [[ \"\$(uname -r)\" == *\"Microsoft\" ]] || [[ \"\$(uname -s)\" == \"MINGW\"*
    if [[ \"\$(command -v apt-get 2>/dev/null)\" != \"\" ]]; then
      echo \"Installing fio and toilet using apt-get\"
      sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
+   elif [[ \"\$(command -v yum 2>/dev/null)\" != \"\" ]]; then
+     echo \"Installing fio and toilet using yum\"
+     sudo yum install -y fio toilet >/tmp/fio-install.log 2>&1 || sudo yum install -y fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
    fi
  fi
 
@@ -203,6 +215,8 @@ popd >/dev/null
 info=\"INFO > IO Engine: [\${ioengine}]. \$direct_info\"
 Header \"\$info\"
 
+errorCode=1; exitCode=0;
+
  function go_fio_1test() {
    local cmd=\$1
    local disk=\$2
@@ -212,9 +226,12 @@ Header \"\$info\"
    echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
    if [[ \$cmd == \"rand\"* ]]; then
       fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
+      if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
    else
       fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
+      if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
    fi
+   exitCode=\$((isError*errorCode + exitCode)); errorCode=\$((errorCode*2))
    popd >/dev/null
    echo \"\"
  }
@@ -230,6 +247,7 @@ Header \"\$info\"
  }
  
  go_fio_4tests \"\$DISK\" \"\$CAPTION\"
+ exit \$exitCode
 
 " | sudo tee ${TARGET_DIR}/File-IO-Benchmark >/dev/null;
   if [[ -f ${TARGET_DIR}/File-IO-Benchmark ]]; then 
