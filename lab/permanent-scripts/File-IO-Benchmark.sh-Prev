@@ -24,14 +24,12 @@ SIZE=${SIZE:-1G}
 DURATION=${DURATION:-30}
 RAMP=${RAMP:-5}
 
-export SYSTEM_VERSION_COMPAT=${SYSTEM_VERSION_COMPAT:-1}
-OS_X_VER=$(sw_vers 2>/dev/null | grep BuildVer | awk '{print $2}' | cut -c1-2 || true); OS_X_VER=$((OS_X_VER-4)); [ "$OS_X_VER" -gt 0 ] || unset OS_X_VER
+ export SYSTEM_VERSION_COMPAT=${SYSTEM_VERSION_COMPAT:-1}
+ OS_X_VER=$(sw_vers 2>/dev/null | grep BuildVer | awk '{print $2}' | cut -c1-2 || true); OS_X_VER=$((OS_X_VER-4)); [ "$OS_X_VER" -gt 0 ] || unset OS_X_VER
 
-# DETECT io engine
 if [[ -n "$OS_X_VER" ]] && [[ "$OS_X_VER" -gt 0 ]]; then ioengine=posixaio; else ioengine=libaio; fi
 if [[ "$(uname -r)" == *"Microsoft" ]] || [[ "$(uname -s)" == "MINGW"* ]]; then ioengine=windowsaio; fi
 
-# install fio & toilet
  if [[ "$(command -v fio 2>/dev/null)" == "" || "$(command -v toilet 2>/dev/null)" == "" ]]; then
    if [[ "$(command -v apt-get 2>/dev/null)" != "" ]]; then
      echo "Installing fio and toilet using apt-get"
@@ -54,15 +52,6 @@ function Header() {
   if [[ "${NEXT_HEADER:-}" == "" ]]; then NEXT_HEADER=true; else echo ""; fi
   echo "> ${txt}"; echo $border
 }
-
-# check libaio support
-if [[ "$ioengine" == libaio ]]; then
-if fio --name=CHECK_LIBAIO --ioengine=$ioengine --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread >/dev/null 2>&1; then
-  ioengine=libaio
-else
-  ioengine=posixaio
-fi
-fi
 
 # check DIRECT IO
 # echo checking direct io on [$DISK]
