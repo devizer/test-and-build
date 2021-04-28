@@ -102,6 +102,7 @@ function Header() {
 }
 
 # check libaio support
+pushd \"\$DISK\" >/dev/null
 if [[ \"\$ioengine\" == libaio ]]; then
 if fio --name=CHECK_LIBAIO --ioengine=\$ioengine --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread >/dev/null 2>&1; then
   ioengine=libaio
@@ -111,8 +112,6 @@ fi
 fi
 
 # check DIRECT IO
-# echo checking direct io on [\$DISK]
-pushd \"\$DISK\" >/dev/null
 direct=0; direct_info=\"Direct IO: [Absent]\"
 if fio --name=CHECK_DIRECT_IO --ioengine=\$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread >/dev/null 2>&1; then
   direct=1; direct_info=\"Direct IO: [Present]\"
@@ -216,6 +215,7 @@ function Header() {
 }
 
 # check libaio support
+pushd \"\$DISK\" >/dev/null
 if [[ \"\$ioengine\" == libaio ]]; then
 if fio --name=CHECK_LIBAIO --ioengine=\$ioengine --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread >/dev/null 2>&1; then
   ioengine=libaio
@@ -225,8 +225,6 @@ fi
 fi
 
 # check DIRECT IO
-# echo checking direct io on [\$DISK]
-pushd \"\$DISK\" >/dev/null
 direct=0; direct_info=\"Direct IO: [Absent]\"
 if fio --name=CHECK_DIRECT_IO --ioengine=\$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread >/dev/null 2>&1; then
   direct=1; direct_info=\"Direct IO: [Present]\"
