@@ -1506,8 +1506,10 @@ if [[ -d ${TARGET_DIR} ]]; then
       if [[ -z \"\$SAY_COLORLESS\" ]]; then # skip colors for azure pipelines
         Blue='\x5C033[1;34m'; Gray='\x5C033[1;37m'; LightGreen='\x5C033[1;32m'; Yellow='\x5C033[1;33m'; RED='\x5C033[0;31m'; NC='\x5C033[0m'; LightGray='\x5C033[1;2m';
       fi
-      printf \"\${Blue}\${black_circle} \$(hostname)\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\x5Cn\";
-      echo \"\$(hostname) \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
+      hostname=\"\$(hostname 2>/dev/null)\"
+      hostname=\"\${hostname:-\$HOSTNAME}\"
+      printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\x5Cn\";
+      echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
     }
 
     function SayIt() { 
@@ -1556,8 +1558,10 @@ SayIt \"\$@\"
       if [[ -z \"\$SAY_COLORLESS\" ]]; then # skip colors for azure pipelines
         Blue='\x5C033[1;34m'; Gray='\x5C033[1;37m'; LightGreen='\x5C033[1;32m'; Yellow='\x5C033[1;33m'; RED='\x5C033[0;31m'; NC='\x5C033[0m'; LightGray='\x5C033[1;2m';
       fi
-      printf \"\${Blue}\${black_circle} \$(hostname)\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\x5Cn\";
-      echo \"\$(hostname) \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
+      hostname=\"\$(hostname 2>/dev/null)\"
+      hostname=\"\${hostname:-\$HOSTNAME}\"
+      printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\x5Cn\";
+      echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
     }
 
     function SayIt() { 
