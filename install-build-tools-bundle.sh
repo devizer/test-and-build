@@ -46,7 +46,6 @@ fi
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
 
-set -o pipefail
 # Possible \$FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
 
 if [[ \"\$1\" == \"\" || \"\$1\" == \"--help\" ]]; then
@@ -143,6 +142,7 @@ errorCode=1; exitCode=0;
      mkdir -p \"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version\"
      fio_shell_cmd=\"\$fio_shell_cmd | tee \x5C\"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version/\$cmd.log\x5C\"\"
    fi
+   set -o pipefail
    eval \$fio_shell_cmd
    if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
    exitCode=\$((isError*errorCode + exitCode)); errorCode=\$((errorCode*2))
@@ -166,7 +166,6 @@ errorCode=1; exitCode=0;
 " 2>/dev/null >${TARGET_DIR}/File-IO-Benchmark ||
   echo -e "#!/usr/bin/env bash
 
-set -o pipefail
 # Possible \$FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
 
 if [[ \"\$1\" == \"\" || \"\$1\" == \"--help\" ]]; then
@@ -263,6 +262,7 @@ errorCode=1; exitCode=0;
      mkdir -p \"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version\"
      fio_shell_cmd=\"\$fio_shell_cmd | tee \x5C\"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version/\$cmd.log\x5C\"\"
    fi
+   set -o pipefail
    eval \$fio_shell_cmd
    if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
    exitCode=\$((isError*errorCode + exitCode)); errorCode=\$((errorCode*2))
