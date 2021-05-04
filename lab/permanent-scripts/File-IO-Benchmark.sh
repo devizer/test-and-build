@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-set -o pipefail
 # Possible $FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
 
 if [[ "$1" == "" || "$1" == "--help" ]]; then
@@ -97,6 +96,7 @@ errorCode=1; exitCode=0;
      mkdir -p "$FILE_IO_BENCHMARK_DUMP_FOLDER/$fio_version"
      fio_shell_cmd="$fio_shell_cmd | tee \"$FILE_IO_BENCHMARK_DUMP_FOLDER/$fio_version/$cmd.log\""
    fi
+   set -o pipefail
    eval $fio_shell_cmd
    if [[ $? == 0 ]]; then isError=0; else isError=1; fi
    exitCode=$((isError*errorCode + exitCode)); errorCode=$((errorCode*2))
