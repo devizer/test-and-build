@@ -46,6 +46,7 @@ fi
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
 
+set -o pipefail
 # Possible \$FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
 
 if [[ \"\$1\" == \"\" || \"\$1\" == \"--help\" ]]; then
@@ -132,12 +133,18 @@ errorCode=1; exitCode=0;
    toilet -f term -F border \"\$caption (\$(pwd))\" 2>/dev/null || Header \"\$caption (\$(pwd))\"
    echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
    if [[ \$cmd == \"rand\"* ]]; then
-      fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
-      if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
+      fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd\"
    else
-      fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
-      if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
+      fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd\"
    fi
+   if [[ -n \"\$FILE_IO_BENCHMARK_DUMP_FOLDER\" ]]; then
+     fio_version=\"\$(fio --version)\"
+     fio_version=\"\${fio_version:-unknown}\"
+     mkdir -p \"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version\"
+     fio_shell_cmd=\"\$fio_shell_cmd | tee \x5C\"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version/\$cmd.log\x5C\"\"
+   fi
+   eval \$fio_shell_cmd
+   if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
    exitCode=\$((isError*errorCode + exitCode)); errorCode=\$((errorCode*2))
    popd >/dev/null
    echo \"\"
@@ -159,6 +166,7 @@ errorCode=1; exitCode=0;
 " 2>/dev/null >${TARGET_DIR}/File-IO-Benchmark ||
   echo -e "#!/usr/bin/env bash
 
+set -o pipefail
 # Possible \$FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
 
 if [[ \"\$1\" == \"\" || \"\$1\" == \"--help\" ]]; then
@@ -245,12 +253,18 @@ errorCode=1; exitCode=0;
    toilet -f term -F border \"\$caption (\$(pwd))\" 2>/dev/null || Header \"\$caption (\$(pwd))\"
    echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
    if [[ \$cmd == \"rand\"* ]]; then
-      fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
-      if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
+      fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd\"
    else
-      fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd
-      if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
+      fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd\"
    fi
+   if [[ -n \"\$FILE_IO_BENCHMARK_DUMP_FOLDER\" ]]; then
+     fio_version=\"\$(fio --version)\"
+     fio_version=\"\${fio_version:-unknown}\"
+     mkdir -p \"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version\"
+     fio_shell_cmd=\"\$fio_shell_cmd | tee \x5C\"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version/\$cmd.log\x5C\"\"
+   fi
+   eval \$fio_shell_cmd
+   if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
    exitCode=\$((isError*errorCode + exitCode)); errorCode=\$((errorCode*2))
    popd >/dev/null
    echo \"\"
