@@ -73,7 +73,7 @@ fi
 if [[ -f fiotest.tmp ]]; then rm -f fiotest.tmp; fi
 popd >/dev/null
 
-info="INFO > IO Engine: [${ioengine}]. $direct_info"
+info="Detected IO Engine: [${ioengine}]. $direct_info"
 Header "$info"
 
 errorCode=1; exitCode=0;
