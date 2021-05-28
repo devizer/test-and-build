@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/install-DOTNET.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash
+# script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/install-DOTNET.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash; test -s /usr/share/dotnet/dotnet && ln -f -s /usr/share/dotnet/dotnet /usr/local/bin/dotnet
 
 DOTNET_VERSIONS="${DOTNET_VERSIONS:-2.1 2.2 3.0 3.1 5.0}"
 DOTNET_VERSIONS2=" ${DOTNET_VERSIONS} "
