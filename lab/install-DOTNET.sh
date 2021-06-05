@@ -71,8 +71,10 @@ sudo chmod +x /etc/profile.d/dotnet-core.sh
 
 if sudo test -d /home/user; then
     sudo -u user mkdir -p /home/user/.dotnet/tools
-    printf "\n\n" >> /home/user/.bashrc
-    sudo -u user cat /etc/profile.d/dotnet-core.sh >> /home/user/.bashrc
+    if [[ -z "${SKIP_DOTNET_ENVIRONMENT:-}" ]]; then
+      printf "\n\n" >> /home/user/.bashrc
+      sudo -u user cat /etc/profile.d/dotnet-core.sh >> /home/user/.bashrc
+    fi
     sudo chown -R user /home/user
 fi
 
