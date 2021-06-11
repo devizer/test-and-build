@@ -30,7 +30,8 @@ function Install_Mono_on_Debians() {
     true 
   elif [[ "$PRETTY_NAME" == *"bullseye/sid"* ]]; then
     def="deb https://download.mono-project.com/repo/debian stable-buster main"
-  elif [[ "$ID" == linuxmint ]]; then
+  fi
+  if [[ "$ID" == linuxmint ]]; then
     def="deb https://download.mono-project.com/repo/ubuntu stable-focal main"
   fi
   echo "$def" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
