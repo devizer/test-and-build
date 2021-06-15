@@ -1490,104 +1490,164 @@ fi
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
 
-    function format2digits() {
-      if [[ \$1 -gt 9 ]]; then echo \$1; else echo 0\$1; fi
-    }
+  function get_stopwatch_file_name() {
+    user=\"\${LOGNAME:-\$(whoami)}\"
+    file2=\"/tmp/.\${user}-stopwatch-for-say\"
+    echo \$file2
+  }
+  
+  function format2digits() {
+    if [[ \$1 -gt 9 ]]; then echo \$1; else echo 0\$1; fi
+  }
 
-    function print_header() {
-      theSYSTEM=\"\${theSYSTEM:-\$(uname -s)}\"
-      if [[ \${theSYSTEM} != \"Darwin\" ]]; then
-          uptime=\$(</proc/uptime);                  # 42645.93 240538.58
-          IFS=' ' read -ra uptime <<< \"\$uptime\";    # 42645.93 240538.58
-          uptime=\"\${uptime[0]}\";                    # 42645.93
-          uptime=\$(printf \"%.0f\x5Cn\" \"\$uptime\")       # 42645
-          uptime=\$(TZ=UTC date -d \"@\${uptime}\" \"+%H:%M:%S\");
-      else 
-          # https://stackoverflow.com/questions/15329443/proc-uptime-in-mac-os-x
-          boottime=\`sysctl -n kern.boottime | awk '{print \$4}' | sed 's/,//g'\`
-\x09\x09  unixtime=\`date +%s\`
-\x09\x09  timeAgo=\$((\$unixtime - \$boottime))
-          seconds1=\$((timeAgo % 86400));
-          seconds=\$((seconds1 % 60));
-          minutes1=\$((seconds1 / 60));
-          minutes=\$((minutes1 % 60));
-          hours=\$((minutes1 / 60));
-          # uptime=\`awk -v time=\$timeAgo 'BEGIN { seconds = time % 60; minutes = int(time / 60 % 60); hours = int(time / 60 / 60 % 24); days = int(time / 60 / 60 / 24); printf(\"%.0f days, %.0f hours, %.0f minutes, %.0f seconds\", days, hours, minutes, seconds); exit }'\`
-          uptime=\"\$(format2digits \$hours):\$(format2digits \$minutes):\$(format2digits \$seconds)\"
-      fi
-      black_circle='\x5CxE2\x5Cx97\x5Cx8f'
-      white_circle='\x5CxE2\x5Cx97\x5Cx8b'
-      # BUILD_DEFINITIONNAME
-      # if [[ -z \"\$BUILD_DEFINITIONNAME\" ]]; then 
-      if [[ -z \"\$SAY_COLORLESS\" ]]; then # skip colors for azure pipelines
-        Blue='\x5C033[1;34m'; Gray='\x5C033[1;37m'; LightGreen='\x5C033[1;32m'; Yellow='\x5C033[1;33m'; RED='\x5C033[0;31m'; NC='\x5C033[0m'; LightGray='\x5C033[1;2m';
-      fi
-      hostname=\"\$(hostname 2>/dev/null)\"
-      hostname=\"\${hostname:-\$HOSTNAME}\"
-      printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\x5Cn\";
-      echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
-    }
+  function get_global_seconds() {
+    theSYSTEM=\"\${theSYSTEM:-\$(uname -s)}\"
+    if [[ \${theSYSTEM} != \"Darwin\" ]]; then
+        uptime=\$(</proc/uptime);                  # 42645.93 240538.58
+        IFS=' ' read -ra uptime <<< \"\$uptime\";    # 42645.93 240538.58
+        uptime=\"\${uptime[0]}\";                    # 42645.93
+        uptime=\$(printf \"%.0f\x5Cn\" \"\$uptime\")       # 42645
+        echo \$uptime
+    else 
+        # https://stackoverflow.com/questions/15329443/proc-uptime-in-mac-os-x
+        boottime=\`sysctl -n kern.boottime | awk '{print \$4}' | sed 's/,//g'\`
+        unixtime=\`date +%s\`
+\x09    timeAgo=\$((\$unixtime - \$boottime))
+\x09    echo \$timeAgo
+    fi
+  }
 
-    function SayIt() { 
-      user=\"\${LOGNAME:-\$(whoami)}\"
-      file=\"/tmp/.\${user}-said-counter\"
-      if [[ -e \"\$file\" ]]; then counter=\$(< \"\$file\"); else counter=1; fi
-      print_header \"#\${counter}\" \"\$1\";
-      counter=\$((counter+1));
-      echo \$counter > \"\$file\"
-    }; 
+  function format_total_seconds() {
+    timeAgo=\$1
+    seconds1=\$((timeAgo % 86400));
+    seconds=\$((seconds1 % 60));
+    minutes1=\$((seconds1 / 60));
+    minutes=\$((minutes1 % 60));
+    hours=\$((minutes1 / 60));
+    echo \"\$(format2digits \$hours):\$(format2digits \$minutes):\$(format2digits \$seconds)\"
+  }
+
+  function print_header() {
+    global_seconds=\"\$(get_global_seconds)\"
+
+    # zero is 0?
+    stopwatch_file=\"\$(get_stopwatch_file_name)\"
+    if [[ -s \"\$stopwatch_file\" ]]; then
+      zero_seconds=\$(<\$stopwatch_file)
+      global_seconds=\$((global_seconds-zero_seconds))
+    fi
+    
+    uptime=\"\$(format_total_seconds \$global_seconds)\"
+
+    black_circle='\x5CxE2\x5Cx97\x5Cx8f'
+    white_circle='\x5CxE2\x5Cx97\x5Cx8b'
+    # BUILD_DEFINITIONNAME
+    # if [[ -z \"\$BUILD_DEFINITIONNAME\" ]]; then 
+    if [[ -z \"\$SAY_COLORLESS\" ]]; then # skip colors for azure pipelines
+      Blue='\x5C033[1;34m'; Gray='\x5C033[1;37m'; LightGreen='\x5C033[1;32m'; Yellow='\x5C033[1;33m'; RED='\x5C033[0;31m'; NC='\x5C033[0m'; LightGray='\x5C033[1;2m';
+    fi
+    hostname=\"\$(hostname 2>/dev/null)\"
+    hostname=\"\${hostname:-\$HOSTNAME}\"
+    printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\x5Cn\";
+    echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
+  }
+
+  function SayIt() { 
+    user=\"\${LOGNAME:-\$(whoami)}\"
+    file=\"/tmp/.\${user}-said-counter\"
+    if [[ -e \"\$file\" ]]; then counter=\$(< \"\$file\"); else counter=1; fi
+    print_header \"#\${counter}\" \"\$1\";
+    counter=\$((counter+1));
+    echo \$counter > \"\$file\"
+  }; 
+
+
+if [[ \"\$1\" == \"--Reset-Stopwatch\" ]]; then
+  echo \"\$(get_global_seconds)\" > \"\$(get_stopwatch_file_name)\"
+  exit 0;
+fi
 
 SayIt \"\$@\"
 
 " 2>/dev/null >${TARGET_DIR}/Say ||
   echo -e "#!/usr/bin/env bash
 
-    function format2digits() {
-      if [[ \$1 -gt 9 ]]; then echo \$1; else echo 0\$1; fi
-    }
+  function get_stopwatch_file_name() {
+    user=\"\${LOGNAME:-\$(whoami)}\"
+    file2=\"/tmp/.\${user}-stopwatch-for-say\"
+    echo \$file2
+  }
+  
+  function format2digits() {
+    if [[ \$1 -gt 9 ]]; then echo \$1; else echo 0\$1; fi
+  }
 
-    function print_header() {
-      theSYSTEM=\"\${theSYSTEM:-\$(uname -s)}\"
-      if [[ \${theSYSTEM} != \"Darwin\" ]]; then
-          uptime=\$(</proc/uptime);                  # 42645.93 240538.58
-          IFS=' ' read -ra uptime <<< \"\$uptime\";    # 42645.93 240538.58
-          uptime=\"\${uptime[0]}\";                    # 42645.93
-          uptime=\$(printf \"%.0f\x5Cn\" \"\$uptime\")       # 42645
-          uptime=\$(TZ=UTC date -d \"@\${uptime}\" \"+%H:%M:%S\");
-      else 
-          # https://stackoverflow.com/questions/15329443/proc-uptime-in-mac-os-x
-          boottime=\`sysctl -n kern.boottime | awk '{print \$4}' | sed 's/,//g'\`
-\x09\x09  unixtime=\`date +%s\`
-\x09\x09  timeAgo=\$((\$unixtime - \$boottime))
-          seconds1=\$((timeAgo % 86400));
-          seconds=\$((seconds1 % 60));
-          minutes1=\$((seconds1 / 60));
-          minutes=\$((minutes1 % 60));
-          hours=\$((minutes1 / 60));
-          # uptime=\`awk -v time=\$timeAgo 'BEGIN { seconds = time % 60; minutes = int(time / 60 % 60); hours = int(time / 60 / 60 % 24); days = int(time / 60 / 60 / 24); printf(\"%.0f days, %.0f hours, %.0f minutes, %.0f seconds\", days, hours, minutes, seconds); exit }'\`
-          uptime=\"\$(format2digits \$hours):\$(format2digits \$minutes):\$(format2digits \$seconds)\"
-      fi
-      black_circle='\x5CxE2\x5Cx97\x5Cx8f'
-      white_circle='\x5CxE2\x5Cx97\x5Cx8b'
-      # BUILD_DEFINITIONNAME
-      # if [[ -z \"\$BUILD_DEFINITIONNAME\" ]]; then 
-      if [[ -z \"\$SAY_COLORLESS\" ]]; then # skip colors for azure pipelines
-        Blue='\x5C033[1;34m'; Gray='\x5C033[1;37m'; LightGreen='\x5C033[1;32m'; Yellow='\x5C033[1;33m'; RED='\x5C033[0;31m'; NC='\x5C033[0m'; LightGray='\x5C033[1;2m';
-      fi
-      hostname=\"\$(hostname 2>/dev/null)\"
-      hostname=\"\${hostname:-\$HOSTNAME}\"
-      printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\x5Cn\";
-      echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
-    }
+  function get_global_seconds() {
+    theSYSTEM=\"\${theSYSTEM:-\$(uname -s)}\"
+    if [[ \${theSYSTEM} != \"Darwin\" ]]; then
+        uptime=\$(</proc/uptime);                  # 42645.93 240538.58
+        IFS=' ' read -ra uptime <<< \"\$uptime\";    # 42645.93 240538.58
+        uptime=\"\${uptime[0]}\";                    # 42645.93
+        uptime=\$(printf \"%.0f\x5Cn\" \"\$uptime\")       # 42645
+        echo \$uptime
+    else 
+        # https://stackoverflow.com/questions/15329443/proc-uptime-in-mac-os-x
+        boottime=\`sysctl -n kern.boottime | awk '{print \$4}' | sed 's/,//g'\`
+        unixtime=\`date +%s\`
+\x09    timeAgo=\$((\$unixtime - \$boottime))
+\x09    echo \$timeAgo
+    fi
+  }
 
-    function SayIt() { 
-      user=\"\${LOGNAME:-\$(whoami)}\"
-      file=\"/tmp/.\${user}-said-counter\"
-      if [[ -e \"\$file\" ]]; then counter=\$(< \"\$file\"); else counter=1; fi
-      print_header \"#\${counter}\" \"\$1\";
-      counter=\$((counter+1));
-      echo \$counter > \"\$file\"
-    }; 
+  function format_total_seconds() {
+    timeAgo=\$1
+    seconds1=\$((timeAgo % 86400));
+    seconds=\$((seconds1 % 60));
+    minutes1=\$((seconds1 / 60));
+    minutes=\$((minutes1 % 60));
+    hours=\$((minutes1 / 60));
+    echo \"\$(format2digits \$hours):\$(format2digits \$minutes):\$(format2digits \$seconds)\"
+  }
+
+  function print_header() {
+    global_seconds=\"\$(get_global_seconds)\"
+
+    # zero is 0?
+    stopwatch_file=\"\$(get_stopwatch_file_name)\"
+    if [[ -s \"\$stopwatch_file\" ]]; then
+      zero_seconds=\$(<\$stopwatch_file)
+      global_seconds=\$((global_seconds-zero_seconds))
+    fi
+    
+    uptime=\"\$(format_total_seconds \$global_seconds)\"
+
+    black_circle='\x5CxE2\x5Cx97\x5Cx8f'
+    white_circle='\x5CxE2\x5Cx97\x5Cx8b'
+    # BUILD_DEFINITIONNAME
+    # if [[ -z \"\$BUILD_DEFINITIONNAME\" ]]; then 
+    if [[ -z \"\$SAY_COLORLESS\" ]]; then # skip colors for azure pipelines
+      Blue='\x5C033[1;34m'; Gray='\x5C033[1;37m'; LightGreen='\x5C033[1;32m'; Yellow='\x5C033[1;33m'; RED='\x5C033[0;31m'; NC='\x5C033[0m'; LightGray='\x5C033[1;2m';
+    fi
+    hostname=\"\$(hostname 2>/dev/null)\"
+    hostname=\"\${hostname:-\$HOSTNAME}\"
+    printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\x5Cn\";
+    echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
+  }
+
+  function SayIt() { 
+    user=\"\${LOGNAME:-\$(whoami)}\"
+    file=\"/tmp/.\${user}-said-counter\"
+    if [[ -e \"\$file\" ]]; then counter=\$(< \"\$file\"); else counter=1; fi
+    print_header \"#\${counter}\" \"\$1\";
+    counter=\$((counter+1));
+    echo \$counter > \"\$file\"
+  }; 
+
+
+if [[ \"\$1\" == \"--Reset-Stopwatch\" ]]; then
+  echo \"\$(get_global_seconds)\" > \"\$(get_stopwatch_file_name)\"
+  exit 0;
+fi
 
 SayIt \"\$@\"
 
