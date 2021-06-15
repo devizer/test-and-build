@@ -64,11 +64,11 @@
 
   function SayIt() { 
     user="${LOGNAME:-$(whoami)}"
-    file="/tmp/.${user}-said-counter"
-    if [[ -e "$file" ]]; then counter=$(< "$file"); else counter=1; fi
+    counter_file="/tmp/.${user}-said-counter"
+    if [[ -e "$counter_file" ]]; then counter=$(< "$counter_file"); else counter=1; fi
     print_header "#${counter}" "$1";
     counter=$((counter+1));
-    echo $counter > "$file"
+    echo $counter > "$counter_file"
   }; 
 
 
