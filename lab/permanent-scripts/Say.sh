@@ -2,7 +2,13 @@
 
   function get_stopwatch_file_name() {
     user="${LOGNAME:-$(whoami)}"
-    file2="/tmp/.${user}-stopwatch-for-say"
+    file1="/tmp/.${user}-stopwatch-for-say"
+    echo $file1
+  }
+
+  function get_counter_file_name() {
+    user="${LOGNAME:-$(whoami)}"
+    file2="/tmp/.${user}-counter-for-say"
     echo $file2
   }
   
@@ -63,8 +69,7 @@
   }
 
   function SayIt() { 
-    user="${LOGNAME:-$(whoami)}"
-    counter_file="/tmp/.${user}-said-counter"
+    counter_file="$(get_counter_file_name)"
     if [[ -e "$counter_file" ]]; then counter=$(< "$counter_file"); else counter=1; fi
     print_header "#${counter}" "$1";
     counter=$((counter+1));
@@ -74,6 +79,7 @@
 
 if [[ "$1" == "--Reset-Stopwatch" ]]; then
   echo "$(get_global_seconds)" > "$(get_stopwatch_file_name)"
+  echo 1 > "$(get_counter_file_name)"
   exit 0;
 fi
 
