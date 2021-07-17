@@ -28,7 +28,7 @@ function Install_Mono_on_Debians() {
     # for Ubuntu 20.04 just a preview WAS available
     # def="deb https://download.mono-project.com/repo/ubuntu preview-$UBUNTU_CODENAME main";
     true 
-  elif [[ "$PRETTY_NAME" == *"bullseye/sid"* ]]; then
+  elif [[ "$PRETTY_NAME" == *"bullseye"* ]]; then
     def="deb https://download.mono-project.com/repo/debian stable-buster main"
   fi
   if [[ "$ID" == linuxmint ]]; then

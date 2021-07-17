@@ -2,6 +2,33 @@
 
 # Possible $FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
 
+function Has_Unicode() {
+  if [[ -n "${FORCE_UNICODE:-}" ]]; then echo "true"; return; fi
+  if [[ -n "${DISABLE_UNICODE:-}" ]]; then echo "false"; return; fi
+  if [[ -z "${hasUnicode:-}" ]]; then
+    if [[ "$(locale charmap 2>/dev/null)" == "UTF"* ]]; then
+      hasUnicode="true"
+    else
+      hasUnicode="false"
+    fi
+  fi
+  echo $hasUnicode
+}
+
+function Header() {
+  local char_arrow='>'; local char_dash='-'
+  if [[ "$(Has_Unicode)" == "true" ]]; then
+    char_arrow='\U27A4'; char_dash='\U2500'
+  fi
+  local txt=$1
+  local length=${#txt}
+  local border="${char_dash}${char_dash}${char_dash}"; while [[ $length -gt 0 ]]; do border="${char_dash}${border}"; length=$((length-1)); done
+  # if [[ "${NEXT_HEADER:-}" == "" ]]; then NEXT_HEADER=true; else echo ""; fi
+  tput bold 2>/dev/null || true
+  echo -e "${char_arrow} ${txt}"; echo -e $border
+  tput sgr0 2>/dev/null || true
+}
+
 if [[ "$1" == "" || "$1" == "--help" ]]; then
 echo "Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
 here 1G - working set size
@@ -32,29 +59,16 @@ if [[ -n "$OS_X_VER" ]] && [[ "$OS_X_VER" -gt 0 ]]; then ioengine=posixaio; else
 if [[ "$(uname -r)" == *"Microsoft" ]] || [[ "$(uname -s)" == "MINGW"* ]]; then ioengine=windowsaio; fi
 if [[ -n "$FILE_IO_BENCHMARK_ENGINE" ]]; then ioengine=$FILE_IO_BENCHMARK_ENGINE; fi
 
-# install fio & toilet
- if [[ "$(command -v fio 2>/dev/null)" == "" || "$(command -v toilet 2>/dev/null)" == "" ]]; then
+# install fio
+ if [[ "$(command -v fio 2>/dev/null)" == "" ]]; then
    if [[ "$(command -v apt-get 2>/dev/null)" != "" ]]; then
-     echo "Installing fio and toilet using apt-get"
-     sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
+     echo "Installing fio using apt-get"
+     sudo apt-get install -yqq fio >/tmp/fio-install.log 2>&1 || sudo apt-get install -yqq fio >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
    elif [[ "$(command -v yum 2>/dev/null)" != "" ]]; then
      echo "Installing fio and toilet using yum"
-     sudo yum install -y fio toilet >/tmp/fio-install.log 2>&1 || sudo yum install -y fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
+     sudo yum install -y fio >/tmp/fio-install.log 2>&1 || sudo yum install -y fio >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
    fi
  fi
-
-echo '
-fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=1G --readwrite=randread
-fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=1G --readwrite=randwrite
-' > /dev/null
-
-function Header() {
-  local txt=$1
-  local length=${#txt}
-  local border="---"; while [[ $length -gt 0 ]]; do border="-${border}"; length=$((length-1)); done
-  if [[ "${NEXT_HEADER:-}" == "" ]]; then NEXT_HEADER=true; else echo ""; fi
-  echo "> ${txt}"; echo $border
-}
 
 # check libaio support
 pushd "$DISK" >/dev/null
@@ -75,7 +89,7 @@ if [[ -f fiotest.tmp ]]; then rm -f fiotest.tmp; fi
 popd >/dev/null
 
 info="Detected IO Engine: [${ioengine}]. $direct_info"
-Header "$info"
+echo "$info" # Header "$info"
 
 errorCode=1; exitCode=0;
 
@@ -84,7 +98,7 @@ errorCode=1; exitCode=0;
    local disk=$2
    local caption="$3"
    pushd "$disk" >/dev/null
-   toilet -f term -F border "$caption ($(pwd))" 2>/dev/null || Header "$caption ($(pwd))"
+   Header "$caption ($(pwd))"
    echo "Benchmark '$(pwd)' folder using '$cmd' test during $DURATION seconds and heating $RAMP secs, size is $SIZE"
    if [[ $cmd == "rand"* ]]; then
       fio_shell_cmd="fio $FILE_IO_BENCHMARK_OPTIONS --name=RUN_$cmd --randrepeat=1 --ioengine=$ioengine --direct=$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=$SIZE --runtime=$DURATION --ramp_time=$RAMP --readwrite=$cmd"
