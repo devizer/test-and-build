@@ -122,7 +122,7 @@ function Build
 
     if (!$Is_IgnoreAll)
     {
-        $mustHavePackages = "smart-apt-install apt-transport-https ca-certificates curl gnupg2 software-properties-common htop mc lsof unzip net-tools bsdutils; apt-get clean"
+        $mustHavePackages = "smart-apt-install apt-transport-https ca-certificates curl gnupg2 software-properties-common htop mc lsof unzip net-tools bsdutils; apt install libatomic1 libaio1 -y || true; apt-get clean"
         Say "Installing must have packages on [$image::$key]"
         Remote-Command-Raw "$mustHavePackages" "localhost" $startParams.Port "root" "$($definition.UsersPassword)"
     }
