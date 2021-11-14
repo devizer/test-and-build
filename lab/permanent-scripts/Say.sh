@@ -64,7 +64,7 @@
     fi
     hostname="$(hostname 2>/dev/null)"
     hostname="${hostname:-$HOSTNAME}"
-    printf "${Blue}${black_circle} ${hostname}${NC} ${LightGray}[${uptime:-}]${NC} ${LightGreen}$1${NC} ${Yellow}$2${NC}\n";
+    printf "${Blue}${black_circle} ${hostname}${NC} ${LightGray}[${uptime:-}]${NC} ${LightGreen}$1${NC} ${Yellow}"; echo -n "$2"; printf "${NC}\n";
     echo "${hostname} ${uptime:-} $1 $2" >> "/tmp/Said-by-$(whoami).log" 2>/dev/null 
   }
 

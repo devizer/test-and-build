@@ -48,6 +48,33 @@ if [[ -d ${TARGET_DIR} ]]; then
 
 # Possible \$FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
 
+function Has_Unicode() {
+  if [[ -n \"\${FORCE_UNICODE:-}\" ]]; then echo \"true\"; return; fi
+  if [[ -n \"\${DISABLE_UNICODE:-}\" ]]; then echo \"false\"; return; fi
+  if [[ -z \"\${hasUnicode:-}\" ]]; then
+    if [[ \"\$(locale charmap 2>/dev/null)\" == \"UTF\"* ]]; then
+      hasUnicode=\"true\"
+    else
+      hasUnicode=\"false\"
+    fi
+  fi
+  echo \$hasUnicode
+}
+
+function Header() {
+  local char_arrow='>'; local char_dash='-'
+  if [[ \"\$(Has_Unicode)\" == \"true\" ]]; then
+    char_arrow='\x5CU27A4'; char_dash='\x5CU2500'
+  fi
+  local txt=\$1
+  local length=\${#txt}
+  local border=\"\${char_dash}\${char_dash}\${char_dash}\"; while [[ \$length -gt 0 ]]; do border=\"\${char_dash}\${border}\"; length=\$((length-1)); done
+  # if [[ \"\${NEXT_HEADER:-}\" == \"\" ]]; then NEXT_HEADER=true; else echo \"\"; fi
+  tput bold 2>/dev/null || true
+  echo -e \"\${char_arrow} \${txt}\"; echo -e \$border
+  tput sgr0 2>/dev/null || true
+}
+
 if [[ \"\$1\" == \"\" || \"\$1\" == \"--help\" ]]; then
 echo \"Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
 here 1G - working set size
@@ -78,29 +105,16 @@ if [[ -n \"\$OS_X_VER\" ]] && [[ \"\$OS_X_VER\" -gt 0 ]]; then ioengine=posixaio
 if [[ \"\$(uname -r)\" == *\"Microsoft\" ]] || [[ \"\$(uname -s)\" == \"MINGW\"* ]]; then ioengine=windowsaio; fi
 if [[ -n \"\$FILE_IO_BENCHMARK_ENGINE\" ]]; then ioengine=\$FILE_IO_BENCHMARK_ENGINE; fi
 
-# install fio & toilet
- if [[ \"\$(command -v fio 2>/dev/null)\" == \"\" || \"\$(command -v toilet 2>/dev/null)\" == \"\" ]]; then
+# install fio
+ if [[ \"\$(command -v fio 2>/dev/null)\" == \"\" ]]; then
    if [[ \"\$(command -v apt-get 2>/dev/null)\" != \"\" ]]; then
-     echo \"Installing fio and toilet using apt-get\"
-     sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
+     echo \"Installing fio using apt-get\"
+     sudo apt-get install -yqq fio >/tmp/fio-install.log 2>&1 || sudo apt-get install -yqq fio >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
    elif [[ \"\$(command -v yum 2>/dev/null)\" != \"\" ]]; then
      echo \"Installing fio and toilet using yum\"
-     sudo yum install -y fio toilet >/tmp/fio-install.log 2>&1 || sudo yum install -y fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
+     sudo yum install -y fio >/tmp/fio-install.log 2>&1 || sudo yum install -y fio >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
    fi
  fi
-
-echo '
-fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=1G --readwrite=randread
-fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=1G --readwrite=randwrite
-' > /dev/null
-
-function Header() {
-  local txt=\$1
-  local length=\${#txt}
-  local border=\"---\"; while [[ \$length -gt 0 ]]; do border=\"-\${border}\"; length=\$((length-1)); done
-  if [[ \"\${NEXT_HEADER:-}\" == \"\" ]]; then NEXT_HEADER=true; else echo \"\"; fi
-  echo \"> \${txt}\"; echo \$border
-}
 
 # check libaio support
 pushd \"\$DISK\" >/dev/null
@@ -121,7 +135,7 @@ if [[ -f fiotest.tmp ]]; then rm -f fiotest.tmp; fi
 popd >/dev/null
 
 info=\"Detected IO Engine: [\${ioengine}]. \$direct_info\"
-Header \"\$info\"
+echo \"\$info\" # Header \"\$info\"
 
 errorCode=1; exitCode=0;
 
@@ -130,7 +144,7 @@ errorCode=1; exitCode=0;
    local disk=\$2
    local caption=\"\$3\"
    pushd \"\$disk\" >/dev/null
-   toilet -f term -F border \"\$caption (\$(pwd))\" 2>/dev/null || Header \"\$caption (\$(pwd))\"
+   Header \"\$caption (\$(pwd))\"
    echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
    if [[ \$cmd == \"rand\"* ]]; then
       fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd\"
@@ -169,6 +183,33 @@ errorCode=1; exitCode=0;
 
 # Possible \$FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
 
+function Has_Unicode() {
+  if [[ -n \"\${FORCE_UNICODE:-}\" ]]; then echo \"true\"; return; fi
+  if [[ -n \"\${DISABLE_UNICODE:-}\" ]]; then echo \"false\"; return; fi
+  if [[ -z \"\${hasUnicode:-}\" ]]; then
+    if [[ \"\$(locale charmap 2>/dev/null)\" == \"UTF\"* ]]; then
+      hasUnicode=\"true\"
+    else
+      hasUnicode=\"false\"
+    fi
+  fi
+  echo \$hasUnicode
+}
+
+function Header() {
+  local char_arrow='>'; local char_dash='-'
+  if [[ \"\$(Has_Unicode)\" == \"true\" ]]; then
+    char_arrow='\x5CU27A4'; char_dash='\x5CU2500'
+  fi
+  local txt=\$1
+  local length=\${#txt}
+  local border=\"\${char_dash}\${char_dash}\${char_dash}\"; while [[ \$length -gt 0 ]]; do border=\"\${char_dash}\${border}\"; length=\$((length-1)); done
+  # if [[ \"\${NEXT_HEADER:-}\" == \"\" ]]; then NEXT_HEADER=true; else echo \"\"; fi
+  tput bold 2>/dev/null || true
+  echo -e \"\${char_arrow} \${txt}\"; echo -e \$border
+  tput sgr0 2>/dev/null || true
+}
+
 if [[ \"\$1\" == \"\" || \"\$1\" == \"--help\" ]]; then
 echo \"Usage: File-IO-Benchmark 'Root FS' / 1G 30 5
 here 1G - working set size
@@ -199,29 +240,16 @@ if [[ -n \"\$OS_X_VER\" ]] && [[ \"\$OS_X_VER\" -gt 0 ]]; then ioengine=posixaio
 if [[ \"\$(uname -r)\" == *\"Microsoft\" ]] || [[ \"\$(uname -s)\" == \"MINGW\"* ]]; then ioengine=windowsaio; fi
 if [[ -n \"\$FILE_IO_BENCHMARK_ENGINE\" ]]; then ioengine=\$FILE_IO_BENCHMARK_ENGINE; fi
 
-# install fio & toilet
- if [[ \"\$(command -v fio 2>/dev/null)\" == \"\" || \"\$(command -v toilet 2>/dev/null)\" == \"\" ]]; then
+# install fio
+ if [[ \"\$(command -v fio 2>/dev/null)\" == \"\" ]]; then
    if [[ \"\$(command -v apt-get 2>/dev/null)\" != \"\" ]]; then
-     echo \"Installing fio and toilet using apt-get\"
-     sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo apt-get install -yqq fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
+     echo \"Installing fio using apt-get\"
+     sudo apt-get install -yqq fio >/tmp/fio-install.log 2>&1 || sudo apt-get install -yqq fio >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
    elif [[ \"\$(command -v yum 2>/dev/null)\" != \"\" ]]; then
      echo \"Installing fio and toilet using yum\"
-     sudo yum install -y fio toilet >/tmp/fio-install.log 2>&1 || sudo yum install -y fio toilet >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
+     sudo yum install -y fio >/tmp/fio-install.log 2>&1 || sudo yum install -y fio >/tmp/fio-install.log 2>&1 || sudo cat /tmp/fio-install.log
    fi
  fi
-
-echo '
-fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=1G --readwrite=randread
-fio --randrepeat=1 --ioengine=libaio --direct=1 --gtod_reduce=1 --name=fiotest --filename=fiotest --bs=4k --iodepth=64 --size=1G --readwrite=randwrite
-' > /dev/null
-
-function Header() {
-  local txt=\$1
-  local length=\${#txt}
-  local border=\"---\"; while [[ \$length -gt 0 ]]; do border=\"-\${border}\"; length=\$((length-1)); done
-  if [[ \"\${NEXT_HEADER:-}\" == \"\" ]]; then NEXT_HEADER=true; else echo \"\"; fi
-  echo \"> \${txt}\"; echo \$border
-}
 
 # check libaio support
 pushd \"\$DISK\" >/dev/null
@@ -242,7 +270,7 @@ if [[ -f fiotest.tmp ]]; then rm -f fiotest.tmp; fi
 popd >/dev/null
 
 info=\"Detected IO Engine: [\${ioengine}]. \$direct_info\"
-Header \"\$info\"
+echo \"\$info\" # Header \"\$info\"
 
 errorCode=1; exitCode=0;
 
@@ -251,7 +279,7 @@ errorCode=1; exitCode=0;
    local disk=\$2
    local caption=\"\$3\"
    pushd \"\$disk\" >/dev/null
-   toilet -f term -F border \"\$caption (\$(pwd))\" 2>/dev/null || Header \"\$caption (\$(pwd))\"
+   Header \"\$caption (\$(pwd))\"
    echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
    if [[ \$cmd == \"rand\"* ]]; then
       fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd\"
@@ -292,6 +320,89 @@ errorCode=1; exitCode=0;
   else "Error: Unable to extract ${TARGET_DIR}/File-IO-Benchmark"; fi
 else 
   echo "Skipping ${TARGET_DIR}/File-IO-Benchmark: directory does not exists"
+fi
+
+
+# Get-Git-Tags
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+
+# git ls-remote --tags https://github.com/git/git | awk '{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n); if (n ~ /^v?[0-9.]*\$/) { print n } }' | sort -V
+
+# ^{}: https://stackoverflow.com/questions/15472107/when-listing-git-ls-remote-why-theres-after-the-tag-name/15472310
+# remove ^{}
+# Get-Git-Tags https://github.com/PowerShell/PowerShell --pre | awk '{ n=\$1; if (! (n ~ /\x5C^\x5C{\x5C}\$/) ) { print \$n } }'
+
+# output tags ordered as versions
+function get_git_tags() {
+  local repo=\"\$1\"; repo=\"\${repo:-https://github.com/nodejs/node}\"
+  local need_pre_release=\"\$2\"; 
+  if [[ \"\$need_pre_release\" == \"pre\"* || \"\$need_pre_release\" == \"--pre\"* ]]; then 
+    need_pre_release=true; else need_pre_release=false; 
+  fi
+  
+  cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
+  if [[ \$need_pre_release == false ]]; then
+    GIT_RELEASE_TAG_FILTER=\${GIT_RELEASE_TAG_FILTER:-/^v?[0-9.]*\$/}
+    cmd=\"\$cmd if (n ~ \$GIT_RELEASE_TAG_FILTER && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
+  else 
+    cmd=\"\$cmd if (! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
+  fi
+  cmd=\"\$cmd { print n } }' | sort -V\"
+  eval \"\$cmd\"
+}
+
+if [[ \"\$1\" == \"\" ]]; then
+    echo \"Usage Get-Git-Tags https://github.com/nodejs/node [--pre-release|--pre]\"
+    echo \"Default filter for tags is /^v?[0-9.]*\$/ It can be overriden by GIT_RELEASE_TAG_FILTER var\"
+    exit 0; 
+fi
+
+get_git_tags \$1 \$2
+
+" 2>/dev/null >${TARGET_DIR}/Get-Git-Tags ||
+  echo -e "#!/usr/bin/env bash
+
+# git ls-remote --tags https://github.com/git/git | awk '{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n); if (n ~ /^v?[0-9.]*\$/) { print n } }' | sort -V
+
+# ^{}: https://stackoverflow.com/questions/15472107/when-listing-git-ls-remote-why-theres-after-the-tag-name/15472310
+# remove ^{}
+# Get-Git-Tags https://github.com/PowerShell/PowerShell --pre | awk '{ n=\$1; if (! (n ~ /\x5C^\x5C{\x5C}\$/) ) { print \$n } }'
+
+# output tags ordered as versions
+function get_git_tags() {
+  local repo=\"\$1\"; repo=\"\${repo:-https://github.com/nodejs/node}\"
+  local need_pre_release=\"\$2\"; 
+  if [[ \"\$need_pre_release\" == \"pre\"* || \"\$need_pre_release\" == \"--pre\"* ]]; then 
+    need_pre_release=true; else need_pre_release=false; 
+  fi
+  
+  cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
+  if [[ \$need_pre_release == false ]]; then
+    GIT_RELEASE_TAG_FILTER=\${GIT_RELEASE_TAG_FILTER:-/^v?[0-9.]*\$/}
+    cmd=\"\$cmd if (n ~ \$GIT_RELEASE_TAG_FILTER && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
+  else 
+    cmd=\"\$cmd if (! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
+  fi
+  cmd=\"\$cmd { print n } }' | sort -V\"
+  eval \"\$cmd\"
+}
+
+if [[ \"\$1\" == \"\" ]]; then
+    echo \"Usage Get-Git-Tags https://github.com/nodejs/node [--pre-release|--pre]\"
+    echo \"Default filter for tags is /^v?[0-9.]*\$/ It can be overriden by GIT_RELEASE_TAG_FILTER var\"
+    exit 0; 
+fi
+
+get_git_tags \$1 \$2
+
+" | sudo tee ${TARGET_DIR}/Get-Git-Tags >/dev/null;
+  if [[ -f ${TARGET_DIR}/Get-Git-Tags ]]; then 
+      chmod +x ${TARGET_DIR}/Get-Git-Tags >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-Git-Tags
+  	echo "OK: ${TARGET_DIR}/Get-Git-Tags"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Get-Git-Tags"; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Get-Git-Tags: directory does not exists"
 fi
 
 
@@ -438,89 +549,6 @@ get_github_releases \"\${owner:-}\" \"\${repo:-}\" \"\${need_pre_release:-}\"
   else "Error: Unable to extract ${TARGET_DIR}/Get-GitHub-Releases"; fi
 else 
   echo "Skipping ${TARGET_DIR}/Get-GitHub-Releases: directory does not exists"
-fi
-
-
-# Get-Git-Tags
-if [[ -d ${TARGET_DIR} ]]; then
-  echo -e "#!/usr/bin/env bash
-
-# git ls-remote --tags https://github.com/git/git | awk '{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n); if (n ~ /^v?[0-9.]*\$/) { print n } }' | sort -V
-
-# ^{}: https://stackoverflow.com/questions/15472107/when-listing-git-ls-remote-why-theres-after-the-tag-name/15472310
-# remove ^{}
-# Get-Git-Tags https://github.com/PowerShell/PowerShell --pre | awk '{ n=\$1; if (! (n ~ /\x5C^\x5C{\x5C}\$/) ) { print \$n } }'
-
-# output tags ordered as versions
-function get_git_tags() {
-  local repo=\"\$1\"; repo=\"\${repo:-https://github.com/nodejs/node}\"
-  local need_pre_release=\"\$2\"; 
-  if [[ \"\$need_pre_release\" == \"pre\"* || \"\$need_pre_release\" == \"--pre\"* ]]; then 
-    need_pre_release=true; else need_pre_release=false; 
-  fi
-  
-  cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
-  if [[ \$need_pre_release == false ]]; then
-    GIT_RELEASE_TAG_FILTER=\${GIT_RELEASE_TAG_FILTER:-/^v?[0-9.]*\$/}
-    cmd=\"\$cmd if (n ~ \$GIT_RELEASE_TAG_FILTER && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
-  else 
-    cmd=\"\$cmd if (! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
-  fi
-  cmd=\"\$cmd { print n } }' | sort -V\"
-  eval \"\$cmd\"
-}
-
-if [[ \"\$1\" == \"\" ]]; then
-    echo \"Usage Get-Git-Tags https://github.com/nodejs/node [--pre-release|--pre]\"
-    echo \"Default filter for tags is /^v?[0-9.]*\$/ It can be overriden by GIT_RELEASE_TAG_FILTER var\"
-    exit 0; 
-fi
-
-get_git_tags \$1 \$2
-
-" 2>/dev/null >${TARGET_DIR}/Get-Git-Tags ||
-  echo -e "#!/usr/bin/env bash
-
-# git ls-remote --tags https://github.com/git/git | awk '{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n); if (n ~ /^v?[0-9.]*\$/) { print n } }' | sort -V
-
-# ^{}: https://stackoverflow.com/questions/15472107/when-listing-git-ls-remote-why-theres-after-the-tag-name/15472310
-# remove ^{}
-# Get-Git-Tags https://github.com/PowerShell/PowerShell --pre | awk '{ n=\$1; if (! (n ~ /\x5C^\x5C{\x5C}\$/) ) { print \$n } }'
-
-# output tags ordered as versions
-function get_git_tags() {
-  local repo=\"\$1\"; repo=\"\${repo:-https://github.com/nodejs/node}\"
-  local need_pre_release=\"\$2\"; 
-  if [[ \"\$need_pre_release\" == \"pre\"* || \"\$need_pre_release\" == \"--pre\"* ]]; then 
-    need_pre_release=true; else need_pre_release=false; 
-  fi
-  
-  cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
-  if [[ \$need_pre_release == false ]]; then
-    GIT_RELEASE_TAG_FILTER=\${GIT_RELEASE_TAG_FILTER:-/^v?[0-9.]*\$/}
-    cmd=\"\$cmd if (n ~ \$GIT_RELEASE_TAG_FILTER && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
-  else 
-    cmd=\"\$cmd if (! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
-  fi
-  cmd=\"\$cmd { print n } }' | sort -V\"
-  eval \"\$cmd\"
-}
-
-if [[ \"\$1\" == \"\" ]]; then
-    echo \"Usage Get-Git-Tags https://github.com/nodejs/node [--pre-release|--pre]\"
-    echo \"Default filter for tags is /^v?[0-9.]*\$/ It can be overriden by GIT_RELEASE_TAG_FILTER var\"
-    exit 0; 
-fi
-
-get_git_tags \$1 \$2
-
-" | sudo tee ${TARGET_DIR}/Get-Git-Tags >/dev/null;
-  if [[ -f ${TARGET_DIR}/Get-Git-Tags ]]; then 
-      chmod +x ${TARGET_DIR}/Get-Git-Tags >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-Git-Tags
-  	echo "OK: ${TARGET_DIR}/Get-Git-Tags"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Get-Git-Tags"; fi
-else 
-  echo "Skipping ${TARGET_DIR}/Get-Git-Tags: directory does not exists"
 fi
 
 
@@ -1554,7 +1582,7 @@ if [[ -d ${TARGET_DIR} ]]; then
     fi
     hostname=\"\$(hostname 2>/dev/null)\"
     hostname=\"\${hostname:-\$HOSTNAME}\"
-    printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\x5Cn\";
+    printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\"; echo -n \"\$2\"; printf \"\${NC}\x5Cn\";
     echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
   }
 
@@ -1642,7 +1670,7 @@ SayIt \"\$@\"
     fi
     hostname=\"\$(hostname 2>/dev/null)\"
     hostname=\"\${hostname:-\$HOSTNAME}\"
-    printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\$2\${NC}\x5Cn\";
+    printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\"; echo -n \"\$2\"; printf \"\${NC}\x5Cn\";
     echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
   }
 
