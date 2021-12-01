@@ -22,7 +22,11 @@ if [[ ! "$ARCH" == i386 ]]; then
      $(lsb_release -cs) \
      stable"
 
+  source /etc/os-release
   if [[ "$UBUNTU_CODENAME" == focal ]]; then
+    # bionic also works
+    echo "deb https://download.docker.com/linux/ubuntu eoan stable" | sudo tee /etc/apt/sources.list.d/docker.list
+  elif [[ "$ID-$VERSION_ID" == "ubuntu-20."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-21."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-22."* ]] ; then
     # bionic also works
     echo "deb https://download.docker.com/linux/ubuntu eoan stable" | sudo tee /etc/apt/sources.list.d/docker.list
   else
