@@ -34,11 +34,11 @@ function Install_Mono_on_Debians() {
   if [[ "$ID" == linuxmint ]]; then
     def="deb https://download.mono-project.com/repo/ubuntu stable-focal main"
   fi
-  if [[ "$VESIONID" == "20."* || "$VESIONID" == "21."* ]] && [[ "$NAME" == ubuntu ]]; then
+  if [[ "$ID-$VERSION_ID" == "ubuntu-20."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-21."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-22."* ]]; then
     def="deb https://download.mono-project.com/repo/ubuntu stable-focal main"
   fi
   echo "$def" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-  time try-and-retry sudo apt-get --allow-unauthenticated update -qq 
+  time try-and-retry sudo apt-get --allow-unauthenticated update -q
   time smart-apt-install mono-complete nuget msbuild 
   sudo apt-get clean; 
   Say "Deleting monodoc*"
