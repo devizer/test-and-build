@@ -26,9 +26,11 @@ if [[ ! "$ARCH" == i386 ]]; then
   if [[ "$UBUNTU_CODENAME" == focal ]]; then
     # bionic also works
     echo "deb https://download.docker.com/linux/ubuntu eoan stable" | sudo tee /etc/apt/sources.list.d/docker.list
-  elif [[ "$ID-$VERSION_ID" == "ubuntu-20."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-21."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-22."* ]] ; then
+  elif [[ "$ID-$VERSION_ID" == "ubuntu-20."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-21."* ]]; then
     # bionic also works
     echo "deb https://download.docker.com/linux/ubuntu eoan stable" | sudo tee /etc/apt/sources.list.d/docker.list
+  elif [[ "$ID-$VERSION_ID" == "ubuntu-22."* ]] ; then
+    echo "deb https://download.docker.com/linux/ubuntu impish stable" | sudo tee /etc/apt/sources.list.d/docker.list
   else
    sudo add-apt-repository \
    "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/$ID $(lsb_release -cs) stable"
