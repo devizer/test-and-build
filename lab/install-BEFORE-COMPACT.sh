@@ -26,7 +26,8 @@ sudo chmod +x /usr/local/bin/del-cache
 
 echo '#!/usr/bin/env bash
 del-cache
-sudo bash -c "rm -f /zero; touch /zero; btrfs property set /zero compression \"\"; chattr -c /zero; time (dd if=/dev/zero bs=1M | pv >> /zero; rm -f /zero)"
+# sudo bash -c "rm -f /zero; touch /zero; btrfs property set /zero compression \"\"; chattr -c /zero; time (dd if=/dev/zero bs=1M | pv >> /zero; rm -f /zero)"
+dd if=/dev/zero of=/zero bs=$((128*1024)) oflag=append status=progress; rm -f /zero
 ' | sudo tee /usr/local/bin/before-compact >/dev/null
 sudo chmod +x /usr/local/bin/before-compact
 
