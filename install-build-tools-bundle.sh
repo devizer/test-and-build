@@ -36,9 +36,9 @@ fi
   if [[ -f ${TARGET_DIR}/Drop-FS-Cache ]]; then 
       chmod +x ${TARGET_DIR}/Drop-FS-Cache >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Drop-FS-Cache
   	echo "OK: ${TARGET_DIR}/Drop-FS-Cache"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Drop-FS-Cache"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/Drop-FS-Cache" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/Drop-FS-Cache: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/Drop-FS-Cache: directory does not exists" >&2
 fi
 
 
@@ -317,9 +317,9 @@ errorCode=1; exitCode=0;
   if [[ -f ${TARGET_DIR}/File-IO-Benchmark ]]; then 
       chmod +x ${TARGET_DIR}/File-IO-Benchmark >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/File-IO-Benchmark
   	echo "OK: ${TARGET_DIR}/File-IO-Benchmark"; 
-  else "Error: Unable to extract ${TARGET_DIR}/File-IO-Benchmark"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/File-IO-Benchmark" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/File-IO-Benchmark: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/File-IO-Benchmark: directory does not exists" >&2
 fi
 
 
@@ -400,9 +400,9 @@ get_git_tags \$1 \$2
   if [[ -f ${TARGET_DIR}/Get-Git-Tags ]]; then 
       chmod +x ${TARGET_DIR}/Get-Git-Tags >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-Git-Tags
   	echo "OK: ${TARGET_DIR}/Get-Git-Tags"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Get-Git-Tags"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/Get-Git-Tags" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/Get-Git-Tags: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/Get-Git-Tags: directory does not exists" >&2
 fi
 
 
@@ -463,9 +463,9 @@ get_github_latest_release \"\${owner:-}\" \"\${repo:-}\"
   if [[ -f ${TARGET_DIR}/Get-GitHub-Latest-Release ]]; then 
       chmod +x ${TARGET_DIR}/Get-GitHub-Latest-Release >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-GitHub-Latest-Release
   	echo "OK: ${TARGET_DIR}/Get-GitHub-Latest-Release"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Get-GitHub-Latest-Release"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/Get-GitHub-Latest-Release" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/Get-GitHub-Latest-Release: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/Get-GitHub-Latest-Release: directory does not exists" >&2
 fi
 
 
@@ -546,9 +546,9 @@ get_github_releases \"\${owner:-}\" \"\${repo:-}\" \"\${need_pre_release:-}\"
   if [[ -f ${TARGET_DIR}/Get-GitHub-Releases ]]; then 
       chmod +x ${TARGET_DIR}/Get-GitHub-Releases >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-GitHub-Releases
   	echo "OK: ${TARGET_DIR}/Get-GitHub-Releases"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Get-GitHub-Releases"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/Get-GitHub-Releases" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/Get-GitHub-Releases: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/Get-GitHub-Releases: directory does not exists" >&2
 fi
 
 
@@ -575,9 +575,9 @@ fi
   if [[ -f ${TARGET_DIR}/Get-Local-Docker-Ip ]]; then 
       chmod +x ${TARGET_DIR}/Get-Local-Docker-Ip >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-Local-Docker-Ip
   	echo "OK: ${TARGET_DIR}/Get-Local-Docker-Ip"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Get-Local-Docker-Ip"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/Get-Local-Docker-Ip" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/Get-Local-Docker-Ip: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/Get-Local-Docker-Ip: directory does not exists" >&2
 fi
 
 
@@ -608,9 +608,9 @@ fi
   if [[ -f ${TARGET_DIR}/Is-Docker-Container ]]; then 
       chmod +x ${TARGET_DIR}/Is-Docker-Container >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Is-Docker-Container
   	echo "OK: ${TARGET_DIR}/Is-Docker-Container"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Is-Docker-Container"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/Is-Docker-Container" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/Is-Docker-Container: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/Is-Docker-Container: directory does not exists" >&2
 fi
 
 
@@ -667,9 +667,9 @@ fi
   if [[ -f ${TARGET_DIR}/Is-Fedora ]]; then 
       chmod +x ${TARGET_DIR}/Is-Fedora >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Is-Fedora
   	echo "OK: ${TARGET_DIR}/Is-Fedora"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Is-Fedora"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/Is-Fedora" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/Is-Fedora: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/Is-Fedora: directory does not exists" >&2
 fi
 
 
@@ -750,9 +750,9 @@ fi
   if [[ -f ${TARGET_DIR}/Is-RedHat ]]; then 
       chmod +x ${TARGET_DIR}/Is-RedHat >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Is-RedHat
   	echo "OK: ${TARGET_DIR}/Is-RedHat"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Is-RedHat"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/Is-RedHat" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/Is-RedHat: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/Is-RedHat: directory does not exists" >&2
 fi
 
 
@@ -781,9 +781,9 @@ ls -1 /var/lib/apt/lists/deb* >/dev/null 2>&1 || ls -1 /var/lib/apt/lists/lock >
   if [[ -f ${TARGET_DIR}/lazy-apt-update ]]; then 
       chmod +x ${TARGET_DIR}/lazy-apt-update >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/lazy-apt-update
   	echo "OK: ${TARGET_DIR}/lazy-apt-update"; 
-  else "Error: Unable to extract ${TARGET_DIR}/lazy-apt-update"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/lazy-apt-update" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/lazy-apt-update: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/lazy-apt-update: directory does not exists" >&2
 fi
 
 
@@ -812,9 +812,9 @@ apt-cache --no-all-versions show \$packages |
   if [[ -f ${TARGET_DIR}/list-packages ]]; then 
       chmod +x ${TARGET_DIR}/list-packages >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/list-packages
   	echo "OK: ${TARGET_DIR}/list-packages"; 
-  else "Error: Unable to extract ${TARGET_DIR}/list-packages"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/list-packages" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/list-packages: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/list-packages: directory does not exists" >&2
 fi
 
 
@@ -1151,9 +1151,9 @@ done
   if [[ -f ${TARGET_DIR}/MySQL-Container ]]; then 
       chmod +x ${TARGET_DIR}/MySQL-Container >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/MySQL-Container
   	echo "OK: ${TARGET_DIR}/MySQL-Container"; 
-  else "Error: Unable to extract ${TARGET_DIR}/MySQL-Container"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/MySQL-Container" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/MySQL-Container: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/MySQL-Container: directory does not exists" >&2
 fi
 
 
@@ -1508,9 +1508,9 @@ done
   if [[ -f ${TARGET_DIR}/Reset-Target-Framework ]]; then 
       chmod +x ${TARGET_DIR}/Reset-Target-Framework >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Reset-Target-Framework
   	echo "OK: ${TARGET_DIR}/Reset-Target-Framework"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Reset-Target-Framework"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/Reset-Target-Framework" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/Reset-Target-Framework: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/Reset-Target-Framework: directory does not exists" >&2
 fi
 
 
@@ -1695,9 +1695,9 @@ SayIt \"\$@\"
   if [[ -f ${TARGET_DIR}/Say ]]; then 
       chmod +x ${TARGET_DIR}/Say >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Say
   	echo "OK: ${TARGET_DIR}/Say"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Say"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/Say" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/Say: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/Say: directory does not exists" >&2
 fi
 
 
@@ -2006,9 +2006,9 @@ ShowBlockStat
   if [[ -f ${TARGET_DIR}/Show-System-Stat ]]; then 
       chmod +x ${TARGET_DIR}/Show-System-Stat >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Show-System-Stat
   	echo "OK: ${TARGET_DIR}/Show-System-Stat"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Show-System-Stat"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/Show-System-Stat" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/Show-System-Stat: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/Show-System-Stat: directory does not exists" >&2
 fi
 
 
@@ -2037,9 +2037,9 @@ if [[ -d ${TARGET_DIR} ]]; then
   if [[ -f ${TARGET_DIR}/smart-apt-install ]]; then 
       chmod +x ${TARGET_DIR}/smart-apt-install >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/smart-apt-install
   	echo "OK: ${TARGET_DIR}/smart-apt-install"; 
-  else "Error: Unable to extract ${TARGET_DIR}/smart-apt-install"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/smart-apt-install" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/smart-apt-install: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/smart-apt-install: directory does not exists" >&2
 fi
 
 
@@ -2100,9 +2100,9 @@ if [[ -d ${TARGET_DIR} ]]; then
   if [[ -f ${TARGET_DIR}/try-and-retry ]]; then 
       chmod +x ${TARGET_DIR}/try-and-retry >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/try-and-retry
   	echo "OK: ${TARGET_DIR}/try-and-retry"; 
-  else "Error: Unable to extract ${TARGET_DIR}/try-and-retry"; fi
+  else "Error: Unable to extract ${TARGET_DIR}/try-and-retry" >&2; fi
 else 
-  echo "Skipping ${TARGET_DIR}/try-and-retry: directory does not exists"
+  echo "Skipping ${TARGET_DIR}/try-and-retry: directory does not exists" >&2
 fi
 
 

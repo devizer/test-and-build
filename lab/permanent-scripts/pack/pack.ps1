@@ -80,9 +80,9 @@ if [[ -d `${TARGET_DIR} ]]; then
   if [[ -f `${TARGET_DIR}/$($nameOnly) ]]; then 
       chmod +x `${TARGET_DIR}/$($nameOnly) >/dev/null 2>&1 || sudo chmod +x `${TARGET_DIR}/$($nameOnly)
   	echo `"OK: `${TARGET_DIR}/$($nameOnly)`"; 
-  else `"Error: Unable to extract `${TARGET_DIR}/$($nameOnly)`"; fi
+  else `"Error: Unable to extract `${TARGET_DIR}/$($nameOnly)`" >&2; fi
 else 
-  echo `"Skipping `${TARGET_DIR}/$($nameOnly): directory does not exists`"
+  echo `"Skipping `${TARGET_DIR}/$($nameOnly): directory does not exists`" >&2
 fi
 "
 
