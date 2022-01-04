@@ -89,7 +89,7 @@ Say "Configured shared environment for .NET Core"
       if [[ "${SKIP_DOTNET_DEPENDENCIES:-}" != "True" ]]; then
         url=https://raw.githubusercontent.com/devizer/glist/master/install-dotnet-dependencies.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash
       fi
-      [[ ! "$(Is-RedHat)" ]] && sudo apt-get clean
+      [[ "$(command -v apt-get)" != "" ]] && sudo apt-get clean
       DOTNET_Url=https://dot.net/v1/dotnet-install.sh; 
       mkdir -p ~/.dotnet/tools;
       sudo mkdir -p ${DOTNET_TARGET_DIR};
