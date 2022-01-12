@@ -27,7 +27,8 @@ fi
 
 Say "Downloading $dl"
 
-work=$HOME/build/go-dl
+TRANSIENT_BUILDS="${TRANSIENT_BUILDS:-$HOME/build}"
+work=$TRANSIENT_BUILDS/go-dl
 mkdir -p $work
 pushd $work >/dev/null
 cmd="wget --no-check-certificate -O _go.tgz $dl || curl -kfSL -o _go.tgz $dl"
