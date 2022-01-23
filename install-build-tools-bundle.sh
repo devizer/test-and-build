@@ -1582,7 +1582,9 @@ if [[ -d ${TARGET_DIR} ]]; then
     fi
     hostname=\"\$(hostname 2>/dev/null)\"
     hostname=\"\${hostname:-\$HOSTNAME}\"
-    printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\"; echo -n \"\$2\"; printf \"\${NC}\x5Cn\";
+    message_color=\"\${Yellow}\"
+    [[ \"\${MESSAGE_TYPE}\" == Error ]] && message_color=\"\${RED}\"
+    printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${message_color}\"; echo -n \"\$2\"; printf \"\${NC}\x5Cn\";
     echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
   }
 
@@ -1599,6 +1601,14 @@ if [[ \"\$1\" == \"--Reset-Stopwatch\" ]]; then
   echo \"\$(get_global_seconds)\" > \"\$(get_stopwatch_file_name)\"
   echo 1 > \"\$(get_counter_file_name)\"
   exit 0;
+fi
+
+if [[ \"\${1:-}\" == \"--Display-As=\"* ]]; then
+  option=\"\${1}\";
+  MESSAGE_TYPE=\"Info\";
+  [[ \"\${option:-}\" == \"--Display-As=Error\" ]] &&   MESSAGE_TYPE=\"Error\"
+  [[ \"\${option:-}\" == \"--Display-As=Warning\" ]] && MESSAGE_TYPE=\"Warning\"
+  shift
 fi
 
 SayIt \"\$@\"
@@ -1670,7 +1680,9 @@ SayIt \"\$@\"
     fi
     hostname=\"\$(hostname 2>/dev/null)\"
     hostname=\"\${hostname:-\$HOSTNAME}\"
-    printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${Yellow}\"; echo -n \"\$2\"; printf \"\${NC}\x5Cn\";
+    message_color=\"\${Yellow}\"
+    [[ \"\${MESSAGE_TYPE}\" == Error ]] && message_color=\"\${RED}\"
+    printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${message_color}\"; echo -n \"\$2\"; printf \"\${NC}\x5Cn\";
     echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
   }
 
@@ -1687,6 +1699,14 @@ if [[ \"\$1\" == \"--Reset-Stopwatch\" ]]; then
   echo \"\$(get_global_seconds)\" > \"\$(get_stopwatch_file_name)\"
   echo 1 > \"\$(get_counter_file_name)\"
   exit 0;
+fi
+
+if [[ \"\${1:-}\" == \"--Display-As=\"* ]]; then
+  option=\"\${1}\";
+  MESSAGE_TYPE=\"Info\";
+  [[ \"\${option:-}\" == \"--Display-As=Error\" ]] &&   MESSAGE_TYPE=\"Error\"
+  [[ \"\${option:-}\" == \"--Display-As=Warning\" ]] && MESSAGE_TYPE=\"Warning\"
+  shift
 fi
 
 SayIt \"\$@\"
