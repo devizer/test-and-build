@@ -1578,12 +1578,14 @@ if [[ -d ${TARGET_DIR} ]]; then
     # BUILD_DEFINITIONNAME
     # if [[ -z \"\$BUILD_DEFINITIONNAME\" ]]; then 
     if [[ -z \"\$SAY_COLORLESS\" ]]; then # skip colors for azure pipelines
-      Blue='\x5C033[1;34m'; Gray='\x5C033[1;37m'; LightGreen='\x5C033[1;32m'; Yellow='\x5C033[1;33m'; RED='\x5C033[0;31m'; NC='\x5C033[0m'; LightGray='\x5C033[1;2m';
+      Blue='\x5C033[1;34m'; Gray='\x5C033[1;37m'; LightGreen='\x5C033[1;32m'; Yellow='\x5C033[1;33m'; 
+      LightRED='\x5C033[1;31m'; RED='\x5C033[0;31m'; LightGray='\x5C033[1;2m';
+      NC='\x5C033[0m';
     fi
     hostname=\"\$(hostname 2>/dev/null)\"
     hostname=\"\${hostname:-\$HOSTNAME}\"
     message_color=\"\${Yellow}\"
-    [[ \"\${MESSAGE_TYPE}\" == Error ]] && message_color=\"\${RED}\"
+    [[ \"\${MESSAGE_TYPE}\" == Error ]] && message_color=\"\${LightRED}\"
     printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${message_color}\"; echo -n \"\$2\"; printf \"\${NC}\x5Cn\";
     echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
   }
@@ -1676,12 +1678,14 @@ SayIt \"\$@\"
     # BUILD_DEFINITIONNAME
     # if [[ -z \"\$BUILD_DEFINITIONNAME\" ]]; then 
     if [[ -z \"\$SAY_COLORLESS\" ]]; then # skip colors for azure pipelines
-      Blue='\x5C033[1;34m'; Gray='\x5C033[1;37m'; LightGreen='\x5C033[1;32m'; Yellow='\x5C033[1;33m'; RED='\x5C033[0;31m'; NC='\x5C033[0m'; LightGray='\x5C033[1;2m';
+      Blue='\x5C033[1;34m'; Gray='\x5C033[1;37m'; LightGreen='\x5C033[1;32m'; Yellow='\x5C033[1;33m'; 
+      LightRED='\x5C033[1;31m'; RED='\x5C033[0;31m'; LightGray='\x5C033[1;2m';
+      NC='\x5C033[0m';
     fi
     hostname=\"\$(hostname 2>/dev/null)\"
     hostname=\"\${hostname:-\$HOSTNAME}\"
     message_color=\"\${Yellow}\"
-    [[ \"\${MESSAGE_TYPE}\" == Error ]] && message_color=\"\${RED}\"
+    [[ \"\${MESSAGE_TYPE}\" == Error ]] && message_color=\"\${LightRED}\"
     printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${message_color}\"; echo -n \"\$2\"; printf \"\${NC}\x5Cn\";
     echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"/tmp/Said-by-\$(whoami).log\" 2>/dev/null 
   }

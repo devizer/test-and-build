@@ -60,12 +60,14 @@
     # BUILD_DEFINITIONNAME
     # if [[ -z "$BUILD_DEFINITIONNAME" ]]; then 
     if [[ -z "$SAY_COLORLESS" ]]; then # skip colors for azure pipelines
-      Blue='\033[1;34m'; Gray='\033[1;37m'; LightGreen='\033[1;32m'; Yellow='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'; LightGray='\033[1;2m';
+      Blue='\033[1;34m'; Gray='\033[1;37m'; LightGreen='\033[1;32m'; Yellow='\033[1;33m'; 
+      LightRED='\033[1;31m'; RED='\033[0;31m'; LightGray='\033[1;2m';
+      NC='\033[0m';
     fi
     hostname="$(hostname 2>/dev/null)"
     hostname="${hostname:-$HOSTNAME}"
     message_color="${Yellow}"
-    [[ "${MESSAGE_TYPE}" == Error ]] && message_color="${RED}"
+    [[ "${MESSAGE_TYPE}" == Error ]] && message_color="${LightRED}"
     printf "${Blue}${black_circle} ${hostname}${NC} ${LightGray}[${uptime:-}]${NC} ${LightGreen}$1${NC} ${message_color}"; echo -n "$2"; printf "${NC}\n";
     echo "${hostname} ${uptime:-} $1 $2" >> "/tmp/Said-by-$(whoami).log" 2>/dev/null 
   }
