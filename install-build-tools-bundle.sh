@@ -1537,7 +1537,13 @@ if [[ -d ${TARGET_DIR} ]]; then
   function get_global_seconds() {
     theSYSTEM=\"\${theSYSTEM:-\$(uname -s)}\"
     if [[ \${theSYSTEM} != \"Darwin\" ]]; then
-        uptime=\$(</proc/uptime);                                  # 42645.93 240538.58
+        # uptime=\$(</proc/uptime);                                # 42645.93 240538.58
+        uptime=\"\$(cat /proc/uptime 2>/dev/null)\";                 # 42645.93 240538.58
+        if [[ -z \"\${uptime:-}\" ]]; then
+          # secured, use number of seconds since 1970
+          echo \"\$(date +%s)\"
+          return
+        fi
         IFS=' ' read -ra uptime <<< \"\$uptime\";                    # 42645.93 240538.58
         uptime=\"\${uptime[0]}\";                                    # 42645.93
         uptime=\$(LC_ALL=C LC_NUMERIC=C printf \"%.0f\x5Cn\" \"\$uptime\") # 42645
@@ -1637,7 +1643,13 @@ SayIt \"\$@\"
   function get_global_seconds() {
     theSYSTEM=\"\${theSYSTEM:-\$(uname -s)}\"
     if [[ \${theSYSTEM} != \"Darwin\" ]]; then
-        uptime=\$(</proc/uptime);                                  # 42645.93 240538.58
+        # uptime=\$(</proc/uptime);                                # 42645.93 240538.58
+        uptime=\"\$(cat /proc/uptime 2>/dev/null)\";                 # 42645.93 240538.58
+        if [[ -z \"\${uptime:-}\" ]]; then
+          # secured, use number of seconds since 1970
+          echo \"\$(date +%s)\"
+          return
+        fi
         IFS=' ' read -ra uptime <<< \"\$uptime\";                    # 42645.93 240538.58
         uptime=\"\${uptime[0]}\";                                    # 42645.93
         uptime=\$(LC_ALL=C LC_NUMERIC=C printf \"%.0f\x5Cn\" \"\$uptime\") # 42645
