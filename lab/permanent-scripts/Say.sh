@@ -2,13 +2,13 @@
 
   function get_stopwatch_file_name() {
     user="${LOGNAME:-$(whoami)}"
-    file1="/tmp/.${user}-stopwatch-for-say"
+    file1="$tmp/.${user}-stopwatch-for-say"
     echo $file1
   }
 
   function get_counter_file_name() {
     user="${LOGNAME:-$(whoami)}"
-    file2="/tmp/.${user}-counter-for-say"
+    file2="$tmp/.${user}-counter-for-say"
     echo $file2
   }
   
@@ -75,7 +75,7 @@
     message_color="${Yellow}"
     [[ "${MESSAGE_TYPE}" == Error ]] && message_color="${LightRED}"
     printf "${Blue}${black_circle} ${hostname}${NC} ${LightGray}[${uptime:-}]${NC} ${LightGreen}$1${NC} ${message_color}"; echo -n "$2"; printf "${NC}\n";
-    echo "${hostname} ${uptime:-} $1 $2" >> "/tmp/Said-by-$(whoami).log" 2>/dev/null 
+    echo "${hostname} ${uptime:-} $1 $2" >> "$tmp/Said-by-$(whoami).log" 2>/dev/null 
   }
 
   function SayIt() { 
@@ -86,6 +86,8 @@
     echo $counter > "$counter_file"
   }; 
 
+
+tmp="${TMPDIR:-/tmp}"
 
 if [[ "$1" == "--Reset-Stopwatch" ]]; then
   echo "$(get_global_seconds)" > "$(get_stopwatch_file_name)"
