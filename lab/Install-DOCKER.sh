@@ -41,6 +41,11 @@ if [[ ! "$ARCH" == i386 ]]; then
   sudo apt-get install -y docker-ce pigz --allow-unauthenticated
   sudo docker version
   
+Say "Install DOCKER-COMPOSE"
+export DCVER=2.2.2 DCDIR=/usr/local/bin
+url=https://raw.githubusercontent.com/devizer/glist/master/Install-Latest-Docker-Compose.sh; (wget -q -nv --no-check-certificate -O - $url 2>/dev/null || curl -ksSL $url) | bash -e
+exit 0;
+
   dock_comp_ver=1.25.0 # is not yet compiled for arm64
   dock_comp_ver=1.24.1 # compiled for both armv7 and v7
   dock_comp_ver=1.25.5 # compiled for both armv7 and v7
