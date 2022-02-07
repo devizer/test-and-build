@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # Possible $FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
+# KEEP_FIO_TEMP_FILES - non empty string keeps a file between benchmarks
 
 function Has_Unicode() {
   if [[ -n "${FORCE_UNICODE:-}" ]]; then echo "true"; return; fi
@@ -73,7 +74,7 @@ if [[ -n "$FILE_IO_BENCHMARK_ENGINE" ]]; then ioengine=$FILE_IO_BENCHMARK_ENGINE
 # check libaio support
 pushd "$DISK" >/dev/null
 if [[ "$ioengine" == libaio ]]; then
-if fio --name=CHECK_LIBAIO --ioengine=$ioengine --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread >/dev/null 2>&1; then
+if fio --name=CHECK_LIBAIO --ioengine=$ioengine --gtod_reduce=1 --filename=fiodiag.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread >/dev/null 2>&1; then
   ioengine=libaio
 else
   ioengine=posixaio
@@ -82,10 +83,10 @@ fi
 
 # check DIRECT IO
 direct=0; direct_info="Direct IO: [Absent]"
-if fio --name=CHECK_DIRECT_IO --ioengine=$ioengine --direct=1 --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread >/dev/null 2>&1; then
+if fio --name=CHECK_DIRECT_IO --ioengine=$ioengine --direct=1 --gtod_reduce=1 --filename=fiodig.tmp --bs=4k --size=64k --runtime=1 --readwrite=randread >/dev/null 2>&1; then
   direct=1; direct_info="Direct IO: [Present]"
 fi
-if [[ -f fiotest.tmp ]]; then rm -f fiotest.tmp; fi
+if [[ -f fiodiag.tmp ]]; then rm -f fiodiag.tmp; fi
 popd >/dev/null
 
 info="Detected IO Engine: [${ioengine}]. $direct_info"
@@ -126,7 +127,9 @@ errorCode=1; exitCode=0;
    go_fio_1test write     $disk "${caption}: Sequential write"
    go_fio_1test randread  $disk "${caption}: Random read"
    go_fio_1test randwrite $disk "${caption}: Random write"
-   if [[ -f $disk/fiotest.tmp ]]; then rm -f $disk/fiotest.tmp; fi
+   if [[ -f $disk/fiotest.tmp ]] && [[ -z "${KEEP_FIO_TEMP_FILES:-}" ]]; then 
+      rm -f $disk/fiotest.tmp; 
+   fi
  }
  
  go_fio_4tests "$DISK" "$CAPTION"
