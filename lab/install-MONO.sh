@@ -20,6 +20,7 @@ function Install_Mono_on_RedHat() {
 
 function Install_Mono_on_Debians() {
   try-and-retry lazy-apt-update 
+  if [[ "$(command -v gnupg)" == "" ]]; then try-and-retry apt-get install gnupg -y -qq; fi
   try-and-retry sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A6A19B38D3D831EF || try-and-retry sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
   source /etc/os-release
   def="deb https://download.mono-project.com/repo/$ID stable-$(lsb_release -s -c) main"
