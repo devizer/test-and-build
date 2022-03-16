@@ -9,7 +9,7 @@ function get_github_releases() {
         need_pre_release=true; else need_pre_release=false; 
     fi
     
-    local query="https://api.github.com/repos/$owner/$repo/releases"
+    local query="https://api.github.com/repos/$owner/$repo/releases?per_page=128"
     local jqFilter;
     if [[ $need_pre_release == "true" ]]; then 
         jqFilter="";
@@ -23,7 +23,11 @@ function get_github_releases() {
 }
 
 if [[ "$1" == "" ]]; then
-    echo "Usage: Get-GitHub-Releases PowerShell PowerShell [--pre-release]"
+    echo 'Usage: 
+  Get-GitHub-Releases PowerShell PowerShell [--pre-release]
+  Get-GitHub-Releases git-lfs git-lfs | jq -r ".[]|.tag_name"
+  Get-GitHub-Releases git-lfs git-lfs | jq -r ".[]|.tarball_url"
+  Get-GitHub-Releases git-lfs git-lfs | jq -r ".[]|.zipball_url"'
     exit 0; 
 fi
 
