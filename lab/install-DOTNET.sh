@@ -19,7 +19,8 @@ function smart_sudo() {
 # echo "[~/.bashrc]"
 # cat ~/.bashrc
 
-DOTNET_TARGET_DIR="${DOTNET_TARGET_DIR:-/usr/share/dotnet}"
+defdir=/usr/share/dotnet; if [[ "$(uname -s)" == Darwin ]]; then defdir=/usr/local/share/dotnet; fi
+DOTNET_TARGET_DIR="${DOTNET_TARGET_DIR:-$defdir}"
 smart_sudo mkdir -p /etc/profile.d
 
 # crazy fix 
@@ -122,6 +123,10 @@ Say "Configured shared environment for .NET Core"
         fi
         __machine="${__machine:-$(uname -m)}"
         Say "Installing .NET Core $__m SDK for $__machine"
-        time smart_sudo try-and-retry timeout 666 bash /tmp/_dotnet-install.sh $__a -i ${DOTNET_TARGET_DIR}
+        if [[ "$(command -v timeout)" == "" ]]; then
+          time smart_sudo try-and-retry bash /tmp/_dotnet-install.sh $__a -i ${DOTNET_TARGET_DIR}
+        else
+          time smart_sudo try-and-retry timeout 666 bash /tmp/_dotnet-install.sh $__a -i ${DOTNET_TARGET_DIR}
+        fi
       done
       
