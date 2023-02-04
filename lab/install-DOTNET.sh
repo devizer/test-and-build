@@ -109,7 +109,7 @@ Say "Configured shared environment for .NET Core"
       smart_sudo mkdir -p /etc/dotnet
       echo ${DOTNET_TARGET_DIR} | smart_sudo tee /etc/dotnet/install_location >/dev/null
       # for arm it starts from 2.1
-      dotnet_install="$(mktemp)"
+      if [[ "$(uname -s)" == Darwin ]]; then dotnet_install="$(mktemp -t dotnet-install.sh)"; else dotnet_install="$(mktemp -t dotnet-install.sh.XXXXXXXX)"; fi
       try-and-retry curl -o "${dotnet_install}" -ksSL $DOTNET_Url
       export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
       
