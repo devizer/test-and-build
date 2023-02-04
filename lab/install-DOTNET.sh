@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # export DOTNET_VERSIONS="3.1"
-# script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/install-DOTNET.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash; test -s /usr/share/dotnet/dotnet && sudo ln -f -s /usr/share/dotnet/dotnet /usr/local/bin/dotnet
+# script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/install-DOTNET.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash; test -s /usr/share/dotnet/dotnet && sudo ln -f -s /usr/share/dotnet/dotnet /usr/local/bin/dotnet; test -s /usr/local/share/dotnet/dotnet && sudo ln -f -s /usr/local/share/dotnet/dotnet /usr/local/bin/dotnet; 
 
 DOTNET_VERSIONS="${DOTNET_VERSIONS:-2.1 2.2 3.0 3.1 5.0 6.0}"
 DOTNET_VERSIONS2=" ${DOTNET_VERSIONS} "
@@ -109,7 +109,8 @@ Say "Configured shared environment for .NET Core"
       smart_sudo mkdir -p /etc/dotnet
       echo ${DOTNET_TARGET_DIR} | smart_sudo tee /etc/dotnet/install_location >/dev/null
       # for arm it starts from 2.1
-      try-and-retry curl -o /tmp/_dotnet-install.sh -ksSL $DOTNET_Url
+      dotnet_install="$(mktemp)"
+      try-and-retry curl -o "${dotnet_install}" -ksSL $DOTNET_Url
       export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
       
       for v in $DOTNET_VERSIONS; do
@@ -124,9 +125,9 @@ Say "Configured shared environment for .NET Core"
         __machine="${__machine:-$(uname -m)}"
         Say "Installing .NET Core $__m SDK for $__machine"
         if [[ "$(command -v timeout)" == "" ]]; then
-          time smart_sudo try-and-retry bash /tmp/_dotnet-install.sh $__a -i ${DOTNET_TARGET_DIR}
+          time smart_sudo try-and-retry bash "${dotnet_install}" $__a -i ${DOTNET_TARGET_DIR}
         else
-          time smart_sudo try-and-retry timeout 666 bash /tmp/_dotnet-install.sh $__a -i ${DOTNET_TARGET_DIR}
+          time smart_sudo try-and-retry timeout 666 bash "${dotnet_install}" $__a -i ${DOTNET_TARGET_DIR}
         fi
       done
       
