@@ -19,9 +19,12 @@ function smart_sudo() {
 # echo "[~/.bashrc]"
 # cat ~/.bashrc
 
-defdir=/usr/share/dotnet; if [[ "$(uname -s)" == Darwin ]]; then defdir=/usr/local/share/dotnet; fi
+defdir=/usr/share/dotnet; 
+is_windows=""
+if [[ "$(uname -s)" == Darwin ]]; then defdir=/usr/local/share/dotnet; fi
+if [[ "$(uname -s)" == *MINGW* ]]; then defdir='C:\Program Files\dotnet'; is_windows="True"; fi
 DOTNET_TARGET_DIR="${DOTNET_TARGET_DIR:-$defdir}"
-smart_sudo mkdir -p /etc/profile.d
+test -n $is_windows && smart_sudo mkdir -p /etc/profile.d
 
 # crazy fix 
 if [[ -f /etc/os-release ]]; then
@@ -102,6 +105,7 @@ Say "Configured shared environment for .NET Core"
       fi
       [[ "$(command -v apt-get)" != "" ]] && smart_sudo apt-get clean
       DOTNET_Url=https://dot.net/v1/dotnet-install.sh; 
+      if [[ -n "$is_windows" ]]; then DOTNET_Url=https://dot.net/v1/dotnet-install.ps1; fi
       mkdir -p ~/.dotnet/tools;
       smart_sudo mkdir -p ${DOTNET_TARGET_DIR};
       export PATH="${DOTNET_TARGET_DIR}:$HOME/.dotnet/tools:$PATH"
@@ -110,6 +114,7 @@ Say "Configured shared environment for .NET Core"
       echo ${DOTNET_TARGET_DIR} | smart_sudo tee /etc/dotnet/install_location >/dev/null
       # for arm it starts from 2.1
       if [[ "$(uname -s)" == Darwin ]]; then dotnet_install="$(mktemp -t dotnet-install.sh)"; else dotnet_install="$(mktemp -t dotnet-install.sh.XXXXXXXX)"; fi
+      if [[ -n "$is_windows" ]]; then TMPDIR="$USERPROFILE"'\Temp'; mkdir -p $TMPDIR; dotnet_install="$TMPDIR"'\'"dotnet-install.$(date +%s.%6N).ps1"; echo "DOWNLOAD SCRIPT TO: [$dotnet_install]"; fi
       try-and-retry curl -o "${dotnet_install}" -ksSL $DOTNET_Url
       export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
       
@@ -124,7 +129,9 @@ Say "Configured shared environment for .NET Core"
         fi
         __machine="${__machine:-$(uname -m)}"
         Say "Installing .NET Core $__m SDK for $__machine"
-        if [[ "$(command -v timeout)" == "" ]]; then
+        if [[ -n "$is_windows" ]]; then
+          bash "${dotnet_install}" $__a -i "${DOTNET_TARGET_DIR}"
+        elif [[ "$(command -v timeout)" == "" ]]; then
           time smart_sudo try-and-retry bash "${dotnet_install}" $__a -i ${DOTNET_TARGET_DIR}
         else
           time smart_sudo try-and-retry timeout 666 bash "${dotnet_install}" $__a -i ${DOTNET_TARGET_DIR}
