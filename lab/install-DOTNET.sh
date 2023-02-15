@@ -82,7 +82,7 @@ fi
 ' | smart_sudo tee /etc/profile.d/dotnet-core.sh >/dev/null
 smart_sudo chmod +x /etc/profile.d/dotnet-core.sh
 
-if sudo test -d /home/user; then
+if [[ -n "$(command -v sudo)" ]] && sudo test -d /home/user; then
     # sudo as user
     sudo -u user mkdir -p /home/user/.dotnet/tools
     if [[ -z "${SKIP_DOTNET_ENVIRONMENT:-}" ]]; then
