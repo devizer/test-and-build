@@ -16,7 +16,7 @@ if [[ -z "${TARGET_DIR:-}" ]]; then
   TARGET_DIR="$defult_target_dir"
 fi
 
-echo "Installing Say, try-and-retry, Get-GitHub-Latest-Releasem etc into [${TARGET_DIR}]"
+echo "Installing Say, try-and-retry, Get-GitHub-Latest-Release, etc into [${TARGET_DIR}]"
 
 function install_build_tools_bundle() {
 
