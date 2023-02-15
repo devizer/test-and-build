@@ -134,7 +134,7 @@ Say "Configured shared environment for .NET Core"
         __machine="${__machine:-$(uname -m)}"
         Say "Installing .NET Core $__m SDK for $__machine"
         if [[ -n "$is_windows" ]]; then
-          poershell -f "${dotnet_install}" $__a -i "${DOTNET_TARGET_DIR}"
+          powershell -f "${dotnet_install}" $__a -i "${DOTNET_TARGET_DIR}"
         elif [[ "$(command -v timeout)" == "" ]]; then
           time smart_sudo try-and-retry bash "${dotnet_install}" $__a -i ${DOTNET_TARGET_DIR}
         else
