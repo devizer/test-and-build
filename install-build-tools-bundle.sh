@@ -9,6 +9,10 @@ if [[ -z "${TARGET_DIR:-}" ]]; then
     defult_target_dir="$PREFIX/bin"
   fi
 
+  if [[ "$(uname -s)" == *"MINGW"* ]] && [[ -d  C:\Windows ]]; then
+    defult_target_dir=C:\Windows
+  fi
+
   TARGET_DIR="$defult_target_dir"
 fi
 
