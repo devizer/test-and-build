@@ -2111,6 +2111,33 @@ else
 fi
 
 
+# Smart-Sudo
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+if [[ -n \"\$(command -v sudo)\" ]]; then
+  sudo -E \"\$@\"
+else
+  eval \"\$@\"
+fi
+
+" 2>/dev/null >${TARGET_DIR}/Smart-Sudo ||
+  echo -e "#!/usr/bin/env bash
+if [[ -n \"\$(command -v sudo)\" ]]; then
+  sudo -E \"\$@\"
+else
+  eval \"\$@\"
+fi
+
+" | sudo tee ${TARGET_DIR}/Smart-Sudo >/dev/null;
+  if [[ -f ${TARGET_DIR}/Smart-Sudo ]]; then 
+      chmod +x ${TARGET_DIR}/Smart-Sudo >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Smart-Sudo
+  	echo "OK: ${TARGET_DIR}/Smart-Sudo"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Smart-Sudo" >&2; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Smart-Sudo: directory does not exists" >&2
+fi
+
+
 # try-and-retry
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
