@@ -14,6 +14,10 @@ function smart_sudo() {
   fi
 }
 
+function SayWindows() {
+  echo "$@"
+}
+
 # echo "[env]"
 # printenv | sort
 # echo "[~/.bashrc]"
@@ -22,7 +26,7 @@ function smart_sudo() {
 defdir=/usr/share/dotnet; 
 is_windows=""
 if [[ "$(uname -s)" == Darwin ]]; then defdir=/usr/local/share/dotnet; fi
-if [[ "$(uname -s)" == *MINGW* ]]; then defdir='C:\Program Files\dotnet'; is_windows="True"; fi
+if [[ "$(uname -s)" == *MINGW* ]]; then defdir='C:\Program Files\dotnet'; is_windows="True"; alias Say=SayWindows; fi
 DOTNET_TARGET_DIR="${DOTNET_TARGET_DIR:-$defdir}"
 test -n $is_windows && smart_sudo mkdir -p /etc/profile.d
 
