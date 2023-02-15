@@ -9,12 +9,14 @@ if [[ -z "${TARGET_DIR:-}" ]]; then
     defult_target_dir="$PREFIX/bin"
   fi
 
-  if [[ "$(uname -s)" == *"MINGW"* ]] && [[ -d  C:\Windows ]]; then
-    defult_target_dir=C:\Windows
+  if [[ "$(uname -s)" == *"MINGW"* ]] && [[ -d "C:\\Windows" ]]; then
+    defult_target_dir="C:\\Windows"
   fi
 
   TARGET_DIR="$defult_target_dir"
 fi
+
+echo "Installing Say, try-and-retry, Get-GitHub-Latest-Releasem etc into [${TARGET_DIR}]"
 
 function install_build_tools_bundle() {
 
