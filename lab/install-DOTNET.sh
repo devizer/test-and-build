@@ -115,7 +115,11 @@ Say "Configured shared environment for .NET Core"
       # for arm it starts from 2.1
       if [[ "$(uname -s)" == Darwin ]]; then dotnet_install="$(mktemp -t dotnet-install.sh)"; else dotnet_install="$(mktemp -t dotnet-install.sh.XXXXXXXX)"; fi
       if [[ -n "$is_windows" ]]; then TMPDIR="$USERPROFILE"'\Temp'; mkdir -p $TMPDIR; dotnet_install="$TMPDIR"'\'"dotnet-install.$(date +%s.%6N).ps1"; echo "DOWNLOAD SCRIPT TO: [$dotnet_install]"; fi
-      try-and-retry curl -o "${dotnet_install}" -ksSL $DOTNET_Url
+      if [[ "$(command -v try-and-retry)" == "" ]]; then
+        curl -o "${dotnet_install}" -ksSL $DOTNET_Url
+      else
+        try-and-retry curl -o "${dotnet_install}" -ksSL $DOTNET_Url
+      fi
       export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
       
       for v in $DOTNET_VERSIONS; do
@@ -130,7 +134,7 @@ Say "Configured shared environment for .NET Core"
         __machine="${__machine:-$(uname -m)}"
         Say "Installing .NET Core $__m SDK for $__machine"
         if [[ -n "$is_windows" ]]; then
-          bash "${dotnet_install}" $__a -i "${DOTNET_TARGET_DIR}"
+          poershell -f "${dotnet_install}" $__a -i "${DOTNET_TARGET_DIR}"
         elif [[ "$(command -v timeout)" == "" ]]; then
           time smart_sudo try-and-retry bash "${dotnet_install}" $__a -i ${DOTNET_TARGET_DIR}
         else
