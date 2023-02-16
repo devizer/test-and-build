@@ -343,6 +343,63 @@ else
 fi
 
 
+# Get-CpuName
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+function get_cpu_name() {
+  if [[ \"\$(uname -s)\" == Linux ]]; then
+    cpu=\"\$(cat /proc/cpuinfo | grep -E '^(model name|Hardware)' | awk -F':' 'NR==1 {print \$2}')\"; 
+    cpu=\"\$(echo -e \"\${cpu:-}\" | sed -e 's/^[[:space:]]*//')\"
+    if [[ -n \"(command -v nproc)\" ]]; then cpu=\"\$cpu, \$(nproc) Cores\"; fi
+    # todo: cat /proc/device-tree/model on raspberry
+    echo \"\${cpu}\"
+  elif [[ \"\$(uname -s)\" == Darwin ]]; then
+    cpu=\"\$(sysctl -n machdep.cpu.brand_string), \$(sysctl -n machdep.cpu.core_count) Cores, \$(sysctl -n machdep.cpu.thread_count) Threads\"
+    echo \"\${cpu}\"
+  elif [[ \"\$(uname -s)\" == *\"MINGW\"* ]]; then
+    cpu=\"\$(echo 'Write-Host \"\$((Get-WmiObject Win32_Processor).Name), \$([Environment]::ProcessorCount) Cores\"' | powershell -c -)\"
+    echo \"\$cpu\"
+  else
+    cpu=\"Unknown '\$(uname -m)' cpu name\"
+    if [[ -n \"(command -v nproc)\" ]]; then cpu=\"\$cpu, \$(nproc) Cores\"; fi
+  fi
+}
+
+echo \"\$(get_cpu_name)\"
+
+" 2>/dev/null >${TARGET_DIR}/Get-CpuName ||
+  echo -e "#!/usr/bin/env bash
+function get_cpu_name() {
+  if [[ \"\$(uname -s)\" == Linux ]]; then
+    cpu=\"\$(cat /proc/cpuinfo | grep -E '^(model name|Hardware)' | awk -F':' 'NR==1 {print \$2}')\"; 
+    cpu=\"\$(echo -e \"\${cpu:-}\" | sed -e 's/^[[:space:]]*//')\"
+    if [[ -n \"(command -v nproc)\" ]]; then cpu=\"\$cpu, \$(nproc) Cores\"; fi
+    # todo: cat /proc/device-tree/model on raspberry
+    echo \"\${cpu}\"
+  elif [[ \"\$(uname -s)\" == Darwin ]]; then
+    cpu=\"\$(sysctl -n machdep.cpu.brand_string), \$(sysctl -n machdep.cpu.core_count) Cores, \$(sysctl -n machdep.cpu.thread_count) Threads\"
+    echo \"\${cpu}\"
+  elif [[ \"\$(uname -s)\" == *\"MINGW\"* ]]; then
+    cpu=\"\$(echo 'Write-Host \"\$((Get-WmiObject Win32_Processor).Name), \$([Environment]::ProcessorCount) Cores\"' | powershell -c -)\"
+    echo \"\$cpu\"
+  else
+    cpu=\"Unknown '\$(uname -m)' cpu name\"
+    if [[ -n \"(command -v nproc)\" ]]; then cpu=\"\$cpu, \$(nproc) Cores\"; fi
+  fi
+}
+
+echo \"\$(get_cpu_name)\"
+
+" | sudo tee ${TARGET_DIR}/Get-CpuName >/dev/null;
+  if [[ -f ${TARGET_DIR}/Get-CpuName ]]; then 
+      chmod +x ${TARGET_DIR}/Get-CpuName >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-CpuName
+  	echo "OK: ${TARGET_DIR}/Get-CpuName"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Get-CpuName" >&2; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Get-CpuName: directory does not exists" >&2
+fi
+
+
 # Get-Git-Tags
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
