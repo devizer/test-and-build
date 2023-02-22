@@ -58,10 +58,10 @@ else
 fi
 
 echo '#!/usr/bin/env bash
-if [[ -s "'${DOTNET_TARGET_DIR}'/dotnet" ]]; then 
-    DOTNET_ROOT='${DOTNET_TARGET_DIR}'
+if [[ -s "'"'"${DOTNET_TARGET_DIR}"'"'/dotnet" ]]; then 
+    DOTNET_ROOT='"'"${DOTNET_TARGET_DIR}"'"'
     export DOTNET_ROOT 
-    PATH="'${DOTNET_TARGET_DIR}':$PATH"
+    PATH="'"'"${DOTNET_TARGET_DIR}"'"':$PATH"
     if [[ -d "$HOME/.dotnet/tools" ]]; then
         PATH="$PATH:$HOME/.dotnet/tools"
     fi
