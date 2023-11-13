@@ -29,13 +29,13 @@ function Install_Mono_on_Debians() {
     # for Ubuntu 20.04 just a preview WAS available
     # def="deb https://download.mono-project.com/repo/ubuntu preview-$UBUNTU_CODENAME main";
     true 
-  elif [[ "$PRETTY_NAME" == *"bullseye"* ]]; then
+  elif [[ "$PRETTY_NAME" == *"bullseye"* || "$PRETTY_NAME" == *"bookworm"* ]]; then
     def="deb https://download.mono-project.com/repo/debian stable-buster main"
   fi
   if [[ "$ID" == linuxmint ]]; then
     def="deb https://download.mono-project.com/repo/ubuntu stable-focal main"
   fi
-  if [[ "$ID-$VERSION_ID" == "ubuntu-20."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-21."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-22."* ]]; then
+  if [[ "$ID-$VERSION_ID" == "ubuntu-20."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-21."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-22."* ]]|| [[ "$ID-$VERSION_ID" == "ubuntu-23."* ]]; then
     def="deb https://download.mono-project.com/repo/ubuntu stable-focal main"
     # focal on armv7 needs bionic, arm64 is ok
     if [[ "$(uname -m)" == armv7 ]] || [[ "$(dpkg --print-architecture)" == armhf ]]; then
