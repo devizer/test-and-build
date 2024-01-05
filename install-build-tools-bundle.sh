@@ -63,6 +63,56 @@ if [[ -d ${TARGET_DIR} ]]; then
 # Possible \$FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
 # KEEP_FIO_TEMP_FILES - non empty string keeps a file between benchmarks
 
+function To_Lower_String() {
+  # https://stackoverflow.com/questions/2264428/how-to-convert-a-string-to-lower-case-in-bash
+  local a=\"\$1\"
+  if [[ \"\$BASH_VERSION\" == 3* ]]; then
+    echo \"\$a\" | awk '{print tolower(\$0)}'
+  else
+    echo \"\${a,,}\"
+  fi
+}
+
+function Trim_String() {
+  # Works on bash 3.x and above
+  # https://stackoverflow.com/a/3352015
+  local var=\"\$*\"
+  # remove leading whitespace characters
+  var=\"\${var#\"\${var%%[![:space:]]*}\"}\"
+  # remove trailing whitespace characters
+  var=\"\${var%\"\${var##*[![:space:]]}\"}\"
+  printf '%s' \"\$var\"
+}
+# echo \"Trimmed: [\$(Trim_String \" Hello World! \")]\"
+
+function Extract_IOPS_from_Output() {
+  local file=\"\$1\"
+  cat \"\$file\" | while IFS='' read -r line; do
+    local cmd=\"\$(echo \$line | awk -F':' '{print \$1}')\"
+    cmd=\"\$(Trim_String \"\$cmd\")\"
+    cmd=\"\$(To_Lower_String \"\$cmd\")\"
+    if [[ \"\$cmd\" == \"read\" ]] || [[ \"\$cmd\" == \"write\" ]]; then
+      local tail=\"\$(echo \$line | awk -F':' '{print \$2}')\"
+      # echo \"TAIL: [\$tail]\"
+      local tailPart;
+      for tailPart in \${tail//,/ }
+      do
+        local header=\"\$(echo \"\$tailPart\" | awk -F'=' '{print \$1}')\"
+        header=\"\$(Trim_String \"\$header\")\"; header=\"\$(To_Lower_String \"\$header\")\"; 
+        if [[ \"\$header\" == \"iops\" ]]; then
+          local rawIops=\"\$(echo \"\$tailPart\" | awk -F'=' '{print \$2}')\"
+          rawIops=\"\$(Trim_String \"\$rawIops\")\"
+          # rawIops is number or 123.4k
+          echo \"\$rawIops\" 
+        fi
+        # echo \"HEADER=[\$header]; Value=[\$value]\"
+      done
+    fi
+  done
+}
+# sudo rm -f /usr/local/bin/File-IO-Benchmark; sudo nano /usr/local/bin/File-IO-Benchmark; sudo chmod +x /usr/local/bin/File-IO-Benchmark
+
+
 function Has_Unicode() {
   if [[ -n \"\${FORCE_UNICODE:-}\" ]]; then echo \"true\"; return; fi
   if [[ -n \"\${DISABLE_UNICODE:-}\" ]]; then echo \"false\"; return; fi
@@ -154,31 +204,36 @@ echo \"\$info\" # Header \"\$info\"
 
 errorCode=1; exitCode=0;
 
- function go_fio_1test() {
-   local cmd=\$1
-   local disk=\$2
-   local caption=\"\$3\"
-   pushd \"\$disk\" >/dev/null
-   Header \"\$caption (\$(pwd))\"
-   echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
-   if [[ \$cmd == \"rand\"* ]]; then
-      fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd\"
-   else
-      fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd\"
-   fi
-   if [[ -n \"\$FILE_IO_BENCHMARK_DUMP_FOLDER\" ]]; then
-     fio_version=\"\$(fio --version)\"
-     fio_version=\"\${fio_version:-unknown}\"
-     mkdir -p \"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version\"
-     fio_shell_cmd=\"\$fio_shell_cmd | tee \x5C\"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version/\$cmd.log\x5C\"\"
-   fi
-   set -o pipefail
-   eval \$fio_shell_cmd
-   if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
-   exitCode=\$((isError*errorCode + exitCode)); errorCode=\$((errorCode*2))
-   popd >/dev/null
-   echo \"\"
- }
+function go_fio_1test() {
+  local cmd=\$1
+  local disk=\$2
+  local caption=\"\$3\"
+  pushd \"\$disk\" >/dev/null
+  Header \"\$caption (\$(pwd))\"
+  echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
+  if [[ \$cmd == \"rand\"* ]]; then
+     fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd --eta=always\"
+  else
+     fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd --eta=always\"
+  fi
+  if [[ -n \"\$FILE_IO_BENCHMARK_DUMP_FOLDER\" ]]; then
+    fio_version=\"\$(fio --version)\"
+    fio_version=\"\${fio_version:-unknown}\"
+    mkdir -p \"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version\"
+    fio_shell_cmd=\"\$fio_shell_cmd | tee \x5C\"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version/\$cmd.log\x5C\"\"
+  fi
+  set -o pipefail
+  output=\"\$(mktemp)\"
+  eval \$fio_shell_cmd | tee \"\$output\"
+  if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
+  exitCode=\$((isError*errorCode + exitCode)); errorCode=\$((errorCode*2))
+  iops=\"\$(Extract_IOPS_from_Output \"\$output\")\"
+  # echo \"..... iops=\$iops\"
+  eval iops_\$cmd=\$iops
+  rm -f \"\$output\"
+  popd >/dev/null
+  echo \"\"
+}
  
  function go_fio_4tests() {
    local disk=\$1
@@ -193,6 +248,14 @@ errorCode=1; exitCode=0;
  }
  
  go_fio_4tests \"\$DISK\" \"\$CAPTION\"
+ 
+ if [[ -n \"\$iops_read\" ]] && [[ -n \"\$iops_write\" ]] && [[ -n \"\$iops_randread\" ]] && [[ -n \"\$iops_randwrite\" ]]; then
+   bold=\"\$(tput bold 2>/dev/null)\"; normal=\"\$(tput sgr0 2>/dev/null)\"
+   echo \"Summary:\"
+   echo \"   Sequential Read: \${bold}\$iops_read MB/s\${normal}; Sequential Write: \${bold}\$iops_write MB/s\${normal}\" 
+   echo \"   Random Read 4K: \${bold}\$iops_randread IOPS\${normal}; Random Write 4K: \${bold}\$iops_randwrite IOPS\${normal}\"
+ fi
+
  exit \$exitCode
 
 " 2>/dev/null >${TARGET_DIR}/File-IO-Benchmark ||
@@ -201,6 +264,56 @@ errorCode=1; exitCode=0;
 # Possible \$FILE_IO_BENCHMARK_OPTIONS: --eta=always --time_based
 # KEEP_FIO_TEMP_FILES - non empty string keeps a file between benchmarks
 
+function To_Lower_String() {
+  # https://stackoverflow.com/questions/2264428/how-to-convert-a-string-to-lower-case-in-bash
+  local a=\"\$1\"
+  if [[ \"\$BASH_VERSION\" == 3* ]]; then
+    echo \"\$a\" | awk '{print tolower(\$0)}'
+  else
+    echo \"\${a,,}\"
+  fi
+}
+
+function Trim_String() {
+  # Works on bash 3.x and above
+  # https://stackoverflow.com/a/3352015
+  local var=\"\$*\"
+  # remove leading whitespace characters
+  var=\"\${var#\"\${var%%[![:space:]]*}\"}\"
+  # remove trailing whitespace characters
+  var=\"\${var%\"\${var##*[![:space:]]}\"}\"
+  printf '%s' \"\$var\"
+}
+# echo \"Trimmed: [\$(Trim_String \" Hello World! \")]\"
+
+function Extract_IOPS_from_Output() {
+  local file=\"\$1\"
+  cat \"\$file\" | while IFS='' read -r line; do
+    local cmd=\"\$(echo \$line | awk -F':' '{print \$1}')\"
+    cmd=\"\$(Trim_String \"\$cmd\")\"
+    cmd=\"\$(To_Lower_String \"\$cmd\")\"
+    if [[ \"\$cmd\" == \"read\" ]] || [[ \"\$cmd\" == \"write\" ]]; then
+      local tail=\"\$(echo \$line | awk -F':' '{print \$2}')\"
+      # echo \"TAIL: [\$tail]\"
+      local tailPart;
+      for tailPart in \${tail//,/ }
+      do
+        local header=\"\$(echo \"\$tailPart\" | awk -F'=' '{print \$1}')\"
+        header=\"\$(Trim_String \"\$header\")\"; header=\"\$(To_Lower_String \"\$header\")\"; 
+        if [[ \"\$header\" == \"iops\" ]]; then
+          local rawIops=\"\$(echo \"\$tailPart\" | awk -F'=' '{print \$2}')\"
+          rawIops=\"\$(Trim_String \"\$rawIops\")\"
+          # rawIops is number or 123.4k
+          echo \"\$rawIops\" 
+        fi
+        # echo \"HEADER=[\$header]; Value=[\$value]\"
+      done
+    fi
+  done
+}
+# sudo rm -f /usr/local/bin/File-IO-Benchmark; sudo nano /usr/local/bin/File-IO-Benchmark; sudo chmod +x /usr/local/bin/File-IO-Benchmark
+
+
 function Has_Unicode() {
   if [[ -n \"\${FORCE_UNICODE:-}\" ]]; then echo \"true\"; return; fi
   if [[ -n \"\${DISABLE_UNICODE:-}\" ]]; then echo \"false\"; return; fi
@@ -292,31 +405,36 @@ echo \"\$info\" # Header \"\$info\"
 
 errorCode=1; exitCode=0;
 
- function go_fio_1test() {
-   local cmd=\$1
-   local disk=\$2
-   local caption=\"\$3\"
-   pushd \"\$disk\" >/dev/null
-   Header \"\$caption (\$(pwd))\"
-   echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
-   if [[ \$cmd == \"rand\"* ]]; then
-      fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd\"
-   else
-      fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd\"
-   fi
-   if [[ -n \"\$FILE_IO_BENCHMARK_DUMP_FOLDER\" ]]; then
-     fio_version=\"\$(fio --version)\"
-     fio_version=\"\${fio_version:-unknown}\"
-     mkdir -p \"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version\"
-     fio_shell_cmd=\"\$fio_shell_cmd | tee \x5C\"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version/\$cmd.log\x5C\"\"
-   fi
-   set -o pipefail
-   eval \$fio_shell_cmd
-   if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
-   exitCode=\$((isError*errorCode + exitCode)); errorCode=\$((errorCode*2))
-   popd >/dev/null
-   echo \"\"
- }
+function go_fio_1test() {
+  local cmd=\$1
+  local disk=\$2
+  local caption=\"\$3\"
+  pushd \"\$disk\" >/dev/null
+  Header \"\$caption (\$(pwd))\"
+  echo \"Benchmark '\$(pwd)' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
+  if [[ \$cmd == \"rand\"* ]]; then
+     fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd --eta=always\"
+  else
+     fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=1024k --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd --eta=always\"
+  fi
+  if [[ -n \"\$FILE_IO_BENCHMARK_DUMP_FOLDER\" ]]; then
+    fio_version=\"\$(fio --version)\"
+    fio_version=\"\${fio_version:-unknown}\"
+    mkdir -p \"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version\"
+    fio_shell_cmd=\"\$fio_shell_cmd | tee \x5C\"\$FILE_IO_BENCHMARK_DUMP_FOLDER/\$fio_version/\$cmd.log\x5C\"\"
+  fi
+  set -o pipefail
+  output=\"\$(mktemp)\"
+  eval \$fio_shell_cmd | tee \"\$output\"
+  if [[ \$? == 0 ]]; then isError=0; else isError=1; fi
+  exitCode=\$((isError*errorCode + exitCode)); errorCode=\$((errorCode*2))
+  iops=\"\$(Extract_IOPS_from_Output \"\$output\")\"
+  # echo \"..... iops=\$iops\"
+  eval iops_\$cmd=\$iops
+  rm -f \"\$output\"
+  popd >/dev/null
+  echo \"\"
+}
  
  function go_fio_4tests() {
    local disk=\$1
@@ -331,6 +449,14 @@ errorCode=1; exitCode=0;
  }
  
  go_fio_4tests \"\$DISK\" \"\$CAPTION\"
+ 
+ if [[ -n \"\$iops_read\" ]] && [[ -n \"\$iops_write\" ]] && [[ -n \"\$iops_randread\" ]] && [[ -n \"\$iops_randwrite\" ]]; then
+   bold=\"\$(tput bold 2>/dev/null)\"; normal=\"\$(tput sgr0 2>/dev/null)\"
+   echo \"Summary:\"
+   echo \"   Sequential Read: \${bold}\$iops_read MB/s\${normal}; Sequential Write: \${bold}\$iops_write MB/s\${normal}\" 
+   echo \"   Random Read 4K: \${bold}\$iops_randread IOPS\${normal}; Random Write 4K: \${bold}\$iops_randwrite IOPS\${normal}\"
+ fi
+
  exit \$exitCode
 
 " | sudo tee ${TARGET_DIR}/File-IO-Benchmark >/dev/null;
@@ -413,89 +539,6 @@ echo \"\$(get_cpu_name)\"
   else "Error: Unable to extract ${TARGET_DIR}/Get-CpuName" >&2; fi
 else 
   echo "Skipping ${TARGET_DIR}/Get-CpuName: directory does not exists" >&2
-fi
-
-
-# Get-Git-Tags
-if [[ -d ${TARGET_DIR} ]]; then
-  echo -e "#!/usr/bin/env bash
-
-# git ls-remote --tags https://github.com/git/git | awk '{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n); if (n ~ /^v?[0-9.]*\$/) { print n } }' | sort -V
-
-# ^{}: https://stackoverflow.com/questions/15472107/when-listing-git-ls-remote-why-theres-after-the-tag-name/15472310
-# remove ^{}
-# Get-Git-Tags https://github.com/PowerShell/PowerShell --pre | awk '{ n=\$1; if (! (n ~ /\x5C^\x5C{\x5C}\$/) ) { print \$n } }'
-
-# output tags ordered as versions
-function get_git_tags() {
-  local repo=\"\$1\"; repo=\"\${repo:-https://github.com/nodejs/node}\"
-  local need_pre_release=\"\$2\"; 
-  if [[ \"\$need_pre_release\" == \"pre\"* || \"\$need_pre_release\" == \"--pre\"* ]]; then 
-    need_pre_release=true; else need_pre_release=false; 
-  fi
-  
-  cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
-  if [[ \$need_pre_release == false ]]; then
-    GIT_RELEASE_TAG_FILTER=\${GIT_RELEASE_TAG_FILTER:-/^v?[0-9.]*\$/}
-    cmd=\"\$cmd if (n ~ \$GIT_RELEASE_TAG_FILTER && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
-  else 
-    cmd=\"\$cmd if (! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
-  fi
-  cmd=\"\$cmd { print n } }' | sort -V\"
-  eval \"\$cmd\"
-}
-
-if [[ \"\$1\" == \"\" ]]; then
-    echo \"Usage Get-Git-Tags https://github.com/nodejs/node [--pre-release|--pre]\"
-    echo \"Default filter for tags is /^v?[0-9.]*\$/ It can be overriden by GIT_RELEASE_TAG_FILTER var\"
-    exit 0; 
-fi
-
-get_git_tags \$1 \$2
-
-" 2>/dev/null >${TARGET_DIR}/Get-Git-Tags ||
-  echo -e "#!/usr/bin/env bash
-
-# git ls-remote --tags https://github.com/git/git | awk '{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n); if (n ~ /^v?[0-9.]*\$/) { print n } }' | sort -V
-
-# ^{}: https://stackoverflow.com/questions/15472107/when-listing-git-ls-remote-why-theres-after-the-tag-name/15472310
-# remove ^{}
-# Get-Git-Tags https://github.com/PowerShell/PowerShell --pre | awk '{ n=\$1; if (! (n ~ /\x5C^\x5C{\x5C}\$/) ) { print \$n } }'
-
-# output tags ordered as versions
-function get_git_tags() {
-  local repo=\"\$1\"; repo=\"\${repo:-https://github.com/nodejs/node}\"
-  local need_pre_release=\"\$2\"; 
-  if [[ \"\$need_pre_release\" == \"pre\"* || \"\$need_pre_release\" == \"--pre\"* ]]; then 
-    need_pre_release=true; else need_pre_release=false; 
-  fi
-  
-  cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
-  if [[ \$need_pre_release == false ]]; then
-    GIT_RELEASE_TAG_FILTER=\${GIT_RELEASE_TAG_FILTER:-/^v?[0-9.]*\$/}
-    cmd=\"\$cmd if (n ~ \$GIT_RELEASE_TAG_FILTER && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
-  else 
-    cmd=\"\$cmd if (! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
-  fi
-  cmd=\"\$cmd { print n } }' | sort -V\"
-  eval \"\$cmd\"
-}
-
-if [[ \"\$1\" == \"\" ]]; then
-    echo \"Usage Get-Git-Tags https://github.com/nodejs/node [--pre-release|--pre]\"
-    echo \"Default filter for tags is /^v?[0-9.]*\$/ It can be overriden by GIT_RELEASE_TAG_FILTER var\"
-    exit 0; 
-fi
-
-get_git_tags \$1 \$2
-
-" | sudo tee ${TARGET_DIR}/Get-Git-Tags >/dev/null;
-  if [[ -f ${TARGET_DIR}/Get-Git-Tags ]]; then 
-      chmod +x ${TARGET_DIR}/Get-Git-Tags >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-Git-Tags
-  	echo "OK: ${TARGET_DIR}/Get-Git-Tags"; 
-  else "Error: Unable to extract ${TARGET_DIR}/Get-Git-Tags" >&2; fi
-else 
-  echo "Skipping ${TARGET_DIR}/Get-Git-Tags: directory does not exists" >&2
 fi
 
 
@@ -650,6 +693,89 @@ get_github_releases \"\${owner:-}\" \"\${repo:-}\" \"\${need_pre_release:-}\"
   else "Error: Unable to extract ${TARGET_DIR}/Get-GitHub-Releases" >&2; fi
 else 
   echo "Skipping ${TARGET_DIR}/Get-GitHub-Releases: directory does not exists" >&2
+fi
+
+
+# Get-Git-Tags
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+
+# git ls-remote --tags https://github.com/git/git | awk '{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n); if (n ~ /^v?[0-9.]*\$/) { print n } }' | sort -V
+
+# ^{}: https://stackoverflow.com/questions/15472107/when-listing-git-ls-remote-why-theres-after-the-tag-name/15472310
+# remove ^{}
+# Get-Git-Tags https://github.com/PowerShell/PowerShell --pre | awk '{ n=\$1; if (! (n ~ /\x5C^\x5C{\x5C}\$/) ) { print \$n } }'
+
+# output tags ordered as versions
+function get_git_tags() {
+  local repo=\"\$1\"; repo=\"\${repo:-https://github.com/nodejs/node}\"
+  local need_pre_release=\"\$2\"; 
+  if [[ \"\$need_pre_release\" == \"pre\"* || \"\$need_pre_release\" == \"--pre\"* ]]; then 
+    need_pre_release=true; else need_pre_release=false; 
+  fi
+  
+  cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
+  if [[ \$need_pre_release == false ]]; then
+    GIT_RELEASE_TAG_FILTER=\${GIT_RELEASE_TAG_FILTER:-/^v?[0-9.]*\$/}
+    cmd=\"\$cmd if (n ~ \$GIT_RELEASE_TAG_FILTER && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
+  else 
+    cmd=\"\$cmd if (! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
+  fi
+  cmd=\"\$cmd { print n } }' | sort -V\"
+  eval \"\$cmd\"
+}
+
+if [[ \"\$1\" == \"\" ]]; then
+    echo \"Usage Get-Git-Tags https://github.com/nodejs/node [--pre-release|--pre]\"
+    echo \"Default filter for tags is /^v?[0-9.]*\$/ It can be overriden by GIT_RELEASE_TAG_FILTER var\"
+    exit 0; 
+fi
+
+get_git_tags \$1 \$2
+
+" 2>/dev/null >${TARGET_DIR}/Get-Git-Tags ||
+  echo -e "#!/usr/bin/env bash
+
+# git ls-remote --tags https://github.com/git/git | awk '{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n); if (n ~ /^v?[0-9.]*\$/) { print n } }' | sort -V
+
+# ^{}: https://stackoverflow.com/questions/15472107/when-listing-git-ls-remote-why-theres-after-the-tag-name/15472310
+# remove ^{}
+# Get-Git-Tags https://github.com/PowerShell/PowerShell --pre | awk '{ n=\$1; if (! (n ~ /\x5C^\x5C{\x5C}\$/) ) { print \$n } }'
+
+# output tags ordered as versions
+function get_git_tags() {
+  local repo=\"\$1\"; repo=\"\${repo:-https://github.com/nodejs/node}\"
+  local need_pre_release=\"\$2\"; 
+  if [[ \"\$need_pre_release\" == \"pre\"* || \"\$need_pre_release\" == \"--pre\"* ]]; then 
+    need_pre_release=true; else need_pre_release=false; 
+  fi
+  
+  cmd='git ls-remote --tags '\$repo' | awk '\"'\"'{n=\$2; gsub(/^refs\x5C/tags\x5C//,\"\", n);'
+  if [[ \$need_pre_release == false ]]; then
+    GIT_RELEASE_TAG_FILTER=\${GIT_RELEASE_TAG_FILTER:-/^v?[0-9.]*\$/}
+    cmd=\"\$cmd if (n ~ \$GIT_RELEASE_TAG_FILTER && ! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
+  else 
+    cmd=\"\$cmd if (! ( n ~ /\x5C^\x5C{\x5C}\$/ ))\"
+  fi
+  cmd=\"\$cmd { print n } }' | sort -V\"
+  eval \"\$cmd\"
+}
+
+if [[ \"\$1\" == \"\" ]]; then
+    echo \"Usage Get-Git-Tags https://github.com/nodejs/node [--pre-release|--pre]\"
+    echo \"Default filter for tags is /^v?[0-9.]*\$/ It can be overriden by GIT_RELEASE_TAG_FILTER var\"
+    exit 0; 
+fi
+
+get_git_tags \$1 \$2
+
+" | sudo tee ${TARGET_DIR}/Get-Git-Tags >/dev/null;
+  if [[ -f ${TARGET_DIR}/Get-Git-Tags ]]; then 
+      chmod +x ${TARGET_DIR}/Get-Git-Tags >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-Git-Tags
+  	echo "OK: ${TARGET_DIR}/Get-Git-Tags"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Get-Git-Tags" >&2; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Get-Git-Tags: directory does not exists" >&2
 fi
 
 
