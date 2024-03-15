@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/install-MONO.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | sudo bash
 
 function Install_Mono_on_RedHat() {
   if [[ "$(Is-RedHat 6)" ]]; then
