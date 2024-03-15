@@ -244,7 +244,7 @@ function go_fio_1test() {
   local disk=\"\$4\"
   local caption=\"\$5\"
   Header \"\$caption (\$(pwd))\"
-  echo \"Benchmark '\$disk' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
+  echo \"Benchmark '\$disk' folder using '\$cmd' test (jobs=\$numjobs) during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
   pushd \"\$disk\" >/dev/null
   if [[ \$cmd == \"rand\"* ]]; then
      fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --numjobs=\$numjobs --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd --eta=always\"
@@ -500,7 +500,7 @@ function go_fio_1test() {
   local disk=\"\$4\"
   local caption=\"\$5\"
   Header \"\$caption (\$(pwd))\"
-  echo \"Benchmark '\$disk' folder using '\$cmd' test during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
+  echo \"Benchmark '\$disk' folder using '\$cmd' test (jobs=\$numjobs) during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
   pushd \"\$disk\" >/dev/null
   if [[ \$cmd == \"rand\"* ]]; then
      fio_shell_cmd=\"fio \$FILE_IO_BENCHMARK_OPTIONS --name=RUN_\$cmd --randrepeat=1 --ioengine=\$ioengine --direct=\$direct --gtod_reduce=1 --filename=fiotest.tmp --bs=4k --iodepth=64 --numjobs=\$numjobs --size=\$SIZE --runtime=\$DURATION --ramp_time=\$RAMP --readwrite=\$cmd --eta=always\"
