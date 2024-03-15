@@ -284,13 +284,13 @@ function go_fio_1test() {
  function go_fio_4tests() {
    local disk=\$1
    local caption=\$2
-   go_fio_1test read read            1        \$disk \"\${caption}: Sequential read\"
-   go_fio_1test write write          1        \$disk \"\${caption}: Sequential write\"
-   go_fio_1test randread randread1   1        \$disk \"\${caption}: Random read\"
-   go_fio_1test randwrite randwrite1 1        \$disk \"\${caption}: Random write\"
+   go_fio_1test \"read\" \"read\"            \"1\"        \"\$disk\" \"\${caption}: Sequential read\"
+   go_fio_1test \"write\" \"write\"          \"1\"        \"\$disk\" \"\${caption}: Sequential write\"
+   go_fio_1test \"randread\" \"randread1\"   \"1\"        \"\$disk\" \"\${caption}: Random read\"
+   go_fio_1test \"randwrite\" \"randwrite1\" \"1\"        \"\$disk\" \"\${caption}: Random write\"
    if [[ \"\$NUMJOBS\" != 1 ]]; then
-   go_fio_1test randread randreadN   \$NUMJOBS \$disk \"\${caption}: Random read \$NUMJOBS jobs\"
-   go_fio_1test randwrite randwriteN \$NUMJOBS \$disk \"\${caption}: Random write \$NUMJOBS jobs\"
+   go_fio_1test \"randread\" \"randreadN\"   \"\$NUMJOBS\" \"\$disk\" \"\${caption}: Random read \$NUMJOBS jobs\"
+   go_fio_1test \"randwrite\" \"randwriteN\" \"\$NUMJOBS\" \"\$disk\" \"\${caption}: Random write \$NUMJOBS jobs\"
    fi
    if [[ -f \$disk/fiotest.tmp ]] && [[ -z \"\${KEEP_FIO_TEMP_FILES:-}\" ]]; then 
       rm -f \$disk/fiotest.tmp; 
@@ -540,13 +540,13 @@ function go_fio_1test() {
  function go_fio_4tests() {
    local disk=\$1
    local caption=\$2
-   go_fio_1test read read            1        \$disk \"\${caption}: Sequential read\"
-   go_fio_1test write write          1        \$disk \"\${caption}: Sequential write\"
-   go_fio_1test randread randread1   1        \$disk \"\${caption}: Random read\"
-   go_fio_1test randwrite randwrite1 1        \$disk \"\${caption}: Random write\"
+   go_fio_1test \"read\" \"read\"            \"1\"        \"\$disk\" \"\${caption}: Sequential read\"
+   go_fio_1test \"write\" \"write\"          \"1\"        \"\$disk\" \"\${caption}: Sequential write\"
+   go_fio_1test \"randread\" \"randread1\"   \"1\"        \"\$disk\" \"\${caption}: Random read\"
+   go_fio_1test \"randwrite\" \"randwrite1\" \"1\"        \"\$disk\" \"\${caption}: Random write\"
    if [[ \"\$NUMJOBS\" != 1 ]]; then
-   go_fio_1test randread randreadN   \$NUMJOBS \$disk \"\${caption}: Random read \$NUMJOBS jobs\"
-   go_fio_1test randwrite randwriteN \$NUMJOBS \$disk \"\${caption}: Random write \$NUMJOBS jobs\"
+   go_fio_1test \"randread\" \"randreadN\"   \"\$NUMJOBS\" \"\$disk\" \"\${caption}: Random read \$NUMJOBS jobs\"
+   go_fio_1test \"randwrite\" \"randwriteN\" \"\$NUMJOBS\" \"\$disk\" \"\${caption}: Random write \$NUMJOBS jobs\"
    fi
    if [[ -f \$disk/fiotest.tmp ]] && [[ -z \"\${KEEP_FIO_TEMP_FILES:-}\" ]]; then 
       rm -f \$disk/fiotest.tmp; 
