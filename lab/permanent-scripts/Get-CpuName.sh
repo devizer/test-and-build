@@ -39,10 +39,9 @@ function get_cpu_name() {
     if [[ -z "$nameOnly" ]] && [[ -n "(command -v nproc)" ]]; then cpu="$cpu, $(nproc) Cores"; fi
     echo "${cpu}"
   elif [[ "$(uname -s)" == Darwin ]]; then
+    cpu="$(sysctl -n machdep.cpu.brand_string)"
     if [[ -z "$nameOnly" ]]; then
       cpu="$cpu, $(sysctl -n machdep.cpu.core_count) Cores, $(sysctl -n machdep.cpu.thread_count) Threads"
-    else
-      cpu="$(sysctl -n machdep.cpu.brand_string)"
     fi
     echo "${cpu}"
   elif [[ "$(uname -s)" == *"MINGW"* ]]; then
