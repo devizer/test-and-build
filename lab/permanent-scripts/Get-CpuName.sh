@@ -44,7 +44,7 @@ function get_cpu_name() {
       cpu="$cpu, $(sysctl -n machdep.cpu.core_count) Cores, $(sysctl -n machdep.cpu.thread_count) Threads"
     fi
     echo "${cpu}"
-  elif [[ "$(uname -s)" == *"MINGW"* ]]; then
+  elif [[ "$(uname -s)" == *"MINGW"* ]] || [[ "$(uname -s)" == *"MSYS"* ]]; then
     if [[ -z "$nameOnly" ]]; then
       cpu="$(echo 'Write-Host "$((Get-WmiObject Win32_Processor).Name), $([Environment]::ProcessorCount) Cores"' | powershell -c -)"
     else
