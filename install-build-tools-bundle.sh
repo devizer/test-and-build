@@ -777,6 +777,93 @@ else
 fi
 
 
+# Get-GitHub-Latest-Release-Assets
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+# https://developer.github.com/v3/repos/releases/
+# https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28#get-a-release
+
+# output the TAG of the latest release of null 
+function get_github_latest_release_assets() {
+    local owner=\"\$1\";
+    local repo=\"\$2\";
+    local query=\"https://api.github.com/repos/\$owner/\$repo/releases/latest\"
+    local json=\$(wget -q -nv --no-check-certificate -O - \$query 2>/dev/null || curl -ksSL \$query)
+    local f='.assets | map({\"url\":.browser_download_url|tostring}) | map([.url] | join(\"|\")) | join(\"\x5Cn\") '
+    local urlList=\$(echo \"\$json\" | jq -r \"\$f\" )
+    if [[ \"\$urlList\" == *\"/assets.json\" ]]; then
+      # example: microsoft/azure-pipelines-agent
+      local prevUrlList=\"\$urlList\"
+      local jsonNext=\"\$(wget -q -nv --no-check-certificate -O - \"\$prevUrlList\" 2>/dev/null || curl -ksSL \"\$prevUrlList\")\"
+      local fNext='. | map({\"url\":.downloadUrl|tostring}) | map([.url] | join(\"|\")) | join(\"\x5Cn\") '
+      local urlListNext=\"\$(echo \"\$jsonNext\" | jq -r \"\$fNext\" )\"
+      urlList=\"\$(echo \$prevUrlList; echo \"\$urlListNext\" | sort)\"
+    fi
+    if [[ -n \"\${urlList:-}\" && \"\$urlList\" != \"null\" ]]; then
+        echo \"\${urlList:-}\" 
+    fi;
+}
+
+if [[ \"\$1\" == \"\" ]]; then
+    echo \"Usage Get-GitHub-Latest-Release-Assets microsoft azure-pipelines-agent\"
+    exit 0; 
+fi
+
+owner=\"\$1\"; owner=\${owner:-microsoft}
+repo=\"\$2\"; repo=\${repo:-azure-pipelines-agent}
+
+get_github_latest_release_assets \"\${owner:-}\" \"\${repo:-}\"
+
+# bash Get-GitHub-Latest-Release-Assets.sh microsoft azure-pipelines-agent; bash Get-GitHub-Latest-Release-Assets.sh devizer w3top-bin
+
+" 2>/dev/null >${TARGET_DIR}/Get-GitHub-Latest-Release-Assets ||
+  echo -e "#!/usr/bin/env bash
+# https://developer.github.com/v3/repos/releases/
+# https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28#get-a-release
+
+# output the TAG of the latest release of null 
+function get_github_latest_release_assets() {
+    local owner=\"\$1\";
+    local repo=\"\$2\";
+    local query=\"https://api.github.com/repos/\$owner/\$repo/releases/latest\"
+    local json=\$(wget -q -nv --no-check-certificate -O - \$query 2>/dev/null || curl -ksSL \$query)
+    local f='.assets | map({\"url\":.browser_download_url|tostring}) | map([.url] | join(\"|\")) | join(\"\x5Cn\") '
+    local urlList=\$(echo \"\$json\" | jq -r \"\$f\" )
+    if [[ \"\$urlList\" == *\"/assets.json\" ]]; then
+      # example: microsoft/azure-pipelines-agent
+      local prevUrlList=\"\$urlList\"
+      local jsonNext=\"\$(wget -q -nv --no-check-certificate -O - \"\$prevUrlList\" 2>/dev/null || curl -ksSL \"\$prevUrlList\")\"
+      local fNext='. | map({\"url\":.downloadUrl|tostring}) | map([.url] | join(\"|\")) | join(\"\x5Cn\") '
+      local urlListNext=\"\$(echo \"\$jsonNext\" | jq -r \"\$fNext\" )\"
+      urlList=\"\$(echo \$prevUrlList; echo \"\$urlListNext\" | sort)\"
+    fi
+    if [[ -n \"\${urlList:-}\" && \"\$urlList\" != \"null\" ]]; then
+        echo \"\${urlList:-}\" 
+    fi;
+}
+
+if [[ \"\$1\" == \"\" ]]; then
+    echo \"Usage Get-GitHub-Latest-Release-Assets microsoft azure-pipelines-agent\"
+    exit 0; 
+fi
+
+owner=\"\$1\"; owner=\${owner:-microsoft}
+repo=\"\$2\"; repo=\${repo:-azure-pipelines-agent}
+
+get_github_latest_release_assets \"\${owner:-}\" \"\${repo:-}\"
+
+# bash Get-GitHub-Latest-Release-Assets.sh microsoft azure-pipelines-agent; bash Get-GitHub-Latest-Release-Assets.sh devizer w3top-bin
+
+" | sudo tee ${TARGET_DIR}/Get-GitHub-Latest-Release-Assets >/dev/null;
+  if [[ -f ${TARGET_DIR}/Get-GitHub-Latest-Release-Assets ]]; then 
+      chmod +x ${TARGET_DIR}/Get-GitHub-Latest-Release-Assets >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/Get-GitHub-Latest-Release-Assets
+  	echo "OK: ${TARGET_DIR}/Get-GitHub-Latest-Release-Assets"; 
+  else "Error: Unable to extract ${TARGET_DIR}/Get-GitHub-Latest-Release-Assets" >&2; fi
+else 
+  echo "Skipping ${TARGET_DIR}/Get-GitHub-Latest-Release-Assets: directory does not exists" >&2
+fi
+
+
 # Get-GitHub-Releases
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
