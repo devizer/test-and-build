@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
+# export SKIP_DOTNET_DEPENDENCIES=False
 # export DOTNET_VERSIONS="3.1 5.0 6.0 7.0 8.0"
+# export DOTNET_VERSIONS="3.1:aspnetcore 5.0:aspnetcore 6.0:aspnetcore 7.0:aspnetcore 8.0"
+# kind: default|sdk, aspnetcore, dotnet, windowsdesktop
 # script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/install-DOTNET.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash; test -s /usr/share/dotnet/dotnet && sudo ln -f -s /usr/share/dotnet/dotnet /usr/local/bin/dotnet; test -s /usr/local/share/dotnet/dotnet && sudo ln -f -s /usr/local/share/dotnet/dotnet /usr/local/bin/dotnet; 
 
 DOTNET_VERSIONS="${DOTNET_VERSIONS:-2.1 2.2 3.0 3.1 5.0 6.0}"
@@ -122,7 +125,16 @@ Say "Configured shared environment for .NET Core"
       fi
       export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
       
-      for v in $DOTNET_VERSIONS; do
+      for arg in $DOTNET_VERSIONS; do
+        v="$(echo "$arg" | awk -F":" '{print $1}')"
+        kind="$(echo "$arg" | awk -F":" '{print $2}')"
+        case $kind in 
+          # kind: default|sdk, aspnetcore, dotnet, windowsdesktop
+          aspnetcore|asp|aspnet) runtime="-runtime aspnetcore"; runtimeName="ASP.NET Core Runtime (includes .NET runtime)";;
+          dotnet|net) runtime="-runtime dotnet"; runtimeName=".NET Runtime (minimal)";;
+          windowsdesktop) runtime="-runtime windowsdesktop"; runtimeName="Windows Desktop .NET Core Runtime";;
+          *) runtime=""; runtimeName="Full SDK";;
+        esac
         pat='^[0-9]+\.[0-9]+$'
         if [[ $v =~ $pat ]]; then 
           __a="-c $v"
@@ -132,13 +144,13 @@ Say "Configured shared environment for .NET Core"
           __m="$v (version)"
         fi
         __machine="${__machine:-$(uname -m)}"
-        Say "Installing .NET Core $__m SDK for $__machine"
+        Say "Installing .NET Core $__m $runtimeName for $__machine"
         if [[ -n "$is_windows" ]]; then
-          powershell -f "${dotnet_install}" $__a -i "${DOTNET_TARGET_DIR}"
+          powershell -f "${dotnet_install}" $runtime $__a -i "${DOTNET_TARGET_DIR}"
         elif [[ "$(command -v timeout)" == "" ]]; then
-          time smart_sudo try-and-retry bash "${dotnet_install}" $__a -i ${DOTNET_TARGET_DIR}
+          time smart_sudo try-and-retry bash "${dotnet_install}" $runtime $__a -i ${DOTNET_TARGET_DIR}
         else
-          time smart_sudo try-and-retry timeout 666 bash "${dotnet_install}" $__a -i ${DOTNET_TARGET_DIR}
+          time smart_sudo try-and-retry timeout 1000 bash "${dotnet_install}" $runtime $__a -i ${DOTNET_TARGET_DIR}
         fi
       done
       
