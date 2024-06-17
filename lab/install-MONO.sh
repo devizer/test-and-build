@@ -36,7 +36,7 @@ function Install_Mono_on_Debians() {
   if [[ "$ID" == linuxmint ]]; then
     def="deb https://download.mono-project.com/repo/ubuntu stable-focal main"
   fi
-  if [[ "$ID-$VERSION_ID" == "ubuntu-20."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-21."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-22."* ]]|| [[ "$ID-$VERSION_ID" == "ubuntu-23."* ]]; then
+  if [[ "$ID-$VERSION_ID" == "ubuntu-20."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-21."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-22."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-23."* ]] || [[ "$ID-$VERSION_ID" == "ubuntu-24."* ]]; then
     def="deb https://download.mono-project.com/repo/ubuntu stable-focal main"
     # focal on armv7 needs bionic, arm64 is ok
     if [[ "$(uname -m)" == armv7 ]] || [[ "$(dpkg --print-architecture)" == armhf ]]; then
