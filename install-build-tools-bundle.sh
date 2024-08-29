@@ -629,9 +629,9 @@ function get_cpu_name() {
     echo \"\${cpu}\"
   elif [[ \"\$(uname -s)\" == *\"MINGW\"* ]] || [[ \"\$(uname -s)\" == *\"MSYS\"* ]]; then
     if [[ -z \"\$nameOnly\" ]]; then
-      cpu=\"\$(echo 'Write-Host \"\$((Get-WmiObject Win32_Processor).Name), \$([Environment]::ProcessorCount) Cores\"' | powershell -c -)\"
+      cpu=\"\$(echo '\$cpu=\"\$((Get-WmiObject Win32_Processor).Name)\".Trim([char] 32, [char] 10, [char] 13);\"\$cpu, \$([Environment]::ProcessorCount) Cores\"' | powershell -c -)\"
     else
-      cpu=\"\$(echo 'Write-Host \"\$((Get-WmiObject Win32_Processor).Name)\"' | powershell -c -)\"
+      cpu=\"\$(echo '\$cpu=\"\$((Get-WmiObject Win32_Processor).Name)\".Trim([char] 32, [char] 10, [char] 13);\"\$cpu\"' | powershell -c -)\"
     fi
     echo \"\$cpu\"
   else
@@ -691,9 +691,9 @@ function get_cpu_name() {
     echo \"\${cpu}\"
   elif [[ \"\$(uname -s)\" == *\"MINGW\"* ]] || [[ \"\$(uname -s)\" == *\"MSYS\"* ]]; then
     if [[ -z \"\$nameOnly\" ]]; then
-      cpu=\"\$(echo 'Write-Host \"\$((Get-WmiObject Win32_Processor).Name), \$([Environment]::ProcessorCount) Cores\"' | powershell -c -)\"
+      cpu=\"\$(echo '\$cpu=\"\$((Get-WmiObject Win32_Processor).Name)\".Trim([char] 32, [char] 10, [char] 13);\"\$cpu, \$([Environment]::ProcessorCount) Cores\"' | powershell -c -)\"
     else
-      cpu=\"\$(echo 'Write-Host \"\$((Get-WmiObject Win32_Processor).Name)\"' | powershell -c -)\"
+      cpu=\"\$(echo '\$cpu=\"\$((Get-WmiObject Win32_Processor).Name)\".Trim([char] 32, [char] 10, [char] 13);\"\$cpu\"' | powershell -c -)\"
     fi
     echo \"\$cpu\"
   else
