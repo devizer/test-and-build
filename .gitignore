@@ -336,3 +336,6 @@ ASALocalRun/
 /Private-Report/
 public-bintray/
 /lab/permanent-scripts/pack/install-bundle.tmp.sh
+lab/permanent-scripts/File-IO-Benchmark.sh
+debian-13-testing.txt
+lab/install-DOTNET-LAB.sh

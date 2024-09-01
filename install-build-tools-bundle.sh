@@ -301,7 +301,7 @@ function go_fio_1test() {
  
 bold=\"\$(tput bold 2>/dev/null)\"; normal=\"\$(tput sgr0 2>/dev/null)\"
  if [[ -n \"\$iops_read\" ]] && [[ -n \"\$iops_write\" ]]; then
-   echo \"Summary:\"
+   Header \"\${CAPTION} Summary (\$DISK)\"
    echo \"   Sequential Read: \${bold}\$iops_read MB/s\${normal}; Sequential Write: \${bold}\$iops_write MB/s\${normal}\" 
  fi
  if [[ -n \"\$iops_randread1\" ]] && [[ -n \"\$iops_randwrite1\" ]]; then
@@ -557,7 +557,7 @@ function go_fio_1test() {
  
 bold=\"\$(tput bold 2>/dev/null)\"; normal=\"\$(tput sgr0 2>/dev/null)\"
  if [[ -n \"\$iops_read\" ]] && [[ -n \"\$iops_write\" ]]; then
-   echo \"Summary:\"
+   Header \"\${CAPTION} Summary (\$DISK)\"
    echo \"   Sequential Read: \${bold}\$iops_read MB/s\${normal}; Sequential Write: \${bold}\$iops_write MB/s\${normal}\" 
  fi
  if [[ -n \"\$iops_randread1\" ]] && [[ -n \"\$iops_randwrite1\" ]]; then
