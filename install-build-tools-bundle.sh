@@ -243,7 +243,7 @@ function go_fio_1test() {
   local numjobs=\"\$3\"
   local disk=\"\$4\"
   local caption=\"\$5\"
-  Header \"\$caption (\$(pwd))\"
+  Header \"\$caption (\$disk)\"
   echo \"Benchmark '\$disk' folder using '\$cmd' test (jobs=\$numjobs) during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
   pushd \"\$disk\" >/dev/null
   if [[ \$cmd == \"rand\"* ]]; then
@@ -499,7 +499,7 @@ function go_fio_1test() {
   local numjobs=\"\$3\"
   local disk=\"\$4\"
   local caption=\"\$5\"
-  Header \"\$caption (\$(pwd))\"
+  Header \"\$caption (\$disk)\"
   echo \"Benchmark '\$disk' folder using '\$cmd' test (jobs=\$numjobs) during \$DURATION seconds and heating \$RAMP secs, size is \$SIZE\"
   pushd \"\$disk\" >/dev/null
   if [[ \$cmd == \"rand\"* ]]; then
