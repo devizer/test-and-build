@@ -158,9 +158,9 @@ function Header() {
   local length=\${#txt}
   local border=\"\${char_dash}\${char_dash}\${char_dash}\"; while [[ \$length -gt 0 ]]; do border=\"\${char_dash}\${border}\"; length=\$((length-1)); done
   # if [[ \"\${NEXT_HEADER:-}\" == \"\" ]]; then NEXT_HEADER=true; else echo \"\"; fi
-  tput bold 2>/dev/null || true
+  if [[ \"\$(Has_Unicode)\" == \"true\" ]]; then tput bold 2>/dev/null || true; fi
   echo -e \"\${char_arrow} \${txt}\"; echo -e \$border
-  tput sgr0 2>/dev/null || true
+  if [[ \"\$(Has_Unicode)\" == \"true\" ]]; then tput sgr0 2>/dev/null || true; fi
 }
 
 if [[ \"\$1\" == \"\" || \"\$1\" == \"--help\" ]]; then
@@ -299,7 +299,8 @@ function go_fio_1test() {
  
  go_fio_4tests \"\$DISK\" \"\$CAPTION\"
  
-bold=\"\$(tput bold 2>/dev/null)\"; normal=\"\$(tput sgr0 2>/dev/null)\"
+bold=\"\"; normal=\"\";
+if [[ \"\$(Has_Unicode)\" == \"true\" ]]; then bold=\"\$(tput bold 2>/dev/null)\"; normal=\"\$(tput sgr0 2>/dev/null)\"; fi
  if [[ -n \"\$iops_read\" ]] && [[ -n \"\$iops_write\" ]]; then
    Header \"\${CAPTION} Summary (\$DISK)\"
    echo \"   Sequential Read: \${bold}\$iops_read MB/s\${normal}; Sequential Write: \${bold}\$iops_write MB/s\${normal}\" 
@@ -414,9 +415,9 @@ function Header() {
   local length=\${#txt}
   local border=\"\${char_dash}\${char_dash}\${char_dash}\"; while [[ \$length -gt 0 ]]; do border=\"\${char_dash}\${border}\"; length=\$((length-1)); done
   # if [[ \"\${NEXT_HEADER:-}\" == \"\" ]]; then NEXT_HEADER=true; else echo \"\"; fi
-  tput bold 2>/dev/null || true
+  if [[ \"\$(Has_Unicode)\" == \"true\" ]]; then tput bold 2>/dev/null || true; fi
   echo -e \"\${char_arrow} \${txt}\"; echo -e \$border
-  tput sgr0 2>/dev/null || true
+  if [[ \"\$(Has_Unicode)\" == \"true\" ]]; then tput sgr0 2>/dev/null || true; fi
 }
 
 if [[ \"\$1\" == \"\" || \"\$1\" == \"--help\" ]]; then
@@ -555,7 +556,8 @@ function go_fio_1test() {
  
  go_fio_4tests \"\$DISK\" \"\$CAPTION\"
  
-bold=\"\$(tput bold 2>/dev/null)\"; normal=\"\$(tput sgr0 2>/dev/null)\"
+bold=\"\"; normal=\"\";
+if [[ \"\$(Has_Unicode)\" == \"true\" ]]; then bold=\"\$(tput bold 2>/dev/null)\"; normal=\"\$(tput sgr0 2>/dev/null)\"; fi
  if [[ -n \"\$iops_read\" ]] && [[ -n \"\$iops_write\" ]]; then
    Header \"\${CAPTION} Summary (\$DISK)\"
    echo \"   Sequential Read: \${bold}\$iops_read MB/s\${normal}; Sequential Write: \${bold}\$iops_write MB/s\${normal}\" 
