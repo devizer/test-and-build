@@ -56,6 +56,97 @@ else
 fi
 
 
+# exec-with-timeout
+if [[ -d ${TARGET_DIR} ]]; then
+  echo -e "#!/usr/bin/env bash
+# https://perldoc.perl.org/functions/alarm
+# https://stackoverflow.com/questions/3504945/timeout-command-on-mac-os-x
+# https://stackoverflow.com/questions/17751199/perl-script-in-bashs-heredoc
+
+set -eu; set -o pipefail;
+if [[ -n \"\$(command -v perl)\" ]]; then
+err=''
+perl || err=\$? <<'EOF' 
+\$timeout = shift;
+print \"[exec-with-timeout] Timeout=\" . \$timeout . \", Command is \" . join(\" \",@ARGV) . \"\x5Cn\";
+
+local \$SIG{ALRM} = sub { 
+  print \"\x5Cn\x5Cn[timeout] Command Terminated by timeout: \" . @ARGV . \"\x5Cn\";
+  print \"\x5Cn\x5Cn\x5Cn\x5Cn WHAT THE HECK\x5Cn\";
+  exit(2);
+  die \"Timeout\x5Cn\" 
+}; 
+
+alarm \$timeout;
+\$exitCode = exec @ARGV or exit(1);
+print \"[timeout] Success\x5Cn\";
+exit (0);
+EOF
+if [[ \"\${err}\" == \"2\" ]]; then
+  shift;
+  echo \"[exec-with-timeout] Command terminated by timeout '\$*'\"
+  exit 2
+fi
+
+elif [[ -n \"\$(command -v timeout)\" ]]; then
+  # using bsdutils timeout
+  timeout \"\$@\"
+else
+  echo \"[exec-with-timeout] Warning! perf and bsdutil timeout are missing, timeout parameter ignored\"
+  shift
+  \"\$@\"
+fi
+
+" 2>/dev/null >${TARGET_DIR}/exec-with-timeout ||
+  echo -e "#!/usr/bin/env bash
+# https://perldoc.perl.org/functions/alarm
+# https://stackoverflow.com/questions/3504945/timeout-command-on-mac-os-x
+# https://stackoverflow.com/questions/17751199/perl-script-in-bashs-heredoc
+
+set -eu; set -o pipefail;
+if [[ -n \"\$(command -v perl)\" ]]; then
+err=''
+perl || err=\$? <<'EOF' 
+\$timeout = shift;
+print \"[exec-with-timeout] Timeout=\" . \$timeout . \", Command is \" . join(\" \",@ARGV) . \"\x5Cn\";
+
+local \$SIG{ALRM} = sub { 
+  print \"\x5Cn\x5Cn[timeout] Command Terminated by timeout: \" . @ARGV . \"\x5Cn\";
+  print \"\x5Cn\x5Cn\x5Cn\x5Cn WHAT THE HECK\x5Cn\";
+  exit(2);
+  die \"Timeout\x5Cn\" 
+}; 
+
+alarm \$timeout;
+\$exitCode = exec @ARGV or exit(1);
+print \"[timeout] Success\x5Cn\";
+exit (0);
+EOF
+if [[ \"\${err}\" == \"2\" ]]; then
+  shift;
+  echo \"[exec-with-timeout] Command terminated by timeout '\$*'\"
+  exit 2
+fi
+
+elif [[ -n \"\$(command -v timeout)\" ]]; then
+  # using bsdutils timeout
+  timeout \"\$@\"
+else
+  echo \"[exec-with-timeout] Warning! perf and bsdutil timeout are missing, timeout parameter ignored\"
+  shift
+  \"\$@\"
+fi
+
+" | sudo tee ${TARGET_DIR}/exec-with-timeout >/dev/null;
+  if [[ -f ${TARGET_DIR}/exec-with-timeout ]]; then 
+      chmod +x ${TARGET_DIR}/exec-with-timeout >/dev/null 2>&1 || sudo chmod +x ${TARGET_DIR}/exec-with-timeout
+  	echo "OK: ${TARGET_DIR}/exec-with-timeout"; 
+  else "Error: Unable to extract ${TARGET_DIR}/exec-with-timeout" >&2; fi
+else 
+  echo "Skipping ${TARGET_DIR}/exec-with-timeout: directory does not exists" >&2
+fi
+
+
 # File-IO-Benchmark
 if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
