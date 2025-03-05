@@ -23,4 +23,4 @@ if errorlevel 2 (echo. && echo ERROR TIMEOUT) Else (
   If errorlevel 1 (echo ERROR COMMAND FAILED) Else (echo OK)
 )
 
-rem exec-with-timeout 10 curl -kfSL -o w:\Temp\sql_server_2014_sp3_developer_edition_x64.7z https://archive.org/download/sql_server_2014_sp3_developer_edition_x64.7z/sql_server_2014_sp3_developer_edition_x64.7z
+rem exec-with-timeout 10 curl -kfSL -o sql_server_2014_sp3_developer_edition_x64.7z https://archive.org/download/sql_server_2014_sp3_developer_edition_x64.7z/sql_server_2014_sp3_developer_edition_x64.7z
