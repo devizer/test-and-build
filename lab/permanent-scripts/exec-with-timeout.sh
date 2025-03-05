@@ -2,6 +2,7 @@
 # https://perldoc.perl.org/functions/alarm
 # https://stackoverflow.com/questions/3504945/timeout-command-on-mac-os-x
 # https://stackoverflow.com/questions/17751199/perl-script-in-bashs-heredoc
+# v5
 
 set -eu; set -o pipefail;
 if [[ -n "$(command -v perl)" ]]; then
@@ -9,23 +10,16 @@ err=''
 perl -E '
 $timeout = shift;
 print "[exec-with-timeout] Timeout=" . $timeout . ", Command is " . join(" ",@ARGV) . "\n";
-
-local $SIG{ALRM} = sub { 
-  print "\n\n[timeout] Command Terminated by timeout: " . @ARGV . "\n";
-  print "\n\n\n\n WHAT THE HECK\n";
-  exit(2);
-  die "Timeout\n" 
-}; 
-
+$SIG{ALRM} = sub { exit(2); };
 alarm $timeout;
 $exitCode = exec @ARGV or exit(1);
-print "[timeout] Success\n";
 exit (0);
 ' -- "$@" || err=$?
 
 if [[ "${err}" == "2" ]]; then
   shift;
-  echo "[exec-with-timeout] Command terminated by timeout '$*'"
+  echo "";
+  echo "[exec-with-timeout] Command terminated by timeout "$*""
   exit 2
 fi
 

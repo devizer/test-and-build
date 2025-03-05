@@ -62,6 +62,7 @@ if [[ -d ${TARGET_DIR} ]]; then
 # https://perldoc.perl.org/functions/alarm
 # https://stackoverflow.com/questions/3504945/timeout-command-on-mac-os-x
 # https://stackoverflow.com/questions/17751199/perl-script-in-bashs-heredoc
+# v5
 
 set -eu; set -o pipefail;
 if [[ -n \"\$(command -v perl)\" ]]; then
@@ -69,23 +70,16 @@ err=''
 perl -E '
 \$timeout = shift;
 print \"[exec-with-timeout] Timeout=\" . \$timeout . \", Command is \" . join(\" \",@ARGV) . \"\x5Cn\";
-
-local \$SIG{ALRM} = sub { 
-  print \"\x5Cn\x5Cn[timeout] Command Terminated by timeout: \" . @ARGV . \"\x5Cn\";
-  print \"\x5Cn\x5Cn\x5Cn\x5Cn WHAT THE HECK\x5Cn\";
-  exit(2);
-  die \"Timeout\x5Cn\" 
-}; 
-
+\$SIG{ALRM} = sub { exit(2); };
 alarm \$timeout;
 \$exitCode = exec @ARGV or exit(1);
-print \"[timeout] Success\x5Cn\";
 exit (0);
 ' -- \"\$@\" || err=\$?
 
 if [[ \"\${err}\" == \"2\" ]]; then
   shift;
-  echo \"[exec-with-timeout] Command terminated by timeout '\$*'\"
+  echo \"\";
+  echo \"[exec-with-timeout] Command terminated by timeout \"\$*\"\"
   exit 2
 fi
 
@@ -103,6 +97,7 @@ fi
 # https://perldoc.perl.org/functions/alarm
 # https://stackoverflow.com/questions/3504945/timeout-command-on-mac-os-x
 # https://stackoverflow.com/questions/17751199/perl-script-in-bashs-heredoc
+# v5
 
 set -eu; set -o pipefail;
 if [[ -n \"\$(command -v perl)\" ]]; then
@@ -110,23 +105,16 @@ err=''
 perl -E '
 \$timeout = shift;
 print \"[exec-with-timeout] Timeout=\" . \$timeout . \", Command is \" . join(\" \",@ARGV) . \"\x5Cn\";
-
-local \$SIG{ALRM} = sub { 
-  print \"\x5Cn\x5Cn[timeout] Command Terminated by timeout: \" . @ARGV . \"\x5Cn\";
-  print \"\x5Cn\x5Cn\x5Cn\x5Cn WHAT THE HECK\x5Cn\";
-  exit(2);
-  die \"Timeout\x5Cn\" 
-}; 
-
+\$SIG{ALRM} = sub { exit(2); };
 alarm \$timeout;
 \$exitCode = exec @ARGV or exit(1);
-print \"[timeout] Success\x5Cn\";
 exit (0);
 ' -- \"\$@\" || err=\$?
 
 if [[ \"\${err}\" == \"2\" ]]; then
   shift;
-  echo \"[exec-with-timeout] Command terminated by timeout '\$*'\"
+  echo \"\";
+  echo \"[exec-with-timeout] Command terminated by timeout \"\$*\"\"
   exit 2
 fi
 
