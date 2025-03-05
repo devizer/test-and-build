@@ -66,7 +66,7 @@ if [[ -d ${TARGET_DIR} ]]; then
 set -eu; set -o pipefail;
 if [[ -n \"\$(command -v perl)\" ]]; then
 err=''
-perl -- \"\$@\" || err=\$? <<'EOF' 
+perl -E '
 \$timeout = shift;
 print \"[exec-with-timeout] Timeout=\" . \$timeout . \", Command is \" . join(\" \",@ARGV) . \"\x5Cn\";
 
@@ -81,7 +81,8 @@ alarm \$timeout;
 \$exitCode = exec @ARGV or exit(1);
 print \"[timeout] Success\x5Cn\";
 exit (0);
-EOF
+' -- \"\$@\" || err=\$?
+
 if [[ \"\${err}\" == \"2\" ]]; then
   shift;
   echo \"[exec-with-timeout] Command terminated by timeout '\$*'\"
@@ -106,7 +107,7 @@ fi
 set -eu; set -o pipefail;
 if [[ -n \"\$(command -v perl)\" ]]; then
 err=''
-perl -- \"\$@\" || err=\$? <<'EOF' 
+perl -E '
 \$timeout = shift;
 print \"[exec-with-timeout] Timeout=\" . \$timeout . \", Command is \" . join(\" \",@ARGV) . \"\x5Cn\";
 
@@ -121,7 +122,8 @@ alarm \$timeout;
 \$exitCode = exec @ARGV or exit(1);
 print \"[timeout] Success\x5Cn\";
 exit (0);
-EOF
+' -- \"\$@\" || err=\$?
+
 if [[ \"\${err}\" == \"2\" ]]; then
   shift;
   echo \"[exec-with-timeout] Command terminated by timeout '\$*'\"
