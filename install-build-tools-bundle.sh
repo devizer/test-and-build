@@ -66,7 +66,7 @@ if [[ -d ${TARGET_DIR} ]]; then
 set -eu; set -o pipefail;
 if [[ -n \"\$(command -v perl)\" ]]; then
 err=''
-perl || err=\$? <<'EOF' 
+perl \"\$@\" || err=\$? <<'EOF' 
 \$timeout = shift;
 print \"[exec-with-timeout] Timeout=\" . \$timeout . \", Command is \" . join(\" \",@ARGV) . \"\x5Cn\";
 
@@ -106,7 +106,7 @@ fi
 set -eu; set -o pipefail;
 if [[ -n \"\$(command -v perl)\" ]]; then
 err=''
-perl || err=\$? <<'EOF' 
+perl \"\$@\" || err=\$? <<'EOF' 
 \$timeout = shift;
 print \"[exec-with-timeout] Timeout=\" . \$timeout . \", Command is \" . join(\" \",@ARGV) . \"\x5Cn\";
 
