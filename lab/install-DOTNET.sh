@@ -3,7 +3,7 @@
 # export SKIP_DOTNET_DEPENDENCIES=False
 # export DOTNET_TARGET_DIR=/usr/share/dotnet
 # export DOTNET_VERSIONS="3.1 5.0 6.0 7.0 8.0 9.0"
-# export DOTNET_VERSIONS="3.1:aspnetcore 5.0:aspnetcore 6.0:aspnetcore 7.0:aspnetcore 8.0"
+# export DOTNET_VERSIONS="3.1:aspnetcore 6.0:aspnetcore 8.0:aspnetcore 10.0"
 # kind: default|sdk, aspnetcore, dotnet, windowsdesktop
 # script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/install-DOTNET.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash; test -s /usr/share/dotnet/dotnet && sudo ln -f -s /usr/share/dotnet/dotnet /usr/local/bin/dotnet; test -s /usr/local/share/dotnet/dotnet && sudo ln -f -s /usr/local/share/dotnet/dotnet /usr/local/bin/dotnet; 
 

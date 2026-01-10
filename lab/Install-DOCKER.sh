@@ -16,10 +16,13 @@ if [[ ! "$ARCH" == i386 ]]; then
 
   # second is optional
   # try-and-retry sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 7EA0A9C3F273FCD8
-  sudo add-apt-repository \
-     "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/$ID \
-     $(lsb_release -cs) \
-     stable"
+  deb="deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/$ID $(lsb_release -cs) stable"
+  if [[ -n "$(command -v add-apt-repository)" ]]; then
+    sudo add-apt-repository "$deb"
+  else
+    echo "$deb" | sudo tee /etc/apt/sources.list.d/docker-ce.list
+  fi
+  
 
   source /etc/os-release
   if [[ "$UBUNTU_CODENAME" == focal ]]; then
