@@ -2999,8 +2999,7 @@ EOFHELPRRS
     return 1
   fi
   
-  printf \"Invoking \"; Colorize Green \"\$arg_url\"
-  echo \"Runner is '\$arg_runner'\"
+  printf \"Invoking \"; Colorize -NoNewLine Magenta \"\${arg_runner} \"; Colorize Green \"\$arg_url\"
 
   local folder=\"\$(MkTemp-Folder-Smarty)\"
   local file=\"\$folder/script\"
@@ -3867,8 +3866,7 @@ EOFHELPRRS
     return 1
   fi
   
-  printf \"Invoking \"; Colorize Green \"\$arg_url\"
-  echo \"Runner is '\$arg_runner'\"
+  printf \"Invoking \"; Colorize -NoNewLine Magenta \"\${arg_runner} \"; Colorize Green \"\$arg_url\"
 
   local folder=\"\$(MkTemp-Folder-Smarty)\"
   local file=\"\$folder/script\"
