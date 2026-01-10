@@ -2940,7 +2940,7 @@ Run-Remote-Script() {
   local arg_url
   arg_runner=\"\"
   arg_url=\"\"
-
+  passthrowArgs=()
   while [ \$# -gt 0 ]; do
     case \"\$1\" in
       -h|--help)
@@ -2971,8 +2971,8 @@ EOFHELPRRS
           arg_url=\"\$1\"
           shift
         else
-          echo \"Run-Remote-Script Arguments Error: Extra argument detected: \$1\" >&2
-          return 1
+          passthrowArgs+=(\"\$1\")
+          shift
         fi
         ;;
     esac
@@ -2999,7 +2999,7 @@ EOFHELPRRS
     return 1
   fi
   
-  printf \"Invoking \"; Colorize -NoNewLine Magenta \"\${arg_runner} \"; Colorize Green \"\$arg_url\"
+  printf \"Invoking \"; Colorize -NoNewLine Magenta \"\${arg_runner} \"; Colorize Green \"\$arg_url\" \"\${passthrowArgs[@]}\"
 
   local folder=\"\$(MkTemp-Folder-Smarty)\"
   local file=\"\$(basename \"\$arg_url\")\"
@@ -3009,8 +3009,8 @@ EOFHELPRRS
     if [[ \"\$arg_runner\" == *\"pwsh\"* || \"\$arg_runner\" == *\"powershell\"* ]]; then file=\"script.ps1\"; fi
   fi;
   local fileFullName=\"\$folder/\$file\"
-  Download_File_Failover \"\$fileFullName\" \"\$arg_url\"
-  \$arg_runner \"\$fileFullName\"
+  Download_File_Failover \"\$fileFullName\" \"\$arg_url\" 
+  \$arg_runner \"\$fileFullName\" \"\${passthrowArgs[@]}\"
   rm -rf \"\$folder\" 2>/dev/null || true
   
   return 0
@@ -3813,7 +3813,7 @@ Run-Remote-Script() {
   local arg_url
   arg_runner=\"\"
   arg_url=\"\"
-
+  passthrowArgs=()
   while [ \$# -gt 0 ]; do
     case \"\$1\" in
       -h|--help)
@@ -3844,8 +3844,8 @@ EOFHELPRRS
           arg_url=\"\$1\"
           shift
         else
-          echo \"Run-Remote-Script Arguments Error: Extra argument detected: \$1\" >&2
-          return 1
+          passthrowArgs+=(\"\$1\")
+          shift
         fi
         ;;
     esac
@@ -3872,7 +3872,7 @@ EOFHELPRRS
     return 1
   fi
   
-  printf \"Invoking \"; Colorize -NoNewLine Magenta \"\${arg_runner} \"; Colorize Green \"\$arg_url\"
+  printf \"Invoking \"; Colorize -NoNewLine Magenta \"\${arg_runner} \"; Colorize Green \"\$arg_url\" \"\${passthrowArgs[@]}\"
 
   local folder=\"\$(MkTemp-Folder-Smarty)\"
   local file=\"\$(basename \"\$arg_url\")\"
@@ -3882,8 +3882,8 @@ EOFHELPRRS
     if [[ \"\$arg_runner\" == *\"pwsh\"* || \"\$arg_runner\" == *\"powershell\"* ]]; then file=\"script.ps1\"; fi
   fi;
   local fileFullName=\"\$folder/\$file\"
-  Download_File_Failover \"\$fileFullName\" \"\$arg_url\"
-  \$arg_runner \"\$fileFullName\"
+  Download_File_Failover \"\$fileFullName\" \"\$arg_url\" 
+  \$arg_runner \"\$fileFullName\" \"\${passthrowArgs[@]}\"
   rm -rf \"\$folder\" 2>/dev/null || true
   
   return 0
