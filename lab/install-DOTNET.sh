@@ -7,15 +7,19 @@
 # kind: default|sdk, aspnetcore, dotnet, windowsdesktop
 # script=https://raw.githubusercontent.com/devizer/test-and-build/master/lab/install-DOTNET.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash; test -s /usr/share/dotnet/dotnet && sudo ln -f -s /usr/share/dotnet/dotnet /usr/local/bin/dotnet; test -s /usr/local/share/dotnet/dotnet && sudo ln -f -s /usr/local/share/dotnet/dotnet /usr/local/bin/dotnet; 
 
+# 2026
+# export DOTNET_VERSIONS="3.1:aspnetcore 6.0:aspnetcore 8.0:aspnetcore 3.1:windowsdesktop 6.0:windowsdesktop 8.0:windowsdesktop 10.0"
+
 DOTNET_VERSIONS="${DOTNET_VERSIONS:-2.1 2.2 3.0 3.1 5.0 6.0}"
 DOTNET_VERSIONS2=" ${DOTNET_VERSIONS} "
 script=https://raw.githubusercontent.com/devizer/test-and-build/master/install-build-tools-bundle.sh; (wget -q -nv --no-check-certificate -O - $script 2>/dev/null || curl -ksSL $script) | bash >/dev/null
 
 function smart_sudo() {
-  if [[ "$(command -v sudo)" ]]; then 
-    sudo -E "$@"
-  else
+  local system="$(uname -s)"
+  if [[ -z "$(command -v sudo)" || "$system" == "MSYS"* || "$system" == "MINGW"* ]]; then 
     eval "$@"
+  else
+    sudo -E "$@"
   fi
 }
 
