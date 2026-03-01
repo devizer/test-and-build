@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
   function get_stopwatch_file_name() {
-    user="${LOGNAME:-$(whoami)}"
-    file1="$tmp/.${user}-stopwatch-for-say"
+    local user="${LOGNAME:-$(whoami)}"
+    local tmp="${TMPDIR:-/tmp}"
+    local file1="$tmp/.${user}-stopwatch-for-say"
     echo $file1
   }
 
   function get_counter_file_name() {
-    user="${LOGNAME:-$(whoami)}"
-    file2="$tmp/.${user}-counter-for-say"
+    local user="${LOGNAME:-$(whoami)}"
+    local tmp="${TMPDIR:-/tmp}"
+    local file2="$tmp/.${user}-counter-for-say"
     echo $file2
   }
   
@@ -20,7 +22,7 @@
     theSYSTEM="${theSYSTEM:-$(uname -s)}"
     if [[ ${theSYSTEM} != "Darwin" ]]; then
         # uptime=$(</proc/uptime);                                # 42645.93 240538.58
-        uptime="$(cat /proc/uptime 2>/dev/null)";                 # 42645.93 240538.58
+        local uptime="$(cat /proc/uptime 2>/dev/null || true)";   # 42645.93 240538.58
         if [[ -z "${uptime:-}" ]]; then
           # secured, use number of seconds since 1970
           echo "$(date +%s)"
@@ -32,24 +34,26 @@
         echo $uptime
     else 
         # https://stackoverflow.com/questions/15329443/proc-uptime-in-mac-os-x
-        boottime=`sysctl -n kern.boottime | awk '{print $4}' | sed 's/,//g'`
-        unixtime=`date +%s`
-	    timeAgo=$(($unixtime - $boottime))
+        local boottime=`sysctl -n kern.boottime | awk '{print $4}' | sed 's/,//g'`
+        local unixtime=`date +%s`
+	    local timeAgo=$(($unixtime - $boottime))
 	    echo $timeAgo
     fi
   }
 
   function format_total_seconds() {
-    timeAgo=$1
-    seconds1=$((timeAgo % 86400));
-    seconds=$((seconds1 % 60));
-    minutes1=$((seconds1 / 60));
-    minutes=$((minutes1 % 60));
-    hours=$((minutes1 / 60));
+    local timeAgo=$1
+    local seconds1=$((timeAgo % 86400));
+    local seconds=$((seconds1 % 60));
+    local minutes1=$((seconds1 / 60));
+    local minutes=$((minutes1 % 60));
+    local hours=$((minutes1 / 60));
     echo "$(format2digits $hours):$(format2digits $minutes):$(format2digits $seconds)"
   }
 
   function print_header() {
+    #1 - counter
+    #2 - message
     global_seconds="$(get_global_seconds)"
 
     # zero is 0?
@@ -75,32 +79,33 @@
     message_color="${Yellow}"
     [[ "${MESSAGE_TYPE}" == Error ]] && message_color="${LightRED}"
     printf "${Blue}${black_circle} ${hostname}${NC} ${LightGray}[${uptime:-}]${NC} ${LightGreen}$1${NC} ${message_color}"; echo -n "$2"; printf "${NC}\n";
+    local tmp="${TMPDIR:-/tmp}"
     echo "${hostname} ${uptime:-} $1 $2" >> "$tmp/Said-by-$(whoami).log" 2>/dev/null 
   }
 
   function SayIt() { 
-    counter_file="$(get_counter_file_name)"
+
+    if [[ "$1" == "--Reset-Stopwatch" ]]; then
+      echo "$(get_global_seconds)" > "$(get_stopwatch_file_name)"
+      echo 1 > "$(get_counter_file_name)"
+      return;
+    fi
+
+    if [[ "${1:-}" == "--Display-As="* ]]; then
+      option="${1}";
+      MESSAGE_TYPE="Info";
+      [[ "${option:-}" == "--Display-As=Error" ]] &&   MESSAGE_TYPE="Error"
+      [[ "${option:-}" == "--Display-As=Warning" ]] && MESSAGE_TYPE="Warning"
+      shift
+    fi
+
+    local counter_file="$(get_counter_file_name)"
+    local counter;
     if [[ -e "$counter_file" ]]; then counter=$(< "$counter_file"); else counter=1; fi
     print_header "#${counter}" "$1";
     counter=$((counter+1));
     echo $counter > "$counter_file"
   }; 
 
-
-tmp="${TMPDIR:-/tmp}"
-
-if [[ "$1" == "--Reset-Stopwatch" ]]; then
-  echo "$(get_global_seconds)" > "$(get_stopwatch_file_name)"
-  echo 1 > "$(get_counter_file_name)"
-  exit 0;
-fi
-
-if [[ "${1:-}" == "--Display-As="* ]]; then
-  option="${1}";
-  MESSAGE_TYPE="Info";
-  [[ "${option:-}" == "--Display-As=Error" ]] &&   MESSAGE_TYPE="Error"
-  [[ "${option:-}" == "--Display-As=Warning" ]] && MESSAGE_TYPE="Warning"
-  shift
-fi
 
 SayIt "$@"

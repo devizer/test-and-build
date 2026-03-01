@@ -981,12 +981,30 @@ function get_github_latest_release() {
     local owner=\"\$1\";
     local repo=\"\$2\";
     local query=\"https://api.github.com/repos/\$owner/\$repo/releases/latest\"
-    local json=\$(wget -q -nv --no-check-certificate -O - \$query 2>/dev/null || curl -ksSL \$query)
-    local tag=\$(echo \"\$json\" | jq -r \".tag_name\" )
+    if [[ \"\${3:-}\" == \"--pre\"* ]]; then query=\"https://api.github.com/repos/\$owner/\$repo/releases\"; fi
+    local header_Accept=\"Accept: application/vnd.github+json\"
+    local header_Version=\"X-GitHub-Api-Version: 2022-11-28\"
+    local json=\$(wget -q --header=\"\$header_Accept\" --header=\"\$header_Version\" -nv --no-check-certificate -O - \$query 2>/dev/null || curl -ksSL \$query -H \"\$header_Accept\" -H \"\$header_Version\")
+    local tag
+    if [[ -n \"\$(command -v jq)\" ]]; then
+      tag=\$(echo \"\$json\" | jq -r \".tag_name\" 2>/dev/null)
+    fi
+    if [[ -z \"\${tag:-}\" ]]; then
+       # V1: OK
+       # tag=\$(echo \"\$json\" | grep -E '\"tag_name\": \"[a-zA-Z0-9_.-]+\"' | sed 's/.*\"tag_name\": \"\x5C(.*\x5C)\".*/\x5C1/')
+       # V2
+       # json=\"\$(echo \$json | tr '\x5Cn' ' ' | tr '\x5Cr' ' ')\"
+       # echo -e \"\$json\x5Cn\x5Cn\" >&2
+       tag=\$(echo \"\$json\" | grep -oE '\"tag_name\": *\"[a-zA-Z0-9_.-]+\"' | sed 's/.*\"tag_name\": *\"//;s/\"//' | head -1)
+    fi
     if [[ -n \"\${tag:-}\" && \"\$tag\" != \"null\" ]]; then 
         echo \"\${tag:-}\" 
     fi;
 }
+# echo \"Tag devizer/Universe.SqlInsights: [\$(get_github_latest_release devizer Universe.SqlInsights)]\"
+# echo \"Tag devizer/Universe.SqlInsights (beta): [\$(get_github_latest_release devizer Universe.SqlInsights --pre)]\"
+# echo \"Tag powershell/powershell: [\$(get_github_latest_release powershell powershell)]\"
+# echo \"Tag powershell/powershell (beta): [\$(get_github_latest_release powershell powershell --pre)]\"
 
 if [[ \"\$1\" == \"\" ]]; then
     echo \"Usage Get-GitHub-Latest-Release microsoft azure-pipelines-agent\"
@@ -996,7 +1014,12 @@ fi
 owner=\"\$1\"; owner=\${owner:-microsoft}
 repo=\"\$2\"; repo=\${repo:-azure-pipelines-agent}
 
-get_github_latest_release \"\${owner:-}\" \"\${repo:-}\"
+get_github_latest_release \"\${owner:-}\" \"\${repo:-}\" \"\${3:-}\"
+
+
+# codePython=\"import sys; import json; data = json.load(sys.stdin); print(data.get('tag_name') or '')\"
+# echo \"RESULT: [\$(echo '{ \"tag_name\": 42 }' | python -c \"\$codePython\")]\"
+
 
 " 2>/dev/null >${TARGET_DIR}/Get-GitHub-Latest-Release ||
   echo -e "#!/usr/bin/env bash
@@ -1007,12 +1030,30 @@ function get_github_latest_release() {
     local owner=\"\$1\";
     local repo=\"\$2\";
     local query=\"https://api.github.com/repos/\$owner/\$repo/releases/latest\"
-    local json=\$(wget -q -nv --no-check-certificate -O - \$query 2>/dev/null || curl -ksSL \$query)
-    local tag=\$(echo \"\$json\" | jq -r \".tag_name\" )
+    if [[ \"\${3:-}\" == \"--pre\"* ]]; then query=\"https://api.github.com/repos/\$owner/\$repo/releases\"; fi
+    local header_Accept=\"Accept: application/vnd.github+json\"
+    local header_Version=\"X-GitHub-Api-Version: 2022-11-28\"
+    local json=\$(wget -q --header=\"\$header_Accept\" --header=\"\$header_Version\" -nv --no-check-certificate -O - \$query 2>/dev/null || curl -ksSL \$query -H \"\$header_Accept\" -H \"\$header_Version\")
+    local tag
+    if [[ -n \"\$(command -v jq)\" ]]; then
+      tag=\$(echo \"\$json\" | jq -r \".tag_name\" 2>/dev/null)
+    fi
+    if [[ -z \"\${tag:-}\" ]]; then
+       # V1: OK
+       # tag=\$(echo \"\$json\" | grep -E '\"tag_name\": \"[a-zA-Z0-9_.-]+\"' | sed 's/.*\"tag_name\": \"\x5C(.*\x5C)\".*/\x5C1/')
+       # V2
+       # json=\"\$(echo \$json | tr '\x5Cn' ' ' | tr '\x5Cr' ' ')\"
+       # echo -e \"\$json\x5Cn\x5Cn\" >&2
+       tag=\$(echo \"\$json\" | grep -oE '\"tag_name\": *\"[a-zA-Z0-9_.-]+\"' | sed 's/.*\"tag_name\": *\"//;s/\"//' | head -1)
+    fi
     if [[ -n \"\${tag:-}\" && \"\$tag\" != \"null\" ]]; then 
         echo \"\${tag:-}\" 
     fi;
 }
+# echo \"Tag devizer/Universe.SqlInsights: [\$(get_github_latest_release devizer Universe.SqlInsights)]\"
+# echo \"Tag devizer/Universe.SqlInsights (beta): [\$(get_github_latest_release devizer Universe.SqlInsights --pre)]\"
+# echo \"Tag powershell/powershell: [\$(get_github_latest_release powershell powershell)]\"
+# echo \"Tag powershell/powershell (beta): [\$(get_github_latest_release powershell powershell --pre)]\"
 
 if [[ \"\$1\" == \"\" ]]; then
     echo \"Usage Get-GitHub-Latest-Release microsoft azure-pipelines-agent\"
@@ -1022,7 +1063,12 @@ fi
 owner=\"\$1\"; owner=\${owner:-microsoft}
 repo=\"\$2\"; repo=\${repo:-azure-pipelines-agent}
 
-get_github_latest_release \"\${owner:-}\" \"\${repo:-}\"
+get_github_latest_release \"\${owner:-}\" \"\${repo:-}\" \"\${3:-}\"
+
+
+# codePython=\"import sys; import json; data = json.load(sys.stdin); print(data.get('tag_name') or '')\"
+# echo \"RESULT: [\$(echo '{ \"tag_name\": 42 }' | python -c \"\$codePython\")]\"
+
 
 " | sudo tee ${TARGET_DIR}/Get-GitHub-Latest-Release >/dev/null;
   if [[ -f ${TARGET_DIR}/Get-GitHub-Latest-Release ]]; then 
@@ -3908,14 +3954,16 @@ if [[ -d ${TARGET_DIR} ]]; then
   echo -e "#!/usr/bin/env bash
 
   function get_stopwatch_file_name() {
-    user=\"\${LOGNAME:-\$(whoami)}\"
-    file1=\"\$tmp/.\${user}-stopwatch-for-say\"
+    local user=\"\${LOGNAME:-\$(whoami)}\"
+    local tmp=\"\${TMPDIR:-/tmp}\"
+    local file1=\"\$tmp/.\${user}-stopwatch-for-say\"
     echo \$file1
   }
 
   function get_counter_file_name() {
-    user=\"\${LOGNAME:-\$(whoami)}\"
-    file2=\"\$tmp/.\${user}-counter-for-say\"
+    local user=\"\${LOGNAME:-\$(whoami)}\"
+    local tmp=\"\${TMPDIR:-/tmp}\"
+    local file2=\"\$tmp/.\${user}-counter-for-say\"
     echo \$file2
   }
   
@@ -3927,7 +3975,7 @@ if [[ -d ${TARGET_DIR} ]]; then
     theSYSTEM=\"\${theSYSTEM:-\$(uname -s)}\"
     if [[ \${theSYSTEM} != \"Darwin\" ]]; then
         # uptime=\$(</proc/uptime);                                # 42645.93 240538.58
-        uptime=\"\$(cat /proc/uptime 2>/dev/null)\";                 # 42645.93 240538.58
+        local uptime=\"\$(cat /proc/uptime 2>/dev/null || true)\";   # 42645.93 240538.58
         if [[ -z \"\${uptime:-}\" ]]; then
           # secured, use number of seconds since 1970
           echo \"\$(date +%s)\"
@@ -3939,24 +3987,26 @@ if [[ -d ${TARGET_DIR} ]]; then
         echo \$uptime
     else 
         # https://stackoverflow.com/questions/15329443/proc-uptime-in-mac-os-x
-        boottime=\`sysctl -n kern.boottime | awk '{print \$4}' | sed 's/,//g'\`
-        unixtime=\`date +%s\`
-\x09    timeAgo=\$((\$unixtime - \$boottime))
+        local boottime=\`sysctl -n kern.boottime | awk '{print \$4}' | sed 's/,//g'\`
+        local unixtime=\`date +%s\`
+\x09    local timeAgo=\$((\$unixtime - \$boottime))
 \x09    echo \$timeAgo
     fi
   }
 
   function format_total_seconds() {
-    timeAgo=\$1
-    seconds1=\$((timeAgo % 86400));
-    seconds=\$((seconds1 % 60));
-    minutes1=\$((seconds1 / 60));
-    minutes=\$((minutes1 % 60));
-    hours=\$((minutes1 / 60));
+    local timeAgo=\$1
+    local seconds1=\$((timeAgo % 86400));
+    local seconds=\$((seconds1 % 60));
+    local minutes1=\$((seconds1 / 60));
+    local minutes=\$((minutes1 % 60));
+    local hours=\$((minutes1 / 60));
     echo \"\$(format2digits \$hours):\$(format2digits \$minutes):\$(format2digits \$seconds)\"
   }
 
   function print_header() {
+    #1 - counter
+    #2 - message
     global_seconds=\"\$(get_global_seconds)\"
 
     # zero is 0?
@@ -3982,33 +4032,34 @@ if [[ -d ${TARGET_DIR} ]]; then
     message_color=\"\${Yellow}\"
     [[ \"\${MESSAGE_TYPE}\" == Error ]] && message_color=\"\${LightRED}\"
     printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${message_color}\"; echo -n \"\$2\"; printf \"\${NC}\x5Cn\";
+    local tmp=\"\${TMPDIR:-/tmp}\"
     echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"\$tmp/Said-by-\$(whoami).log\" 2>/dev/null 
   }
 
   function SayIt() { 
-    counter_file=\"\$(get_counter_file_name)\"
+
+    if [[ \"\$1\" == \"--Reset-Stopwatch\" ]]; then
+      echo \"\$(get_global_seconds)\" > \"\$(get_stopwatch_file_name)\"
+      echo 1 > \"\$(get_counter_file_name)\"
+      return;
+    fi
+
+    if [[ \"\${1:-}\" == \"--Display-As=\"* ]]; then
+      option=\"\${1}\";
+      MESSAGE_TYPE=\"Info\";
+      [[ \"\${option:-}\" == \"--Display-As=Error\" ]] &&   MESSAGE_TYPE=\"Error\"
+      [[ \"\${option:-}\" == \"--Display-As=Warning\" ]] && MESSAGE_TYPE=\"Warning\"
+      shift
+    fi
+
+    local counter_file=\"\$(get_counter_file_name)\"
+    local counter;
     if [[ -e \"\$counter_file\" ]]; then counter=\$(< \"\$counter_file\"); else counter=1; fi
     print_header \"#\${counter}\" \"\$1\";
     counter=\$((counter+1));
     echo \$counter > \"\$counter_file\"
   }; 
 
-
-tmp=\"\${TMPDIR:-/tmp}\"
-
-if [[ \"\$1\" == \"--Reset-Stopwatch\" ]]; then
-  echo \"\$(get_global_seconds)\" > \"\$(get_stopwatch_file_name)\"
-  echo 1 > \"\$(get_counter_file_name)\"
-  exit 0;
-fi
-
-if [[ \"\${1:-}\" == \"--Display-As=\"* ]]; then
-  option=\"\${1}\";
-  MESSAGE_TYPE=\"Info\";
-  [[ \"\${option:-}\" == \"--Display-As=Error\" ]] &&   MESSAGE_TYPE=\"Error\"
-  [[ \"\${option:-}\" == \"--Display-As=Warning\" ]] && MESSAGE_TYPE=\"Warning\"
-  shift
-fi
 
 SayIt \"\$@\"
 
@@ -4016,14 +4067,16 @@ SayIt \"\$@\"
   echo -e "#!/usr/bin/env bash
 
   function get_stopwatch_file_name() {
-    user=\"\${LOGNAME:-\$(whoami)}\"
-    file1=\"\$tmp/.\${user}-stopwatch-for-say\"
+    local user=\"\${LOGNAME:-\$(whoami)}\"
+    local tmp=\"\${TMPDIR:-/tmp}\"
+    local file1=\"\$tmp/.\${user}-stopwatch-for-say\"
     echo \$file1
   }
 
   function get_counter_file_name() {
-    user=\"\${LOGNAME:-\$(whoami)}\"
-    file2=\"\$tmp/.\${user}-counter-for-say\"
+    local user=\"\${LOGNAME:-\$(whoami)}\"
+    local tmp=\"\${TMPDIR:-/tmp}\"
+    local file2=\"\$tmp/.\${user}-counter-for-say\"
     echo \$file2
   }
   
@@ -4035,7 +4088,7 @@ SayIt \"\$@\"
     theSYSTEM=\"\${theSYSTEM:-\$(uname -s)}\"
     if [[ \${theSYSTEM} != \"Darwin\" ]]; then
         # uptime=\$(</proc/uptime);                                # 42645.93 240538.58
-        uptime=\"\$(cat /proc/uptime 2>/dev/null)\";                 # 42645.93 240538.58
+        local uptime=\"\$(cat /proc/uptime 2>/dev/null || true)\";   # 42645.93 240538.58
         if [[ -z \"\${uptime:-}\" ]]; then
           # secured, use number of seconds since 1970
           echo \"\$(date +%s)\"
@@ -4047,24 +4100,26 @@ SayIt \"\$@\"
         echo \$uptime
     else 
         # https://stackoverflow.com/questions/15329443/proc-uptime-in-mac-os-x
-        boottime=\`sysctl -n kern.boottime | awk '{print \$4}' | sed 's/,//g'\`
-        unixtime=\`date +%s\`
-\x09    timeAgo=\$((\$unixtime - \$boottime))
+        local boottime=\`sysctl -n kern.boottime | awk '{print \$4}' | sed 's/,//g'\`
+        local unixtime=\`date +%s\`
+\x09    local timeAgo=\$((\$unixtime - \$boottime))
 \x09    echo \$timeAgo
     fi
   }
 
   function format_total_seconds() {
-    timeAgo=\$1
-    seconds1=\$((timeAgo % 86400));
-    seconds=\$((seconds1 % 60));
-    minutes1=\$((seconds1 / 60));
-    minutes=\$((minutes1 % 60));
-    hours=\$((minutes1 / 60));
+    local timeAgo=\$1
+    local seconds1=\$((timeAgo % 86400));
+    local seconds=\$((seconds1 % 60));
+    local minutes1=\$((seconds1 / 60));
+    local minutes=\$((minutes1 % 60));
+    local hours=\$((minutes1 / 60));
     echo \"\$(format2digits \$hours):\$(format2digits \$minutes):\$(format2digits \$seconds)\"
   }
 
   function print_header() {
+    #1 - counter
+    #2 - message
     global_seconds=\"\$(get_global_seconds)\"
 
     # zero is 0?
@@ -4090,33 +4145,34 @@ SayIt \"\$@\"
     message_color=\"\${Yellow}\"
     [[ \"\${MESSAGE_TYPE}\" == Error ]] && message_color=\"\${LightRED}\"
     printf \"\${Blue}\${black_circle} \${hostname}\${NC} \${LightGray}[\${uptime:-}]\${NC} \${LightGreen}\$1\${NC} \${message_color}\"; echo -n \"\$2\"; printf \"\${NC}\x5Cn\";
+    local tmp=\"\${TMPDIR:-/tmp}\"
     echo \"\${hostname} \${uptime:-} \$1 \$2\" >> \"\$tmp/Said-by-\$(whoami).log\" 2>/dev/null 
   }
 
   function SayIt() { 
-    counter_file=\"\$(get_counter_file_name)\"
+
+    if [[ \"\$1\" == \"--Reset-Stopwatch\" ]]; then
+      echo \"\$(get_global_seconds)\" > \"\$(get_stopwatch_file_name)\"
+      echo 1 > \"\$(get_counter_file_name)\"
+      return;
+    fi
+
+    if [[ \"\${1:-}\" == \"--Display-As=\"* ]]; then
+      option=\"\${1}\";
+      MESSAGE_TYPE=\"Info\";
+      [[ \"\${option:-}\" == \"--Display-As=Error\" ]] &&   MESSAGE_TYPE=\"Error\"
+      [[ \"\${option:-}\" == \"--Display-As=Warning\" ]] && MESSAGE_TYPE=\"Warning\"
+      shift
+    fi
+
+    local counter_file=\"\$(get_counter_file_name)\"
+    local counter;
     if [[ -e \"\$counter_file\" ]]; then counter=\$(< \"\$counter_file\"); else counter=1; fi
     print_header \"#\${counter}\" \"\$1\";
     counter=\$((counter+1));
     echo \$counter > \"\$counter_file\"
   }; 
 
-
-tmp=\"\${TMPDIR:-/tmp}\"
-
-if [[ \"\$1\" == \"--Reset-Stopwatch\" ]]; then
-  echo \"\$(get_global_seconds)\" > \"\$(get_stopwatch_file_name)\"
-  echo 1 > \"\$(get_counter_file_name)\"
-  exit 0;
-fi
-
-if [[ \"\${1:-}\" == \"--Display-As=\"* ]]; then
-  option=\"\${1}\";
-  MESSAGE_TYPE=\"Info\";
-  [[ \"\${option:-}\" == \"--Display-As=Error\" ]] &&   MESSAGE_TYPE=\"Error\"
-  [[ \"\${option:-}\" == \"--Display-As=Warning\" ]] && MESSAGE_TYPE=\"Warning\"
-  shift
-fi
 
 SayIt \"\$@\"
 
