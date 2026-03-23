@@ -42,6 +42,11 @@ function Install_Mono_on_Debians() {
     if [[ "$(uname -m)" == armv7 ]] || [[ "$(dpkg --print-architecture)" == armhf ]]; then
       def="deb https://download.mono-project.com/repo/ubuntu stable-bionic main"
     fi
+    if [[ "$ID-$VERSION_ID" == "ubuntu-24."* ]] && [[ "$(uname -m)" == armv7 || "$(dpkg --print-architecture)" == armhf ]]; then
+      # for armhf 24.04
+      # deb https://download.mono-project.com/repo/debian stable-buster main
+      def="deb https://download.mono-project.com/repo/debian stable-buster main"
+    fi
   fi
   echo "$def" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
   time try-and-retry sudo apt-get --allow-unauthenticated update -q
