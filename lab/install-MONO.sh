@@ -50,6 +50,7 @@ function Install_Mono_on_Debians() {
   fi
   echo "$def" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
   time try-and-retry sudo apt-get --allow-unauthenticated update -q
+  # nuget msbuild - are enough for 24.04
   time smart-apt-install mono-complete nuget msbuild 
   sudo apt-get clean; 
   Say "Deleting monodoc*"
