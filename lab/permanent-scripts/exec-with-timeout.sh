@@ -29,7 +29,7 @@ elif [[ -n "$(command -v timeout)" ]]; then
   # using bsdutils timeout
   timeout "$@"
 else
-  echo "[exec-with-timeout] Warning! perf and bsdutil timeout are missing, timeout parameter ignored"
+  echo "[exec-with-timeout] Warning! perl and bsdutil timeout are missing, timeout parameter ignored"
   shift
   "$@"
 fi

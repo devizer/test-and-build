@@ -21,7 +21,8 @@ function get_cpu_name() {
   local cpu;
   if [[ "$(uname -s)" == Linux ]]; then
     cpu="$(cat /proc/cpuinfo | grep -E '^(model name|Hardware)' | awk -F':' 'NR==1 {print $2}')"; 
-    cpu="$(echo -e "${cpu:-}" | sed -e 's/^[[:space:]]*//')"
+    # cpu="$(echo -e "${cpu:-}" | sed -e 's/^[[:space:]]*//')"
+    cpu="$(echo "${cpu}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/[[:space:]]\{2,\}/ /g')"
     # on raspberry, AWS, And Oracle Cloud it is empty for ARM
     if [[ -z "$cpu" ]]; then
       # /sys/firmware/devicetree/base/model: Raspberry Pi 5 Model B Rev 1.0
