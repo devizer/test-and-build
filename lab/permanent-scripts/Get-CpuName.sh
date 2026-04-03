@@ -41,15 +41,17 @@ function get_cpu_name() {
     echo "${cpu}"
   elif [[ "$(uname -s)" == Darwin ]]; then
     cpu="$(sysctl -n machdep.cpu.brand_string)"
+    cpu="$(echo "${cpu}" | tr -d '\0' | sed -e 's/^[[:space:]]*//' | sed -e 's/[[:space:]]*$//' | sed -e 's/[[:space:]]\{2,\}/ /g')"
     if [[ -z "$nameOnly" ]]; then
-      cpu="$cpu, $(sysctl -n machdep.cpu.core_count) Cores, $(sysctl -n machdep.cpu.thread_count) Threads"
+      # cpu="$cpu, $(sysctl -n machdep.cpu.core_count) Cores, $(sysctl -n machdep.cpu.thread_count) Threads"
+      cpu="$cpu, $(hw.ncpu) Cores"
     fi
     echo "${cpu}"
   elif [[ "$(uname -s)" == *"MINGW"* ]] || [[ "$(uname -s)" == *"MSYS"* ]]; then
     if [[ -z "$nameOnly" ]]; then
-      cpu="$(echo '$cpu="$((Get-WmiObject Win32_Processor | Select -First 1).Name)".Trim([char] 32, [char] 10, [char] 13);"$cpu, $([Environment]::ProcessorCount) Cores"' | powershell -c -)"
+      cpu="$(echo '$cpu="$((Get-WmiObject Win32_Processor | Select -First 1).Name)".Trim([char] 32, [char] 10, [char] 13, [char] 0);"$cpu, $([Environment]::ProcessorCount) Cores"' | powershell -c -)"
     else
-      cpu="$(echo '$cpu="$((Get-WmiObject Win32_Processor | Select -First 1).Name)".Trim([char] 32, [char] 10, [char] 13);"$cpu"' | powershell -c -)"
+      cpu="$(echo '$cpu="$((Get-WmiObject Win32_Processor | Select -First 1).Name)".Trim([char] 32, [char] 10, [char] 13, [char] 0);"$cpu"' | powershell -c -)"
     fi
     echo "$cpu"
   else
